@@ -1,6 +1,3 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { getTransactionDutyRate } from './lib/stateDuty.js';
 
 // Get stored values
@@ -51,7 +48,7 @@ let modelInputs = {
   },
 };
 
-// Calculation functions from the logic engine
+// Calculation functions
 const READY_GST_RATE = 0;
 const UNDER_CONSTRUCTION_GST_RATE = 0.05;
 const ZINC_RATE_SPREAD = 0.02;
@@ -168,10 +165,8 @@ function calculateModel(inputs) {
 
   const effectiveRsuInrCagr = calculateEffectiveRsuInrCagr(inputs.assets.foreignRsu.usdCagrPct, inputs.assets.foreignRsu.inrDepreciationPct);
 
-  // Calculate asset sale strategies
   const strategies = [];
 
-  // Cash
   const cashFutureValue = calculateFutureValue(fundingGap, inputs.assets.cash.cagrPct, analysisHorizonYears);
   strategies.push({
     strategyId: 'use-cash',
@@ -180,7 +175,6 @@ function calculateModel(inputs) {
     rank: 0
   });
 
-  // Land
   const landGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.land.embeddedGainPct, inputs.assets.land.ltcgTaxRatePct, inputs.assets.land.exemptionAmount);
   const landFutureValue = calculateFutureValue(landGrossSale, inputs.assets.land.cagrPct, analysisHorizonYears);
   strategies.push({
@@ -190,7 +184,6 @@ function calculateModel(inputs) {
     rank: 0
   });
 
-  // Indian Equity
   const equityGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.indianEquity.embeddedGainPct, inputs.assets.indianEquity.ltcgTaxRatePct, inputs.assets.indianEquity.exemptionAmount);
   const equityFutureValue = calculateFutureValue(equityGrossSale, inputs.assets.indianEquity.cagrPct, analysisHorizonYears);
   strategies.push({
@@ -200,7 +193,6 @@ function calculateModel(inputs) {
     rank: 0
   });
 
-  // Foreign RSUs
   const rsuGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.foreignRsu.embeddedGainPct, inputs.assets.foreignRsu.ltcgTaxRatePct, inputs.assets.foreignRsu.exemptionAmount);
   const rsuFutureValue = calculateFutureValue(rsuGrossSale, effectiveRsuInrCagr, analysisHorizonYears);
   strategies.push({
@@ -210,7 +202,6 @@ function calculateModel(inputs) {
     rank: 0
   });
 
-  // Zinc Loan
   const zincRate = deriveZincLoanRate(inputs.selectedHomeLoanRatePct);
   const zincInterest = fundingGap * zincRate * analysisHorizonYears;
   const zincPaymentsFV = calculateFutureValue(zincInterest, inputs.zincPaymentReinvestmentCagrPct, analysisHorizonYears / 2);
@@ -225,7 +216,6 @@ function calculateModel(inputs) {
     rank: 0
   });
 
-  // Rank strategies
   strategies.sort((a, b) => a.impact - b.impact);
   strategies.forEach((s, i) => s.rank = i + 1);
 
@@ -244,7 +234,6 @@ function calculateModel(inputs) {
   };
 }
 
-// Format currency
 function formatCurrency(amount) {
   const absAmount = Math.abs(amount);
   if (absAmount >= 10000000) {
@@ -259,66 +248,83 @@ function formatCurrency(amount) {
 function formatLacs(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
-    return (lacs / 100).toFixed(1) + ' CR';
+    return (lacs / 100).toFixed(1) + ' Cr';
   }
-  return lacs.toFixed(1) + ' LACS';
+  return lacs.toFixed(1) + ' lacs';
 }
 
 function formatCr(amount) {
-  return (amount / 10000000).toFixed(2) + ' CR';
+  const cr = amount / 10000000;
+  if (cr >= 1) {
+    return cr.toFixed(0) + ' Cr';
+  }
+  return (amount / 100000).toFixed(0) + ' Lacs';
 }
 
-// Update UI
+function getHouseLevel(value) {
+  const MIN_VALUE = 100000;
+  const MAX_VALUE = 100000000;
+  const range = MAX_VALUE - MIN_VALUE;
+  const step = range / 6;
+
+  if (value < MIN_VALUE + step) return 1;
+  if (value < MIN_VALUE + step * 2) return 2;
+  if (value < MIN_VALUE + step * 3) return 3;
+  if (value < MIN_VALUE + step * 4) return 4;
+  if (value < MIN_VALUE + step * 5) return 5;
+  return 6;
+}
+
 function updateUI() {
   const results = calculateModel(modelInputs);
 
-  // Update funding amount
   document.getElementById('funding-amount').textContent = formatLacs(results.fundingGap);
-
-  // Update city and house value
   document.getElementById('city-name').textContent = selectedCity;
   document.getElementById('house-value').textContent = formatCr(modelInputs.propertyPrice);
 
-  // Update settings display
+  const houseLevel = getHouseLevel(modelInputs.propertyPrice);
+  document.getElementById('house-image').src = `/houses/level${houseLevel}.png`;
+
   const ratePercent = (modelInputs.selectedHomeLoanRatePct * 100).toFixed(1);
   const ltvPercent = (modelInputs.homeLoanLtvPct * 100).toFixed(0);
   document.getElementById('loan-settings-value').textContent = `${ratePercent}%, ${modelInputs.homeLoanTenureYears} year, ${ltvPercent}%`;
-
   document.getElementById('construction-value').textContent = modelInputs.propertyStatus === 'Ready' ? 'No' : 'Yes';
 
-  // Update options
   const bestOption = results.strategies.find(s => s.rank === 1);
   const otherOptions = results.strategies.filter(s => s.rank !== 1);
 
   document.getElementById('best-option').innerHTML = `
-    <div class="option-rank rank-1">1</div>
-    <div class="option-info">
+    <div class="option-left">
+      <div class="option-rank rank-1">1</div>
       <div class="option-name">${bestOption.strategyName}</div>
     </div>
-    <div class="option-impact">
-      <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
-      <div class="option-label">10 year financing impact</div>
+    <div class="option-right">
+      <div class="option-impact">
+        <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
+        <div class="option-label">10 year financing impact</div>
+      </div>
+      <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
-    <svg class="option-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
   `;
   document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
 
   const otherOptionsHtml = otherOptions.map(opt => `
     <div class="option-card" data-strategy-id="${opt.strategyId}">
-      <div class="option-rank rank-other">${opt.rank}</div>
-      <div class="option-info">
+      <div class="option-left">
+        <div class="option-rank rank-other">${opt.rank}</div>
         <div class="option-name">${opt.strategyName}</div>
       </div>
-      <div class="option-impact">
-        <div class="option-amount">${formatCurrency(opt.impact)}</div>
-        <div class="option-label">10 year financing impact</div>
+      <div class="option-right">
+        <div class="option-impact">
+          <div class="option-amount">${formatCurrency(opt.impact)}</div>
+          <div class="option-label">10 year financing impact</div>
+        </div>
+        <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </div>
-      <svg class="option-expand" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
   `).join('');
   document.getElementById('other-options').innerHTML = otherOptionsHtml;
 
-  // Add click handlers for option cards
   document.querySelectorAll('.option-card').forEach(card => {
     card.addEventListener('click', () => showOptionDetails(card.dataset.strategyId, results));
   });
@@ -365,7 +371,6 @@ function showOptionDetails(strategyId, results) {
   document.getElementById('detail-modal').classList.add('visible');
 }
 
-// Modal handlers
 const loanModal = document.getElementById('loan-modal');
 const constructionModal = document.getElementById('construction-modal');
 const detailModal = document.getElementById('detail-modal');
@@ -389,8 +394,32 @@ document.getElementById('loan-modal-save').addEventListener('click', () => {
   updateUI();
 });
 
+const constructionExtraFields = document.getElementById('construction-extra-fields');
+const constructionSelect = document.getElementById('modal-construction');
+
+constructionSelect.addEventListener('change', () => {
+  if (constructionSelect.value === 'Under Construction') {
+    constructionExtraFields.classList.add('visible');
+  } else {
+    constructionExtraFields.classList.remove('visible');
+  }
+});
+
 document.getElementById('construction-btn').addEventListener('click', () => {
   document.getElementById('modal-construction').value = modelInputs.propertyStatus;
+  document.getElementById('modal-construction-duration').value = modelInputs.constructionDurationYears;
+
+  document.getElementById('drawdown-0').value = modelInputs.drawdownSchedule[0].percentage;
+  document.getElementById('drawdown-1').value = modelInputs.drawdownSchedule[1].percentage;
+  document.getElementById('drawdown-2').value = modelInputs.drawdownSchedule[2].percentage;
+  document.getElementById('drawdown-3').value = modelInputs.drawdownSchedule[3].percentage;
+
+  if (modelInputs.propertyStatus === 'Under Construction') {
+    constructionExtraFields.classList.add('visible');
+  } else {
+    constructionExtraFields.classList.remove('visible');
+  }
+
   constructionModal.classList.add('visible');
 });
 
@@ -400,6 +429,17 @@ document.getElementById('construction-modal-cancel').addEventListener('click', (
 
 document.getElementById('construction-modal-save').addEventListener('click', () => {
   modelInputs.propertyStatus = document.getElementById('modal-construction').value;
+
+  if (modelInputs.propertyStatus === 'Under Construction') {
+    modelInputs.constructionDurationYears = parseInt(document.getElementById('modal-construction-duration').value);
+    modelInputs.drawdownSchedule = [
+      { id: 'drawdown-1', year: 0, percentage: parseFloat(document.getElementById('drawdown-0').value) },
+      { id: 'drawdown-2', year: 1, percentage: parseFloat(document.getElementById('drawdown-1').value) },
+      { id: 'drawdown-3', year: 2, percentage: parseFloat(document.getElementById('drawdown-2').value) },
+      { id: 'drawdown-4', year: 3, percentage: parseFloat(document.getElementById('drawdown-3').value) },
+    ];
+  }
+
   constructionModal.classList.remove('visible');
   updateUI();
 });
@@ -408,78 +448,10 @@ document.getElementById('detail-modal-close').addEventListener('click', () => {
   detailModal.classList.remove('visible');
 });
 
-// Close modals on overlay click
 [loanModal, constructionModal, detailModal].forEach(modal => {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.remove('visible');
   });
 });
 
-// Initialize UI
 updateUI();
-
-// 3D Model Setup
-const container = document.getElementById('canvas-container');
-const scene = new THREE.Scene();
-scene.background = null;
-
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-camera.position.set(0, 2, 6);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x000000, 0);
-container.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.enableZoom = false;
-controls.enablePan = false;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(5, 10, 7);
-scene.add(directionalLight);
-
-const loader = new GLTFLoader();
-
-// Determine which model to load based on property price
-function getModelPath() {
-  if (propertyPrice < 10000000) return '/models/house.glb';
-  if (propertyPrice < 30000000) return '/models/house_rodin.glb';
-  return '/models/house_large.glb';
-}
-
-loader.load(getModelPath(), (gltf) => {
-  const model = gltf.scene;
-  const box = new THREE.Box3().setFromObject(model);
-  const center = box.getCenter(new THREE.Vector3());
-  const size = box.getSize(new THREE.Vector3());
-
-  model.position.sub(center);
-  model.position.y += size.y * 0.1;
-
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const scale = 3 / maxDim;
-  model.scale.setScalar(scale);
-
-  scene.add(model);
-  controls.target.set(0, 0, 0);
-  controls.update();
-});
-
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
-
-container.addEventListener('mousedown', () => controls.autoRotate = false);
-container.addEventListener('mouseup', () => setTimeout(() => controls.autoRotate = true, 3000));

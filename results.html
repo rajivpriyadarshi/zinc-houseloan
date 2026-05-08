@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>House Purchase Planner - Results</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Funding Options - Zinc</title>
   <link rel="stylesheet" href="results.css">
 </head>
 <body>
@@ -14,40 +11,44 @@
     <!-- Left Column -->
     <div class="left-column">
       <button class="back-btn" onclick="window.location.href='location.html'">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
       </button>
 
       <div class="funding-info">
         <p class="funding-label">You still need</p>
-        <h1 class="funding-amount" id="funding-amount">99.3 LACS</h1>
+        <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
         <p class="funding-subtitle">even after taking a home loan to get in your house</p>
       </div>
 
       <div class="house-info">
-        <div class="house-label">
-          <span id="city-name">Bangalore</span> house
-          <div class="house-value" id="house-value">1 CR</div>
+        <div class="house-badge">
+          <span class="house-city" id="city-name">Mumbai</span> house
+          <div class="house-value" id="house-value">5 Cr</div>
         </div>
-        <div id="canvas-container"></div>
+        <img id="house-image" class="house-image" src="/houses/level4.png" alt="House">
       </div>
 
       <div class="settings-section">
         <button class="settings-btn" id="loan-settings-btn">
           <span class="settings-label">Home loan rate</span>
-          <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
+          <div class="settings-right">
+            <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
         </button>
 
         <button class="settings-btn" id="construction-btn">
           <span class="settings-label">Under-construction property?</span>
-          <span class="settings-value" id="construction-value">No</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 9l6 6 6-6"/>
-          </svg>
+          <div class="settings-right">
+            <span class="settings-value" id="construction-value">No</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
         </button>
       </div>
     </div>
@@ -136,6 +137,70 @@
           <option value="Ready" selected>No - Ready to move</option>
           <option value="Under Construction">Yes - Under construction</option>
         </select>
+      </div>
+
+      <div id="construction-extra-fields" class="construction-extra-fields">
+        <div class="modal-field">
+          <label>Construction Duration (Years)</label>
+          <select id="modal-construction-duration">
+            <option value="1">1 year</option>
+            <option value="2">2 years</option>
+            <option value="3" selected>3 years</option>
+            <option value="4">4 years</option>
+            <option value="5">5 years</option>
+          </select>
+        </div>
+
+        <div class="modal-info">
+          <span class="info-label">GST Rate</span>
+          <span class="info-value">5%</span>
+        </div>
+
+        <div class="modal-field">
+          <label>Drawdown Schedule</label>
+          <div class="drawdown-grid">
+            <div class="drawdown-row">
+              <span>Year 0</span>
+              <select id="drawdown-0">
+                <option value="0.1">10%</option>
+                <option value="0.2">20%</option>
+                <option value="0.3" selected>30%</option>
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </div>
+            <div class="drawdown-row">
+              <span>Year 1</span>
+              <select id="drawdown-1">
+                <option value="0.1">10%</option>
+                <option value="0.2">20%</option>
+                <option value="0.3" selected>30%</option>
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </div>
+            <div class="drawdown-row">
+              <span>Year 2</span>
+              <select id="drawdown-2">
+                <option value="0.1">10%</option>
+                <option value="0.2" selected>20%</option>
+                <option value="0.3">30%</option>
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </div>
+            <div class="drawdown-row">
+              <span>Year 3</span>
+              <select id="drawdown-3">
+                <option value="0.1">10%</option>
+                <option value="0.2" selected>20%</option>
+                <option value="0.3">30%</option>
+                <option value="0.4">40%</option>
+                <option value="0.5">50%</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-actions">

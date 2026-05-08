@@ -5,48 +5,38 @@ const dropdownContainer = document.getElementById('dropdown-container');
 const stateDropdown = document.getElementById('state-dropdown');
 
 const cityImages = {
-  'Bangalore': '/cities/Bangalore.png',
-  'Mumbai': '/cities/Mumbai.png',
-  'Delhi': '/cities/Delhi.png',
-  'Hyderabad': '/cities/Hyderabad.png',
-  'Chennai': '/cities/Chennai.png'
+  'Bangalore': '/new-cities/Bangalore.png',
+  'Mumbai': '/new-cities/Mumbai.png',
+  'Delhi': '/new-cities/Delhi.png',
+  'Hyderabad': '/new-cities/Hyderabad.png',
+  'Chennai': '/new-cities/Chennai.png'
 };
 
 let selectedCity = 'Bangalore';
 let isTransitioning = false;
 
-function switchImage(newSrc, alt) {
+function switchImage(city) {
   if (isTransitioning) return;
 
+  const newSrc = cityImages[city];
   if (!newSrc) {
-    cityImage.style.transform = 'scale(0)';
-    setTimeout(() => {
-      cityImage.classList.remove('visible');
-      cityImage.src = '';
-    }, 300);
+    cityImage.classList.add('zoom-out');
     return;
   }
 
-  if (cityImage.classList.contains('visible') && cityImage.src) {
-    isTransitioning = true;
-    cityImage.style.transform = 'scale(0)';
+  if (cityImage.src.includes(city)) return;
+
+  isTransitioning = true;
+  cityImage.classList.add('zoom-out');
+
+  setTimeout(() => {
+    cityImage.src = newSrc;
 
     setTimeout(() => {
-      cityImage.src = newSrc;
-      cityImage.alt = alt;
-      cityImage.style.transform = 'scale(1)';
+      cityImage.classList.remove('zoom-out');
       isTransitioning = false;
-    }, 300);
-  } else {
-    cityImage.src = newSrc;
-    cityImage.alt = alt;
-    cityImage.classList.add('visible');
-    cityImage.style.transform = 'scale(0)';
-
-    requestAnimationFrame(() => {
-      cityImage.style.transform = 'scale(1)';
-    });
-  }
+    }, 50);
+  }, 300);
 }
 
 cityButtons.forEach(btn => {
@@ -58,18 +48,14 @@ cityButtons.forEach(btn => {
 
     if (city === 'Others') {
       dropdownContainer.classList.add('visible');
-      switchImage(null, '');
+      cityImage.classList.add('zoom-out');
       selectedCity = null;
       proceedBtn.classList.remove('visible');
     } else {
       dropdownContainer.classList.remove('visible');
       stateDropdown.value = '';
       selectedCity = city;
-
-      if (cityImages[city]) {
-        switchImage(cityImages[city], city);
-      }
-
+      switchImage(city);
       proceedBtn.classList.add('visible');
     }
   });
@@ -80,7 +66,6 @@ stateDropdown.addEventListener('change', () => {
   if (state) {
     selectedCity = state;
     proceedBtn.classList.add('visible');
-    switchImage(null, '');
   } else {
     selectedCity = null;
     proceedBtn.classList.remove('visible');

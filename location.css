@@ -1,3 +1,24 @@
+@font-face {
+  font-family: 'Butler Pro';
+  src: url('/fonts/ButlerPro-Light-Ds.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,8 +26,7 @@
 }
 
 body {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%),
-              linear-gradient(90deg, rgb(236, 250, 209) 0%, rgb(236, 250, 209) 100%);
+  background-color: #000;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -15,22 +35,22 @@ body {
   position: fixed;
   top: 30px;
   left: 30px;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background-color: #e8eb8a;
-  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, background-color 0.2s;
   z-index: 100;
 }
 
 .back-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .back-btn:active {
@@ -43,27 +63,33 @@ body {
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  padding-top: 130px;
-  padding-bottom: 100px;
+  position: relative;
+  overflow: hidden;
+  background-image: url('/bg-planner.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 140px;
+  z-index: 10;
+  position: relative;
 }
 
 .title {
-  font-family: 'Lilita One', cursive;
-  font-size: clamp(3rem, 7vw, 5rem);
-  color: #1a1a1a;
+  font-family: 'Butler Pro', serif;
+  font-weight: 300;
+  font-size: 72px;
+  color: #fff;
   text-align: center;
   letter-spacing: -2px;
-  margin-bottom: 40px;
-}
-
-.char {
-  display: inline-block;
-  transition: transform 0.2s ease-out;
-  cursor: default;
-}
-
-.char:hover {
-  transform: scale(1.2) rotate(-8deg);
+  line-height: 1.05;
+  margin-bottom: 30px;
 }
 
 .city-options {
@@ -75,13 +101,14 @@ body {
 }
 
 .city-btn {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.25rem;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
   padding: 20px 28px;
   border-radius: 20px;
-  border: 1px solid #1a1a1a;
-  background-color: white;
-  color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+  color: #fff;
   cursor: pointer;
   transition: all 0.2s;
   letter-spacing: -0.48px;
@@ -89,12 +116,13 @@ body {
 
 .city-btn:hover {
   transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .city-btn.selected {
-  background-color: #c8e154;
+  background-color: #fff;
   border-color: #c8e154;
-  color: #285d0c;
+  color: #000;
 }
 
 .dropdown-container {
@@ -107,13 +135,13 @@ body {
 }
 
 .state-dropdown {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.1rem;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
   padding: 16px 24px;
   border-radius: 16px;
-  border: 1px solid #1a1a1a;
-  background-color: white;
-  color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
   cursor: pointer;
   min-width: 250px;
   outline: none;
@@ -123,18 +151,25 @@ body {
   border-color: #c8e154;
 }
 
+.state-dropdown option {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
 .proceed-btn {
-  font-family: 'Lilita One', cursive;
-  font-size: 1.5rem;
-  background-color: #c8e154;
-  color: #285d0c;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  background-color: #fff;
+  color: #000;
   border: none;
-  padding: 16px 40px;
+  padding: 24px 32px;
   border-radius: 40px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  letter-spacing: -1px;
+  letter-spacing: -0.56px;
   display: none;
+  min-width: 210px;
 }
 
 .proceed-btn.visible {
@@ -143,7 +178,7 @@ body {
 
 .proceed-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
 }
 
 .proceed-btn:active {
@@ -152,22 +187,22 @@ body {
 
 .city-image-container {
   width: 100%;
-  max-width: 924px;
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
+  z-index: 5;
+  position: relative;
+  flex: 1;
 }
 
 .city-image {
-  width: 100%;
-  max-width: 924px;
-  height: auto;
-  object-fit: cover;
-  display: none;
-  transition: transform 0.3s ease-out;
-  transform: scale(0);
+  max-width: 90vw;
+  max-height: 50vh;
+  object-fit: contain;
+  transition: transform 0.3s ease, opacity 0.15s ease;
 }
 
-.city-image.visible {
-  display: block;
+.city-image.zoom-out {
+  transform: scale(0.8);
+  opacity: 0;
 }
