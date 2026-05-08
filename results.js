@@ -298,6 +298,25 @@ function updateUI() {
 
   const analysisYears = modelInputs.zincLoanTenureYears;
 
+  function getImpactLabel(strategyId, impact) {
+    if (strategyId === 'zinc-loan') {
+      return impact < 0 ? `You'll be richer by this` : `Net cost after ${analysisYears} years`;
+    }
+    if (strategyId === 'use-cash') {
+      return `Opportunity cost`;
+    }
+    if (strategyId === 'sell-land') {
+      return `What land would be worth`;
+    }
+    if (strategyId === 'sell-indian-equity') {
+      return `What stocks would be worth`;
+    }
+    if (strategyId === 'sell-rsus') {
+      return `What RSUs would be worth`;
+    }
+    return `${analysisYears} year impact`;
+  }
+
   document.getElementById('best-option').innerHTML = `
     <div class="option-left">
       <div class="option-rank rank-1">1</div>
@@ -306,7 +325,7 @@ function updateUI() {
     <div class="option-right">
       <div class="option-impact">
         <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
-        <div class="option-label">${analysisYears} year financing impact</div>
+        <div class="option-label">${getImpactLabel(bestOption.strategyId, bestOption.impact)}</div>
       </div>
       <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>
@@ -323,7 +342,7 @@ function updateUI() {
       <div class="option-right">
         <div class="option-impact">
           <div class="option-amount">${formatCurrency(opt.impact)}</div>
-          <div class="option-label">${analysisYears} year financing impact</div>
+          <div class="option-label">${getImpactLabel(opt.strategyId, opt.impact)}</div>
         </div>
         <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </div>
