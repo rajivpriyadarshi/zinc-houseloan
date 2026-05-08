@@ -27,15 +27,27 @@ function switchImage(city) {
   if (cityImage.src.includes(city)) return;
 
   isTransitioning = true;
+
+  // Zoom out + fade out + move down old image
   cityImage.classList.add('zoom-out');
 
   setTimeout(() => {
     cityImage.src = newSrc;
 
+    // Set starting position for zoom in (scaled down, above, invisible)
+    cityImage.classList.remove('zoom-out');
+    cityImage.classList.add('zoom-in-start');
+
+    // Force reflow
+    void cityImage.offsetWidth;
+
+    // Remove zoom-in-start to trigger transition to normal state
     setTimeout(() => {
-      cityImage.classList.remove('zoom-out');
-      isTransitioning = false;
-    }, 50);
+      cityImage.classList.remove('zoom-in-start');
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 300);
+    }, 20);
   }, 300);
 }
 

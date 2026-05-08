@@ -220,13 +220,19 @@ body {
   object-fit: contain;
   position: relative;
   z-index: 2;
-  transition: transform 0.3s ease, opacity 0.15s ease;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
   margin-top: -40px;
 }
 
 .house-image.zoom-out {
-  transform: scale(0.8);
+  transform: scale(0.8) translateY(40px);
   opacity: 0;
+}
+
+.house-image.zoom-in-start {
+  transform: scale(0.8) translateY(-40px);
+  opacity: 0;
+  transition: none;
 }
 
 .house-shadow {
@@ -244,8 +250,14 @@ body {
 }
 
 .house-shadow.zoom-out {
-  transform: translateX(-50%) scale(0.8);
+  transform: translateX(-50%) scale(0.8) translateY(40px);
   opacity: 0;
+}
+
+.house-shadow.zoom-in-start {
+  transform: translateX(-50%) scale(0.8) translateY(-40px);
+  opacity: 0;
+  transition: none;
 }
 
 /* Page transition */

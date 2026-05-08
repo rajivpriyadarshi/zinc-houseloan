@@ -199,12 +199,18 @@ body {
   max-width: 90vw;
   max-height: 50vh;
   object-fit: contain;
-  transition: transform 0.3s ease, opacity 0.15s ease;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
 .city-image.zoom-out {
-  transform: scale(0.8);
+  transform: scale(0.8) translateY(40px);
   opacity: 0;
+}
+
+.city-image.zoom-in-start {
+  transform: scale(0.8) translateY(-40px);
+  opacity: 0;
+  transition: none;
 }
 
 /* Page transition */

@@ -64,18 +64,32 @@ function updateHouseImage(level) {
 
   isTransitioning = true;
 
+  // Zoom out + fade out + move down old image
   houseImage.classList.add('zoom-out');
   houseShadow.classList.add('zoom-out');
 
   setTimeout(() => {
+    // Change source while zoomed out
     houseImage.src = newSrc;
     houseShadow.src = newSrc;
 
+    // Set starting position for zoom in (scaled down, above, invisible)
+    houseImage.classList.remove('zoom-out');
+    houseImage.classList.add('zoom-in-start');
+    houseShadow.classList.remove('zoom-out');
+    houseShadow.classList.add('zoom-in-start');
+
+    // Force reflow
+    void houseImage.offsetWidth;
+
+    // Remove zoom-in-start to trigger transition to normal state
     setTimeout(() => {
-      houseImage.classList.remove('zoom-out');
-      houseShadow.classList.remove('zoom-out');
-      isTransitioning = false;
-    }, 50);
+      houseImage.classList.remove('zoom-in-start');
+      houseShadow.classList.remove('zoom-in-start');
+      setTimeout(() => {
+        isTransitioning = false;
+      }, 300);
+    }, 20);
   }, 300);
 }
 
