@@ -300,21 +300,21 @@ function updateUI() {
 
   function getImpactLabel(strategyId, impact) {
     if (strategyId === 'zinc-loan') {
-      return impact < 0 ? `You'll be richer by this` : `Net cost after ${analysisYears} years`;
+      return impact < 0 ? `You'll be richer after ${analysisYears} years` : `Net cost after ${analysisYears} years`;
     }
     if (strategyId === 'use-cash') {
-      return `Opportunity cost`;
+      return `Opportunity cost over ${analysisYears} years`;
     }
     if (strategyId === 'sell-land') {
-      return `What land would be worth`;
+      return `What land would be worth in ${analysisYears} years`;
     }
     if (strategyId === 'sell-indian-equity') {
-      return `What stocks would be worth`;
+      return `What stocks would be worth in ${analysisYears} years`;
     }
     if (strategyId === 'sell-rsus') {
-      return `What RSUs would be worth`;
+      return `What RSUs would be worth in ${analysisYears} years`;
     }
-    return `${analysisYears} year impact`;
+    return `Impact after ${analysisYears} years`;
   }
 
   document.getElementById('best-option').innerHTML = `
