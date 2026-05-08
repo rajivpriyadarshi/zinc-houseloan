@@ -336,7 +336,7 @@ body {
 .option-rank {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
+  border-radius: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
