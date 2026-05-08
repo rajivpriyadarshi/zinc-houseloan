@@ -281,6 +281,7 @@ function updateUI() {
   document.getElementById('funding-amount').textContent = formatLacs(results.fundingGap);
   document.getElementById('city-name').textContent = selectedCity;
   document.getElementById('house-value').textContent = formatCr(modelInputs.propertyPrice);
+  document.getElementById('options-title').textContent = `Options to fill ${formatCurrency(results.fundingGap)} gap`;
 
   const houseLevel = getHouseLevel(modelInputs.propertyPrice);
   document.getElementById('house-image').src = `/houses/level${houseLevel}.png`;
