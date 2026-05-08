@@ -129,6 +129,28 @@ body {
   min-height: 0;
 }
 
+.house-float-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: houseFloatWrapper 5s ease-in-out infinite;
+}
+
+@keyframes houseFloatWrapper {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(0.3deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-12px) rotate(-0.3deg);
+  }
+}
+
 .house-badge {
   background: rgba(30, 30, 30, 0.8);
   backdrop-filter: blur(20px);
@@ -139,25 +161,9 @@ body {
   color: rgba(255, 255, 255, 0.4);
   font-size: 16px;
   letter-spacing: -0.64px;
-  margin-bottom: -130px;
+  margin-bottom: -30px;
   z-index: 10;
   position: relative;
-  animation: badgeFloat 5s ease-in-out infinite;
-}
-
-@keyframes badgeFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  25% {
-    transform: translateY(-10px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  75% {
-    transform: translateY(-12px);
-  }
 }
 
 .house-badge::after {
@@ -602,12 +608,12 @@ body.page-exit {
   }
 }
 
-/* House floating animation */
-.house-image {
-  animation: houseEntrance 0.8s ease-out 0.4s backwards, resultsHouseFloat 5s ease-in-out infinite 1.2s;
+/* House entrance animation */
+.house-float-wrapper {
+  animation: houseWrapperEntrance 0.8s ease-out 0.4s backwards, houseFloatWrapper 5s ease-in-out infinite 1.2s;
 }
 
-@keyframes houseEntrance {
+@keyframes houseWrapperEntrance {
   0% {
     opacity: 0;
     transform: translateY(40px) scale(0.9);
@@ -615,21 +621,6 @@ body.page-exit {
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes resultsHouseFloat {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-10px) rotate(0.3deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-12px) rotate(-0.3deg);
   }
 }
 
