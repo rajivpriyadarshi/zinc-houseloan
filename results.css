@@ -600,12 +600,38 @@ body {
   margin-top: 8px;
 }
 
-.table-heading {
+.detail-group {
+  margin-bottom: 24px;
+}
+
+.detail-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-heading {
   font-size: 14px;
-  color: #666;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #eee;
+}
+
+.detail-row.sub-row .detail-label {
+  padding-left: 12px;
+  color: #888;
+}
+
+.detail-row.total-row {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.detail-row.total-row .detail-label,
+.detail-row.total-row .detail-value {
+  font-weight: 600;
+  color: #000;
 }
 
 /* Page transition */
