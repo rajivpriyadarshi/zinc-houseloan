@@ -134,22 +134,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: houseFloatWrapper 5s ease-in-out infinite;
-}
-
-@keyframes houseFloatWrapper {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-10px) rotate(0.3deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-12px) rotate(-0.3deg);
-  }
 }
 
 .house-badge {
@@ -165,6 +149,16 @@ body {
   margin-bottom: -100px;
   z-index: 10;
   position: relative;
+  animation: badgeFloat 4s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .house-badge::after {
@@ -196,6 +190,22 @@ body {
   max-width: 500px;
   max-height: 500px;
   object-fit: contain;
+  animation: houseFloat 6s ease-in-out infinite;
+}
+
+@keyframes houseFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-12px) rotate(0.3deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-14px) rotate(-0.3deg);
+  }
 }
 
 .settings-section {
@@ -611,7 +621,7 @@ body.page-exit {
 
 /* House entrance animation */
 .house-float-wrapper {
-  animation: houseWrapperEntrance 0.8s ease-out 0.4s backwards, houseFloatWrapper 5s ease-in-out infinite 1.2s;
+  animation: houseWrapperEntrance 0.8s ease-out 0.4s backwards;
 }
 
 @keyframes houseWrapperEntrance {
