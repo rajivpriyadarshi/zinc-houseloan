@@ -323,7 +323,7 @@ body {
   font-weight: 400;
   padding: 10px 16px;
   margin-top: 16px;
-  border-radius: 8px;
+  border-radius: 0;
   letter-spacing: -0.28px;
 }
 
