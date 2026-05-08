@@ -296,6 +296,8 @@ function updateUI() {
 
   const savingsAmount = secondBestOption ? secondBestOption.impact - bestOption.impact : 0;
 
+  const analysisYears = modelInputs.zincLoanTenureYears;
+
   document.getElementById('best-option').innerHTML = `
     <div class="option-left">
       <div class="option-rank rank-1">1</div>
@@ -304,7 +306,7 @@ function updateUI() {
     <div class="option-right">
       <div class="option-impact">
         <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
-        <div class="option-label">10 year financing impact</div>
+        <div class="option-label">${analysisYears} year financing impact</div>
       </div>
       <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>
@@ -321,7 +323,7 @@ function updateUI() {
       <div class="option-right">
         <div class="option-impact">
           <div class="option-amount">${formatCurrency(opt.impact)}</div>
-          <div class="option-label">10 year financing impact</div>
+          <div class="option-label">${analysisYears} year financing impact</div>
         </div>
         <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </div>
@@ -350,13 +352,14 @@ function getStrategyCalculation(strategyId, results, inputs) {
 
   if (strategyId === 'use-cash') {
     const rate = (inputs.assets.cash.cagrPct * 100).toFixed(0);
+    const years = inputs.zincLoanTenureYears;
     return `
       <div class="detail-row">
         <span class="detail-label">Cash needed today</span>
         <span class="detail-value">${formatCurrency(fundingGap)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">If invested at ${rate}% for 10 years</span>
+        <span class="detail-label">If invested at ${rate}% for ${years} years</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
       </div>
       <p class="calc-note">This is the opportunity cost - what your money could have grown to.</p>
@@ -366,6 +369,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
   if (strategyId === 'sell-land') {
     const taxRate = (inputs.assets.land.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.land.cagrPct * 100).toFixed(0);
+    const years = inputs.zincLoanTenureYears;
     return `
       <div class="detail-row">
         <span class="detail-label">Cash needed</span>
@@ -376,7 +380,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
         <span class="detail-value">Included</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% for 10 years</span>
+        <span class="detail-label">Missed growth at ${growthRate}% for ${years} years</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
       </div>
     `;
@@ -385,6 +389,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
   if (strategyId === 'sell-indian-equity') {
     const taxRate = (inputs.assets.indianEquity.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.indianEquity.cagrPct * 100).toFixed(0);
+    const years = inputs.zincLoanTenureYears;
     return `
       <div class="detail-row">
         <span class="detail-label">Cash needed</span>
@@ -395,7 +400,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
         <span class="detail-value">After ₹1.25L exemption</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% for 10 years</span>
+        <span class="detail-label">Missed growth at ${growthRate}% for ${years} years</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
       </div>
     `;
@@ -404,6 +409,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
   if (strategyId === 'sell-rsus') {
     const taxRate = (inputs.assets.foreignRsu.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0);
+    const years = inputs.zincLoanTenureYears;
     return `
       <div class="detail-row">
         <span class="detail-label">Cash needed</span>
@@ -414,7 +420,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
         <span class="detail-value">No exemption</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% + rupee depreciation</span>
+        <span class="detail-label">Missed growth at ${growthRate}% + rupee depreciation for ${years} years</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
       </div>
     `;
@@ -423,6 +429,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
   if (strategyId === 'zinc-loan') {
     const zincRate = Math.min(inputs.selectedHomeLoanRatePct + 0.02, 0.125);
     const zincRatePct = (zincRate * 100).toFixed(1);
+    const years = inputs.zincLoanTenureYears;
     const strategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
     return `
       <div class="detail-row">
@@ -438,7 +445,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
         <span class="detail-value">Yes</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Net benefit after 10 years</span>
+        <span class="detail-label">Net benefit after ${years} years</span>
         <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
       </div>
       <p class="calc-note">RSU growth minus loan interest = you come out ahead!</p>
@@ -456,6 +463,7 @@ function showOptionDetails(strategyId, results) {
 
   const description = getStrategyDescription(strategyId, results);
 
+  const years = modelInputs.zincLoanTenureYears;
   const impactText = strategy.impact < 0
     ? `You'll be <strong>${formatCurrency(Math.abs(strategy.impact))}</strong> richer`
     : `You'll be down by <strong>${formatCurrency(strategy.impact)}</strong>`;
@@ -465,7 +473,7 @@ function showOptionDetails(strategyId, results) {
   let content = `
     <p class="detail-description">${description}</p>
     <div class="detail-highlight">
-      <span class="highlight-label">After 10 years</span>
+      <span class="highlight-label">After ${years} years</span>
       <span class="highlight-value">${impactText}</span>
     </div>
     <div class="detail-table">
