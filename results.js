@@ -306,7 +306,7 @@ function updateUI() {
         <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
         <div class="option-label">10 year financing impact</div>
       </div>
-      <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>
     ${savingsAmount > 0 ? `<div class="savings-tag">You'll be ${formatCurrency(savingsAmount)} richer compared to the 2nd best option</div>` : ''}
   `;
@@ -323,7 +323,7 @@ function updateUI() {
           <div class="option-amount">${formatCurrency(opt.impact)}</div>
           <div class="option-label">10 year financing impact</div>
         </div>
-        <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
       </div>
     </div>
   `).join('');
