@@ -248,9 +248,9 @@ function formatCurrency(amount) {
 function formatLacs(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
-    return (lacs / 100).toFixed(1) + ' Cr';
+    return (lacs / 100).toFixed(2) + ' Cr';
   }
-  return lacs.toFixed(1) + ' lacs';
+  return lacs.toFixed(2) + ' lacs';
 }
 
 function formatCr(amount) {
