@@ -445,7 +445,7 @@ body {
 .option-amount {
   font-weight: 700;
   font-size: 24px;
-  color: #000;
+  color: #af5c5c;
   letter-spacing: -0.96px;
 }
 
@@ -639,6 +639,10 @@ body {
   color: #000;
 }
 
+.detail-value-red {
+  color: #af5c5c;
+}
+
 .detail-description {
   font-size: 16px;
   line-height: 1.6;
@@ -752,8 +756,6 @@ body {
   color: #666;
   font-style: italic;
   margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed #ddd;
   text-align: left;
 }
 

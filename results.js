@@ -256,7 +256,7 @@ function formatLacs(amount) {
 function formatCr(amount) {
   const cr = amount / 10000000;
   if (cr >= 1) {
-    return cr.toFixed(0) + ' Cr';
+    return cr.toFixed(2) + ' Cr';
   }
   return (amount / 100000).toFixed(0) + ' Lacs';
 }
@@ -390,7 +390,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
       </div>
       <div class="detail-row">
         <span class="detail-label">If invested at ${rate}% for ${years} years</span>
-        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
+        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
       </div>
       <p class="calc-note">This is the opportunity cost - what your money could have grown to.</p>
     `;
@@ -417,7 +417,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
       </div>
       <div class="detail-row">
         <span class="detail-label">If land grew at ${growthRate}% for ${years} years instead</span>
-        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
+        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
       </div>
       <p class="calc-note">This is what that land would have been worth if you didn't sell it.</p>
     `;
@@ -444,7 +444,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
       </div>
       <div class="detail-row">
         <span class="detail-label">If stocks grew at ${growthRate}% for ${years} years instead</span>
-        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
+        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
       </div>
       <p class="calc-note">This is what those stocks would have been worth if you didn't sell them.</p>
     `;
@@ -471,7 +471,7 @@ function getStrategyCalculation(strategyId, results, inputs) {
       </div>
       <div class="detail-row">
         <span class="detail-label">If RSUs grew at ${growthRate}% + rupee gains for ${years} years</span>
-        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
+        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
       </div>
       <p class="calc-note">This is what those RSUs would have been worth if you didn't sell them.</p>
     `;
