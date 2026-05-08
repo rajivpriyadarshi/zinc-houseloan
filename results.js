@@ -334,40 +334,56 @@ function updateUI() {
   });
 }
 
+function getStrategyDescription(strategyId, results) {
+  const descriptions = {
+    'zinc-loan': `Instead of selling your investments, you can take a loan against your RSUs from Zinc. This lets you keep your stocks growing while using them as collateral. Over 10 years, this could actually make you money as your RSUs appreciate faster than the loan interest.`,
+    'use-cash': `Using your savings to fund the gap means no debt, but you lose out on potential investment returns. The amount shown is what your cash could have grown to if invested instead.`,
+    'sell-land': `Selling land involves capital gains tax on your profits. After accounting for taxes and the growth you'd miss out on, here's the real cost of this option.`,
+    'sell-indian-equity': `Selling your Indian stocks means paying capital gains tax and missing future growth. With a ₹1.25 lakh exemption on LTCG, this might be efficient for smaller amounts.`,
+    'sell-rsus': `Selling your foreign RSUs triggers capital gains tax with no exemption. Plus, you'd miss the combined benefit of stock growth and rupee depreciation.`
+  };
+  return descriptions[strategyId] || 'Here\'s a breakdown of this funding option.';
+}
+
 function showOptionDetails(strategyId, results) {
   const strategy = results.strategies.find(s => s.strategyId === strategyId);
   if (!strategy) return;
 
   document.getElementById('detail-modal-title').textContent = strategy.strategyName;
 
+  const description = getStrategyDescription(strategyId, results);
+
   let content = `
-    <div class="detail-row">
-      <span class="detail-label">10 Year Financing Impact</span>
-      <span class="detail-value">${formatCurrency(strategy.impact)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Funding Gap</span>
-      <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Home Loan Amount</span>
-      <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Monthly EMI</span>
-      <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Down Payment</span>
-      <span class="detail-value">${formatCurrency(results.downPayment)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Transaction Duty</span>
-      <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Interiors</span>
-      <span class="detail-value">${formatCurrency(results.interiors)}</span>
+    <p class="detail-description">${description}</p>
+    <div class="detail-table">
+      <div class="detail-row">
+        <span class="detail-label">10 Year Financing Impact</span>
+        <span class="detail-value">${formatCurrency(strategy.impact)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Funding Gap</span>
+        <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Home Loan Amount</span>
+        <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Monthly EMI</span>
+        <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Down Payment</span>
+        <span class="detail-value">${formatCurrency(results.downPayment)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Transaction Duty</span>
+        <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Interiors</span>
+        <span class="detail-value">${formatCurrency(results.interiors)}</span>
+      </div>
     </div>
   `;
 
