@@ -175,7 +175,7 @@ document.getElementById('proceed-btn').addEventListener('click', () => {
   setTimeout(() => window.location.href = 'location.html', 400);
 });
 
-document.querySelector('.back-btn').addEventListener('click', (e) => {
+document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'index.html', 400);

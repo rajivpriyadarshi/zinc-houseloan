@@ -80,7 +80,7 @@ proceedBtn.addEventListener('click', () => {
   }
 });
 
-document.querySelector('.back-btn').addEventListener('click', (e) => {
+document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'planner.html', 400);
