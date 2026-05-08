@@ -36,6 +36,11 @@
     </div>
   </div>
 
+  <script>
+    if (!sessionStorage.getItem('zinc-flow-started')) {
+      window.location.href = '/';
+    }
+  </script>
   <script type="module" src="planner-main.js"></script>
 </body>
 </html>

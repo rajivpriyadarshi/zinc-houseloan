@@ -68,6 +68,11 @@
     </div>
   </div>
 
+  <script>
+    if (!sessionStorage.getItem('zinc-flow-started')) {
+      window.location.href = '/';
+    }
+  </script>
   <script type="module" src="location.js"></script>
 </body>
 </html>

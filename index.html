@@ -15,6 +15,7 @@
   </div>
   <script>
     document.getElementById('get-started-btn').addEventListener('click', () => {
+      sessionStorage.setItem('zinc-flow-started', 'true');
       document.body.classList.add('page-exit');
       setTimeout(() => window.location.href = 'planner.html', 400);
     });
