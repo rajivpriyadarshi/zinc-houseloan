@@ -420,6 +420,15 @@ body {
 
 .modal-large {
   max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-large #detail-modal-content {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 10px;
 }
 
 .modal-title {
@@ -641,6 +650,13 @@ body {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px dashed #ddd;
+  text-align: left;
+}
+
+.detail-group .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Page transition */
