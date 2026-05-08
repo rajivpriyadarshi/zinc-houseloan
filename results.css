@@ -161,8 +161,7 @@ body {
   color: rgba(255, 255, 255, 0.4);
   font-size: 16px;
   letter-spacing: -0.64px;
-  margin-bottom: -30px;
-  margin-top: 60px;
+  margin-bottom: -100px;
   z-index: 10;
   position: relative;
 }
@@ -196,6 +195,7 @@ body {
   max-width: 500px;
   max-height: 500px;
   object-fit: contain;
+  margin-top: -50px;
 }
 
 .settings-section {
