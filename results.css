@@ -244,7 +244,7 @@ body {
 .option-card {
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0;
-  padding: 24px 20px;
+  padding: 20px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -260,7 +260,20 @@ body {
 
 .option-card.best {
   border-color: #000;
-  background: #f9fad1;
+  background: #FAF2D1;
+  flex-wrap: wrap;
+}
+
+.savings-tag {
+  width: 100%;
+  background: #D8D99D;
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 10px 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  letter-spacing: -0.28px;
 }
 
 .option-left {
@@ -284,7 +297,7 @@ body {
 }
 
 .option-rank.rank-1 {
-  background: #c8d84b;
+  background: #D8D99D;
   color: #000;
 }
 
@@ -497,5 +510,194 @@ body {
 .detail-value {
   font-weight: 500;
   color: #000;
+}
+
+/* Page transition */
+body {
+  animation: pageIn 0.6s ease-out;
+}
+
+@keyframes pageIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body.page-exit {
+  animation: pageOut 0.4s ease-in forwards;
+}
+
+@keyframes pageOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Left column animations */
+.funding-info {
+  animation: slideInLeft 0.7s ease-out 0.1s backwards;
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.house-badge {
+  animation: fadeSlideDown 0.5s ease-out 0.3s backwards;
+}
+
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* House floating animation */
+.house-image {
+  animation: houseEntrance 0.8s ease-out 0.4s backwards, resultsHouseFloat 5s ease-in-out infinite 1.2s;
+}
+
+@keyframes houseEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes resultsHouseFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(0.3deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-12px) rotate(-0.3deg);
+  }
+}
+
+/* Settings buttons */
+.settings-btn {
+  animation: fadeSlideUp 0.5s ease-out backwards;
+}
+
+.settings-btn:first-child {
+  animation-delay: 0.5s;
+}
+
+.settings-btn:last-child {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Right column animations */
+.options-title {
+  animation: slideInRight 0.7s ease-out 0.2s backwards;
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.section-label {
+  animation: fadeIn 0.5s ease-out 0.4s backwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Option cards staggered entrance */
+.option-card {
+  animation: optionSlideIn 0.5s ease-out backwards;
+}
+
+.best-option-section .option-card {
+  animation-delay: 0.5s;
+}
+
+.other-options-section .option-card:nth-child(1) { animation-delay: 0.6s; }
+.other-options-section .option-card:nth-child(2) { animation-delay: 0.7s; }
+.other-options-section .option-card:nth-child(3) { animation-delay: 0.8s; }
+.other-options-section .option-card:nth-child(4) { animation-delay: 0.9s; }
+.other-options-section .option-card:nth-child(5) { animation-delay: 1s; }
+
+@keyframes optionSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal animations */
+.modal-overlay.visible .modal {
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Back button */
+.back-btn {
+  animation: fadeIn 0.4s ease-out;
 }
 

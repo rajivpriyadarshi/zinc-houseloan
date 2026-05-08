@@ -270,3 +270,144 @@ body {
   transform: translateX(-50%) scale(0.8);
   opacity: 0;
 }
+
+/* Page transition */
+body {
+  animation: pageIn 0.6s ease-out;
+}
+
+@keyframes pageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.page-exit {
+  animation: pageOut 0.4s ease-in forwards;
+}
+
+@keyframes pageOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+/* Content entrance animations */
+.subtitle {
+  animation: fadeSlideUp 0.6s ease-out 0.1s backwards;
+}
+
+.amount-display {
+  animation: fadeSlideUp 0.6s ease-out 0.2s backwards;
+}
+
+.slider-container {
+  animation: fadeSlideUp 0.6s ease-out 0.3s backwards;
+}
+
+.proceed-btn {
+  animation: buttonPop 0.5s ease-out 0.4s backwards;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes buttonPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* House floating animation */
+.house-image {
+  animation: houseEntrance 0.8s ease-out 0.3s backwards, houseFloat 4s ease-in-out infinite 1.1s;
+}
+
+.house-shadow {
+  animation: houseEntrance 0.8s ease-out 0.3s backwards, houseShadowFloat 4s ease-in-out infinite 1.1s;
+}
+
+@keyframes houseEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes houseFloat {
+  0%, 100% {
+    transform: translateY(-40px);
+  }
+  50% {
+    transform: translateY(-55px);
+  }
+}
+
+@keyframes houseShadowFloat {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0.15;
+  }
+}
+
+/* Slider thumb pulse */
+#amount-slider::-webkit-slider-thumb {
+  animation: thumbPulse 2s ease-in-out infinite;
+}
+
+@keyframes thumbPulse {
+  0%, 100% {
+    box-shadow: inset 2px 4px 4px 0px rgba(255, 255, 255, 0.45);
+  }
+  50% {
+    box-shadow: inset 2px 4px 4px 0px rgba(255, 255, 255, 0.45), 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Back button */
+.back-btn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -291,7 +291,10 @@ function updateUI() {
   document.getElementById('construction-value').textContent = modelInputs.propertyStatus === 'Ready' ? 'No' : 'Yes';
 
   const bestOption = results.strategies.find(s => s.rank === 1);
+  const secondBestOption = results.strategies.find(s => s.rank === 2);
   const otherOptions = results.strategies.filter(s => s.rank !== 1);
+
+  const savingsAmount = secondBestOption ? secondBestOption.impact - bestOption.impact : 0;
 
   document.getElementById('best-option').innerHTML = `
     <div class="option-left">
@@ -305,6 +308,7 @@ function updateUI() {
       </div>
       <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
+    ${savingsAmount > 0 ? `<div class="savings-tag">You'll be ${formatCurrency(savingsAmount)} richer compared to the 2nd best option</div>` : ''}
   `;
   document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
 
@@ -452,6 +456,11 @@ document.getElementById('detail-modal-close').addEventListener('click', () => {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.remove('visible');
   });
+});
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.body.classList.add('page-exit');
+  setTimeout(() => window.location.href = 'location.html', 400);
 });
 
 updateUI();

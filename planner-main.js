@@ -3,7 +3,6 @@ const amountInput = document.getElementById('amount-input');
 const amountDisplay = document.getElementById('amount-display');
 const houseImage = document.getElementById('house-image');
 const houseShadow = document.getElementById('house-shadow');
-const houseBgBlur = document.getElementById('house-bg-blur');
 
 const MIN_VALUE = 100000;
 const MAX_VALUE = 100000000;
@@ -71,7 +70,6 @@ function updateHouseImage(level) {
   setTimeout(() => {
     houseImage.src = newSrc;
     houseShadow.src = newSrc;
-    houseBgBlur.src = newSrc;
 
     setTimeout(() => {
       houseImage.classList.remove('zoom-out');
@@ -173,5 +171,12 @@ amountInput.addEventListener('blur', () => {
 document.getElementById('proceed-btn').addEventListener('click', () => {
   const value = parseInt(slider.value, 10);
   localStorage.setItem('houseValue', value);
-  window.location.href = 'location.html';
+  document.body.classList.add('page-exit');
+  setTimeout(() => window.location.href = 'location.html', 400);
+});
+
+document.querySelector('.back-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.body.classList.add('page-exit');
+  setTimeout(() => window.location.href = 'index.html', 400);
 });

@@ -10,7 +10,13 @@
   <div class="container">
     <div class="vertical-lines"></div>
     <h1 class="title">Plan your home<br>purchase</h1>
-    <button class="get-started-btn" onclick="window.location.href='planner.html'">Get started</button>
+    <button class="get-started-btn" id="get-started-btn">Get started</button>
   </div>
+  <script>
+    document.getElementById('get-started-btn').addEventListener('click', () => {
+      document.body.classList.add('page-exit');
+      setTimeout(() => window.location.href = 'planner.html', 400);
+    });
+  </script>
 </body>
 </html>
