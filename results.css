@@ -130,7 +130,9 @@ body {
 }
 
 .house-badge {
-  background: #1e1e1e;
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 16px 24px;
   text-align: center;
@@ -139,6 +141,20 @@ body {
   letter-spacing: -0.64px;
   margin-bottom: -100px;
   z-index: 10;
+  position: relative;
+}
+
+.house-badge::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 14px solid rgba(30, 30, 30, 0.8);
 }
 
 .house-city {
