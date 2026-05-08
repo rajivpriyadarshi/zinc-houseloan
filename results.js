@@ -353,19 +353,24 @@ function showOptionDetails(strategyId, results) {
 
   const description = getStrategyDescription(strategyId, results);
 
+  const impactText = strategy.impact < 0
+    ? `You'll be <strong>${formatCurrency(Math.abs(strategy.impact))}</strong> richer`
+    : `This will cost you <strong>${formatCurrency(strategy.impact)}</strong>`;
+
   let content = `
     <p class="detail-description">${description}</p>
+    <div class="detail-highlight">
+      <span class="highlight-label">After 10 years</span>
+      <span class="highlight-value">${impactText}</span>
+    </div>
     <div class="detail-table">
+      <p class="table-heading">Here's how we calculated this</p>
       <div class="detail-row">
-        <span class="detail-label">10 Year Financing Impact</span>
-        <span class="detail-value">${formatCurrency(strategy.impact)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Funding Gap</span>
+        <span class="detail-label">Cash you need upfront</span>
         <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Home Loan Amount</span>
+        <span class="detail-label">Your bank loan</span>
         <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
       </div>
       <div class="detail-row">
@@ -373,15 +378,15 @@ function showOptionDetails(strategyId, results) {
         <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Down Payment</span>
+        <span class="detail-label">Down payment (20%)</span>
         <span class="detail-value">${formatCurrency(results.downPayment)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Transaction Duty</span>
+        <span class="detail-label">Stamp duty & registration</span>
         <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Interiors</span>
+        <span class="detail-label">Interior budget</span>
         <span class="detail-value">${formatCurrency(results.interiors)}</span>
       </div>
     </div>
