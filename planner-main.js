@@ -79,7 +79,7 @@ function updateHouseImage(level) {
   }, 300);
 }
 
-let currentLevel = 4;
+let currentLevel = getHouseLevel(10000000);
 updateDisplay(10000000);
 updateHouseImage(currentLevel);
 

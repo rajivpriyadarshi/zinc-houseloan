@@ -91,6 +91,7 @@ body {
 .funding-info {
   margin-top: 80px;
   margin-bottom: 40px;
+  text-align: center;
 }
 
 .funding-label {
@@ -98,7 +99,7 @@ body {
   font-size: 24px;
   font-weight: 400;
   color: #fff;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   letter-spacing: 0px;
 }
 
@@ -112,12 +113,26 @@ body {
   margin-bottom: 2px;
 }
 
+
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-family: 'Satoshi', sans-serif;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #c8d84b;
+}
+
 .funding-subtitle {
   font-family: 'Satoshi', sans-serif;
   font-size: 20px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.5);
-  max-width: 460px;
   line-height: 1.3;
   letter-spacing: 0px;
 }
@@ -180,12 +195,32 @@ body {
   color: rgba(255, 255, 255, 0.4);
 }
 
+.house-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 .house-value {
   font-family: 'Satoshi', sans-serif;
   font-size: 24px;
   font-weight: 900;
   color: #fff;
-  margin-top: 6px;
+}
+
+.house-edit-icon {
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.2s;
+}
+
+.house-badge {
+  cursor: pointer;
+}
+
+.house-badge:hover .house-edit-icon {
+  color: #fff;
 }
 
 .house-image {
@@ -312,19 +347,51 @@ body {
 .option-card.best {
   border-color: #000;
   background: #FAF2D1;
-  flex-wrap: wrap;
+  flex-direction: column;
+  padding: 0;
 }
 
-.savings-tag {
+.best-option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
+  padding: 20px;
+}
+
+.carousel-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px 20px;
+}
+
+.carousel-card {
+  flex-shrink: 0;
+  width: 270px;
   background: #D8D99D;
   color: #000;
   font-size: 14px;
   font-weight: 400;
-  padding: 10px 16px;
-  margin-top: 16px;
-  border-radius: 0;
+  padding: 14px 16px;
   letter-spacing: -0.28px;
+  line-height: 1.4;
+  border-radius: 0;
+}
+
+.carousel-card strong {
+  font-weight: 700;
 }
 
 .option-left {
@@ -580,9 +647,9 @@ body {
 }
 
 .detail-highlight {
-  background: #f5f5f5;
+  background: #FAF2D1;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 0;
   margin-bottom: 24px;
   text-align: center;
 }
@@ -602,6 +669,43 @@ body {
 
 .highlight-value strong {
   font-size: 24px;
+  font-weight: 700;
+}
+
+.modal-carousel-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin-top: 12px;
+}
+
+.modal-carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.modal-carousel-track {
+  display: flex;
+  gap: 12px;
+  padding: 0 10px;
+}
+
+.modal-carousel-card {
+  flex-shrink: 0;
+  width: 240px;
+  background: #D8D99D;
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 14px 16px;
+  letter-spacing: -0.28px;
+  line-height: 1.4;
+  border-radius: 0;
+  text-align: left;
+}
+
+.modal-carousel-card strong {
   font-weight: 700;
 }
 

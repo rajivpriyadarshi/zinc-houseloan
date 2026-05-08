@@ -24,9 +24,15 @@
 
       <div class="house-info">
         <div class="house-float-wrapper">
-          <div class="house-badge">
+          <div class="house-badge" id="house-badge-btn">
             <span class="house-city" id="city-name">Mumbai</span> house
-            <div class="house-value" id="house-value">5 Cr</div>
+            <div class="house-value-row">
+              <span class="house-value" id="house-value">5 Cr</span>
+              <svg class="house-edit-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </div>
           </div>
           <img id="house-image" class="house-image" src="/houses/level4.png" alt="House">
         </div>
@@ -208,6 +214,23 @@
       <div class="modal-actions">
         <button class="modal-cancel" id="construction-modal-cancel">Cancel</button>
         <button class="modal-save" id="construction-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- House Value Modal -->
+  <div class="modal-overlay" id="house-value-modal">
+    <div class="modal">
+      <h3 class="modal-title">Edit House Value</h3>
+
+      <div class="modal-field">
+        <label>House Value (₹)</label>
+        <input type="text" id="modal-house-value" class="modal-input">
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel" id="house-value-modal-cancel">Cancel</button>
+        <button class="modal-save" id="house-value-modal-save">Save</button>
       </div>
     </div>
   </div>

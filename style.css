@@ -77,8 +77,8 @@ body {
   right: 0;
   bottom: 0;
   background-image: url('/bg-home.jpg');
-  background-size: 110%;
-  background-position: center 70%;
+  background-size: 100% auto;
+  background-position: center -20vh;
   background-repeat: no-repeat;
   animation: subtleParallax 30s ease-in-out infinite alternate;
   z-index: 0;
@@ -86,45 +86,30 @@ body {
 
 @keyframes subtleParallax {
   0% {
-    background-size: 110%;
-    background-position: center 70%;
+    background-size: 100% auto;
+    background-position: center -20vh;
   }
   50% {
-    background-size: 115%;
-    background-position: 48% 68%;
+    background-size: 105% auto;
+    background-position: 48% -18vh;
   }
   100% {
-    background-size: 112%;
-    background-position: 52% 72%;
+    background-size: 102% auto;
+    background-position: 52% -22vh;
   }
+}
+
+.logo {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  height: 24px;
+  width: auto;
+  z-index: 10;
 }
 
 .vertical-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.vertical-lines::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 70px,
-    rgba(255, 255, 255, 0.03) 70px,
-    rgba(255, 255, 255, 0.03) 72px
-  );
-  mix-blend-mode: overlay;
+  display: none;
 }
 
 .title {
@@ -240,16 +225,3 @@ body.page-exit {
   }
 }
 
-/* Vertical lines subtle animation */
-.vertical-lines::before {
-  animation: linesShimmer 8s ease-in-out infinite;
-}
-
-@keyframes linesShimmer {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}

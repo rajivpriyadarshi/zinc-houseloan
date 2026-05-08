@@ -281,7 +281,7 @@ function updateUI() {
   document.getElementById('funding-amount').textContent = formatLacs(results.fundingGap);
   document.getElementById('city-name').textContent = selectedCity;
   document.getElementById('house-value').textContent = formatCr(modelInputs.propertyPrice);
-  document.getElementById('options-title').textContent = `Options to fill ${formatCurrency(results.fundingGap)} gap`;
+  document.getElementById('options-title').textContent = `Options to fund ${formatCurrency(results.fundingGap)}`;
 
   const houseLevel = getHouseLevel(modelInputs.propertyPrice);
   document.getElementById('house-image').src = `/houses/level${houseLevel}.png`;
@@ -292,10 +292,7 @@ function updateUI() {
   document.getElementById('construction-value').textContent = modelInputs.propertyStatus === 'Ready' ? 'No' : 'Yes';
 
   const bestOption = results.strategies.find(s => s.rank === 1);
-  const secondBestOption = results.strategies.find(s => s.rank === 2);
   const otherOptions = results.strategies.filter(s => s.rank !== 1);
-
-  const savingsAmount = secondBestOption ? secondBestOption.impact - bestOption.impact : 0;
 
   const analysisYears = modelInputs.zincLoanTenureYears;
 
@@ -303,42 +300,55 @@ function updateUI() {
     if (strategyId === 'zinc-loan') {
       return impact < 0 ? `You'll be richer after ${analysisYears} years` : `Net cost after ${analysisYears} years`;
     }
-    if (strategyId === 'use-cash') {
-      return `Opportunity cost over ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-land') {
-      return `What land would be worth in ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-indian-equity') {
-      return `What stocks would be worth in ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-rsus') {
-      return `What RSUs would be worth in ${analysisYears} years`;
-    }
-    return `Impact after ${analysisYears} years`;
+    return `Opportunity cost over ${analysisYears} years`;
   }
 
+  function getStrategyDisplayName(strategyId) {
+    if (strategyId === 'use-cash') return 'Use cash';
+    if (strategyId === 'sell-land') return 'Sell land';
+    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
+    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
+    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
+    return strategyId;
+  }
+
+  function getComparisonPhrase(strategyId) {
+    if (strategyId === 'use-cash') return 'Use cash';
+    if (strategyId === 'sell-land') return 'Sell land';
+    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
+    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
+    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
+    return 'this option';
+  }
+
+  const comparisonCards = otherOptions.map(opt => {
+    const savings = opt.impact - bestOption.impact;
+    return `<div class="carousel-card">You'll be <strong>${formatCurrency(savings)}</strong> richer than if you were to ${getComparisonPhrase(opt.strategyId)}</div>`;
+  }).join('');
+
   document.getElementById('best-option').innerHTML = `
-    <div class="option-left">
-      <div class="option-rank rank-1">1</div>
-      <div class="option-name">${bestOption.strategyName}</div>
-    </div>
-    <div class="option-right">
-      <div class="option-impact">
-        <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
-        <div class="option-label">${getImpactLabel(bestOption.strategyId, bestOption.impact)}</div>
+    <div class="best-option-header">
+      <div class="option-left">
+        <div class="option-rank rank-1">1</div>
+        <div class="option-name">${getStrategyDisplayName(bestOption.strategyId)}</div>
       </div>
       <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>
-    ${savingsAmount > 0 ? `<div class="savings-tag">You'll be ${formatCurrency(savingsAmount)} richer compared to the 2nd best option</div>` : ''}
+    <div class="carousel-container">
+      <div class="carousel-track" id="carousel-track">
+        ${comparisonCards}
+      </div>
+    </div>
   `;
   document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
+
+  initCarousel();
 
   const otherOptionsHtml = otherOptions.map(opt => `
     <div class="option-card" data-strategy-id="${opt.strategyId}">
       <div class="option-left">
         <div class="option-rank rank-other">${opt.rank}</div>
-        <div class="option-name">${opt.strategyName}</div>
+        <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
       </div>
       <div class="option-right">
         <div class="option-impact">
@@ -506,31 +516,48 @@ function showOptionDetails(strategyId, results) {
 
   const years = modelInputs.zincLoanTenureYears;
 
-  // Find the next best/worst option to compare against
-  const sortedStrategies = [...results.strategies].sort((a, b) => a.impact - b.impact);
-  const currentIndex = sortedStrategies.findIndex(s => s.strategyId === strategyId);
-  const comparisonStrategy = currentIndex === 0
-    ? sortedStrategies[1] // Best option compares to 2nd best
-    : sortedStrategies[0]; // Others compare to best
-
-  const comparisonDiff = comparisonStrategy ? Math.abs(strategy.impact - comparisonStrategy.impact) : 0;
-
-  let impactText;
-  if (strategy.rank === 1) {
-    // Best option - show how much better than 2nd best
-    impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> richer than ${comparisonStrategy.strategyName}`;
-  } else {
-    // Other options - show how much worse than best
-    impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${sortedStrategies[0].strategyName}`;
+  // Build comparison section
+  function getModalComparisonPhrase(strategyId) {
+    if (strategyId === 'use-cash') return 'Use cash';
+    if (strategyId === 'sell-land') return 'Sell land';
+    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
+    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
+    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
+    return 'this option';
   }
 
   const strategyExplanation = getStrategyCalculation(strategyId, results, modelInputs);
+
+  let comparisonHtml;
+  if (strategyId === 'zinc-loan') {
+    const otherStrategies = results.strategies.filter(s => s.strategyId !== strategyId);
+    const comparisonCardsHtml = otherStrategies.map(opt => {
+      const diff = opt.impact - strategy.impact;
+      if (diff > 0) {
+        return `<div class="modal-carousel-card">You'll be <strong>${formatCurrency(diff)}</strong> richer than if you were to ${getModalComparisonPhrase(opt.strategyId)}</div>`;
+      } else {
+        return `<div class="modal-carousel-card">You'll be <strong>${formatCurrency(Math.abs(diff))}</strong> poorer than if you were to ${getModalComparisonPhrase(opt.strategyId)}</div>`;
+      }
+    }).join('');
+    comparisonHtml = `
+      <div class="modal-carousel-container">
+        <div class="modal-carousel-track">${comparisonCardsHtml}</div>
+      </div>
+    `;
+  } else {
+    const sortedStrategies = [...results.strategies].sort((a, b) => a.impact - b.impact);
+    const bestStrategy = sortedStrategies[0];
+    const comparisonDiff = Math.abs(strategy.impact - bestStrategy.impact);
+    const bestName = bestStrategy.strategyId === 'zinc-loan' ? 'taking a Zinc loan against RSUs' : bestStrategy.strategyName;
+    const impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${bestName}`;
+    comparisonHtml = `<span class="highlight-value">${impactText}</span>`;
+  }
 
   let content = `
     <p class="detail-description">${description}</p>
     <div class="detail-highlight">
       <span class="highlight-label">After ${years} years</span>
-      <span class="highlight-value">${impactText}</span>
+      ${comparisonHtml}
     </div>
     <div class="detail-table">
       <div class="detail-group">
@@ -572,6 +599,10 @@ function showOptionDetails(strategyId, results) {
 
   document.getElementById('detail-modal-content').innerHTML = content;
   document.getElementById('detail-modal').classList.add('visible');
+
+  if (strategyId === 'zinc-loan') {
+    setTimeout(() => initModalCarousel(), 100);
+  }
 }
 
 const loanModal = document.getElementById('loan-modal');
@@ -648,12 +679,16 @@ document.getElementById('construction-modal-save').addEventListener('click', () 
 });
 
 document.getElementById('detail-modal-close').addEventListener('click', () => {
+  stopModalCarousel();
   detailModal.classList.remove('visible');
 });
 
 [loanModal, constructionModal, detailModal].forEach(modal => {
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.remove('visible');
+    if (e.target === modal) {
+      if (modal === detailModal) stopModalCarousel();
+      modal.classList.remove('visible');
+    }
   });
 });
 
@@ -661,5 +696,108 @@ document.getElementById('back-btn').addEventListener('click', () => {
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'location.html', 400);
 });
+
+// House value edit functionality
+const houseValueModal = document.getElementById('house-value-modal');
+const modalHouseValue = document.getElementById('modal-house-value');
+
+function formatIndianNumber(num) {
+  const str = Math.round(num).toString();
+  let result = '';
+  let count = 0;
+  for (let i = str.length - 1; i >= 0; i--) {
+    count++;
+    result = str[i] + result;
+    if (count === 3 && i > 0) {
+      result = ',' + result;
+    } else if (count > 3 && (count - 3) % 2 === 0 && i > 0) {
+      result = ',' + result;
+    }
+  }
+  return result;
+}
+
+function parseIndianNumber(str) {
+  return parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
+}
+
+document.getElementById('house-badge-btn').addEventListener('click', () => {
+  modalHouseValue.value = formatIndianNumber(modelInputs.propertyPrice);
+  houseValueModal.classList.add('visible');
+  modalHouseValue.focus();
+  modalHouseValue.select();
+});
+
+modalHouseValue.addEventListener('input', (e) => {
+  const rawValue = e.target.value.replace(/[^0-9]/g, '');
+  const numValue = parseInt(rawValue, 10) || 0;
+  modalHouseValue.value = formatIndianNumber(numValue);
+});
+
+document.getElementById('house-value-modal-cancel').addEventListener('click', () => {
+  houseValueModal.classList.remove('visible');
+});
+
+document.getElementById('house-value-modal-save').addEventListener('click', () => {
+  const newHouseValue = parseIndianNumber(modalHouseValue.value);
+  if (newHouseValue > 0) {
+    modelInputs.propertyPrice = newHouseValue;
+    localStorage.setItem('houseValue', newHouseValue);
+  }
+  houseValueModal.classList.remove('visible');
+  updateUI();
+});
+
+houseValueModal.addEventListener('click', (e) => {
+  if (e.target === houseValueModal) houseValueModal.classList.remove('visible');
+});
+
+let carouselInterval = null;
+let modalCarouselInterval = null;
+
+function initCarousel() {
+  const container = document.querySelector('.carousel-container');
+  if (!container) return;
+
+  const track = document.getElementById('carousel-track');
+  if (!track) return;
+
+  if (carouselInterval) clearInterval(carouselInterval);
+
+  carouselInterval = setInterval(() => {
+    const maxScroll = track.scrollWidth - container.clientWidth;
+    if (container.scrollLeft >= maxScroll - 10) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: 282, behavior: 'smooth' });
+    }
+  }, 3000);
+}
+
+function initModalCarousel() {
+  const container = document.querySelector('.modal-carousel-container');
+  if (!container) return;
+
+  const track = container.querySelector('.modal-carousel-track');
+  if (!track) return;
+
+  if (modalCarouselInterval) clearInterval(modalCarouselInterval);
+
+  modalCarouselInterval = setInterval(() => {
+    const maxScroll = track.scrollWidth - container.clientWidth;
+    if (container.scrollLeft >= maxScroll - 10) {
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      container.scrollBy({ left: 252, behavior: 'smooth' });
+    }
+  }, 3000);
+}
+
+function stopModalCarousel() {
+  if (modalCarouselInterval) {
+    clearInterval(modalCarouselInterval);
+    modalCarouselInterval = null;
+  }
+}
 
 updateUI();
