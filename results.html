@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Purchase Planner - Results</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="results.css">
+</head>
+<body>
+  <div class="page-container">
+    <!-- Left Column -->
+    <div class="left-column">
+      <button class="back-btn" onclick="window.location.href='location.html'">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <div class="funding-info">
+        <p class="funding-label">You still need</p>
+        <h1 class="funding-amount" id="funding-amount">99.3 LACS</h1>
+        <p class="funding-subtitle">even after taking a home loan to get in your house</p>
+      </div>
+
+      <div class="house-info">
+        <div class="house-label">
+          <span id="city-name">Bangalore</span> house
+          <div class="house-value" id="house-value">1 CR</div>
+        </div>
+        <div id="canvas-container"></div>
+      </div>
+
+      <div class="settings-section">
+        <button class="settings-btn" id="loan-settings-btn">
+          <span class="settings-label">Home loan rate</span>
+          <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+
+        <button class="settings-btn" id="construction-btn">
+          <span class="settings-label">Under-construction property?</span>
+          <span class="settings-value" id="construction-value">No</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+      <h2 class="options-title">Here are your funding options</h2>
+
+      <div class="best-option-section">
+        <p class="section-label">Best option for you</p>
+        <div class="option-card best" id="best-option">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <div class="other-options-section">
+        <p class="section-label">Other options</p>
+        <div id="other-options">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Settings Modal -->
+  <div class="modal-overlay" id="loan-modal">
+    <div class="modal">
+      <h3 class="modal-title">Home Loan Settings</h3>
+
+      <div class="modal-field">
+        <label>Interest Rate</label>
+        <select id="modal-loan-rate">
+          <option value="0.075">7.5%</option>
+          <option value="0.08">8%</option>
+          <option value="0.085" selected>8.5%</option>
+          <option value="0.09">9%</option>
+          <option value="0.095">9.5%</option>
+          <option value="0.1">10%</option>
+          <option value="0.105">10.5%</option>
+          <option value="0.11">11%</option>
+          <option value="0.115">11.5%</option>
+          <option value="0.12">12%</option>
+          <option value="0.125">12.5%</option>
+        </select>
+      </div>
+
+      <div class="modal-field">
+        <label>Tenure (Years)</label>
+        <select id="modal-loan-tenure">
+          <option value="5">5 years</option>
+          <option value="10">10 years</option>
+          <option value="15">15 years</option>
+          <option value="20" selected>20 years</option>
+          <option value="25">25 years</option>
+          <option value="30">30 years</option>
+        </select>
+      </div>
+
+      <div class="modal-field">
+        <label>LTV (Loan to Value)</label>
+        <select id="modal-loan-ltv">
+          <option value="0.5">50%</option>
+          <option value="0.6">60%</option>
+          <option value="0.7">70%</option>
+          <option value="0.8" selected>80%</option>
+          <option value="0.9">90%</option>
+          <option value="0.95">95%</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel" id="loan-modal-cancel">Cancel</button>
+        <button class="modal-save" id="loan-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Construction Modal -->
+  <div class="modal-overlay" id="construction-modal">
+    <div class="modal">
+      <h3 class="modal-title">Property Status</h3>
+
+      <div class="modal-field">
+        <label>Is this an under-construction property?</label>
+        <select id="modal-construction">
+          <option value="Ready" selected>No - Ready to move</option>
+          <option value="Under Construction">Yes - Under construction</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel" id="construction-modal-cancel">Cancel</button>
+        <button class="modal-save" id="construction-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option Detail Modal -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal modal-large">
+      <h3 class="modal-title" id="detail-modal-title">Option Details</h3>
+      <div id="detail-modal-content"></div>
+      <div class="modal-actions">
+        <button class="modal-save" id="detail-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="results.js"></script>
+</body>
+</html>

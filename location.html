@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Purchase Planner - Location</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="location.css">
+</head>
+<body>
+  <button class="back-btn" onclick="window.location.href='planner.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+  </button>
+
+  <div class="container">
+    <h1 class="title"><span class="char">W</span><span class="char">h</span><span class="char">e</span><span class="char">r</span><span class="char">e</span><span class="char">&nbsp;</span><span class="char">w</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">&nbsp;</span><span class="char">t</span><span class="char">h</span><span class="char">i</span><span class="char">s</span><span class="char">&nbsp;</span><span class="char">h</span><span class="char">o</span><span class="char">u</span><span class="char">s</span><span class="char">e</span><span class="char">&nbsp;</span><span class="char">b</span><span class="char">e</span><span class="char">?</span></h1>
+
+    <div class="city-options">
+      <button class="city-btn selected" data-city="Bangalore">Bangalore</button>
+      <button class="city-btn" data-city="Mumbai">Mumbai</button>
+      <button class="city-btn" data-city="Delhi">Delhi</button>
+      <button class="city-btn" data-city="Hyderabad">Hyderabad</button>
+      <button class="city-btn" data-city="Chennai">Chennai</button>
+      <button class="city-btn others-btn" data-city="Others">Others</button>
+    </div>
+
+    <div class="dropdown-container" id="dropdown-container">
+      <select id="state-dropdown" class="state-dropdown">
+        <option value="">Select a state</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+        <option value="Assam">Assam</option>
+        <option value="Bihar">Bihar</option>
+        <option value="Chhattisgarh">Chhattisgarh</option>
+        <option value="Goa">Goa</option>
+        <option value="Gujarat">Gujarat</option>
+        <option value="Haryana">Haryana</option>
+        <option value="Himachal Pradesh">Himachal Pradesh</option>
+        <option value="Jharkhand">Jharkhand</option>
+        <option value="Karnataka">Karnataka</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Madhya Pradesh">Madhya Pradesh</option>
+        <option value="Maharashtra">Maharashtra</option>
+        <option value="Manipur">Manipur</option>
+        <option value="Meghalaya">Meghalaya</option>
+        <option value="Mizoram">Mizoram</option>
+        <option value="Nagaland">Nagaland</option>
+        <option value="Odisha">Odisha</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Rajasthan">Rajasthan</option>
+        <option value="Sikkim">Sikkim</option>
+        <option value="Tamil Nadu">Tamil Nadu</option>
+        <option value="Telangana">Telangana</option>
+        <option value="Tripura">Tripura</option>
+        <option value="Uttar Pradesh">Uttar Pradesh</option>
+        <option value="Uttarakhand">Uttarakhand</option>
+        <option value="West Bengal">West Bengal</option>
+      </select>
+    </div>
+
+    <button class="proceed-btn visible" id="proceed-btn">Proceed</button>
+
+    <div class="city-image-container">
+      <img id="city-image" class="city-image visible" src="/cities/Bangalore.png" alt="Bangalore" style="transform: scale(1)">
+    </div>
+  </div>
+
+  <script src="location.js"></script>
+</body>
+</html>
