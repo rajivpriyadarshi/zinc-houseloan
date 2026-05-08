@@ -504,9 +504,24 @@ function showOptionDetails(strategyId, results) {
   const description = getStrategyDescription(strategyId, results);
 
   const years = modelInputs.zincLoanTenureYears;
-  const impactText = strategy.impact < 0
-    ? `You'll be <strong>${formatCurrency(Math.abs(strategy.impact))}</strong> richer`
-    : `You'll be down by <strong>${formatCurrency(strategy.impact)}</strong>`;
+
+  // Find the next best/worst option to compare against
+  const sortedStrategies = [...results.strategies].sort((a, b) => a.impact - b.impact);
+  const currentIndex = sortedStrategies.findIndex(s => s.strategyId === strategyId);
+  const comparisonStrategy = currentIndex === 0
+    ? sortedStrategies[1] // Best option compares to 2nd best
+    : sortedStrategies[0]; // Others compare to best
+
+  const comparisonDiff = comparisonStrategy ? Math.abs(strategy.impact - comparisonStrategy.impact) : 0;
+
+  let impactText;
+  if (strategy.rank === 1) {
+    // Best option - show how much better than 2nd best
+    impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> richer than ${comparisonStrategy.strategyName}`;
+  } else {
+    // Other options - show how much worse than best
+    impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${sortedStrategies[0].strategyName}`;
+  }
 
   const strategyExplanation = getStrategyCalculation(strategyId, results, modelInputs);
 
