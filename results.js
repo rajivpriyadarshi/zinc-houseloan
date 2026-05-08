@@ -336,13 +336,116 @@ function updateUI() {
 
 function getStrategyDescription(strategyId, results) {
   const descriptions = {
-    'zinc-loan': `Instead of selling your investments, you can take a loan against your RSUs from Zinc. This lets you keep your stocks growing while using them as collateral. Over 10 years, this could actually make you money as your RSUs appreciate faster than the loan interest.`,
-    'use-cash': `Using your savings to fund the gap means no debt, but you lose out on potential investment returns. The amount shown is what your cash could have grown to if invested instead.`,
-    'sell-land': `Selling land involves capital gains tax on your profits. After accounting for taxes and the growth you'd miss out on, here's the real cost of this option.`,
-    'sell-indian-equity': `Selling your Indian stocks means paying capital gains tax and missing future growth. With a ₹1.25 lakh exemption on LTCG, this might be efficient for smaller amounts.`,
-    'sell-rsus': `Selling your foreign RSUs triggers capital gains tax with no exemption. Plus, you'd miss the combined benefit of stock growth and rupee depreciation.`
+    'zinc-loan': `Instead of selling your investments, you can take a loan against your RSUs from Zinc. This lets you keep your stocks growing while using them as collateral.`,
+    'use-cash': `Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.`,
+    'sell-land': `Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.`,
+    'sell-indian-equity': `Selling stocks means paying capital gains tax and missing future growth. There's a ₹1.25 lakh exemption on LTCG.`,
+    'sell-rsus': `Selling foreign RSUs triggers capital gains tax with no exemption, plus you miss stock growth and rupee depreciation benefits.`
   };
   return descriptions[strategyId] || 'Here\'s a breakdown of this funding option.';
+}
+
+function getStrategyCalculation(strategyId, results, inputs) {
+  const fundingGap = results.fundingGap;
+
+  if (strategyId === 'use-cash') {
+    const rate = (inputs.assets.cash.cagrPct * 100).toFixed(0);
+    return `
+      <div class="detail-row">
+        <span class="detail-label">Cash needed today</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">If invested at ${rate}% for 10 years</span>
+        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
+      </div>
+      <p class="calc-note">This is the opportunity cost - what your money could have grown to.</p>
+    `;
+  }
+
+  if (strategyId === 'sell-land') {
+    const taxRate = (inputs.assets.land.ltcgTaxRatePct * 100).toFixed(1);
+    const growthRate = (inputs.assets.land.cagrPct * 100).toFixed(0);
+    return `
+      <div class="detail-row">
+        <span class="detail-label">Cash needed</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
+        <span class="detail-value">Included</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Missed growth at ${growthRate}% for 10 years</span>
+        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
+      </div>
+    `;
+  }
+
+  if (strategyId === 'sell-indian-equity') {
+    const taxRate = (inputs.assets.indianEquity.ltcgTaxRatePct * 100).toFixed(1);
+    const growthRate = (inputs.assets.indianEquity.cagrPct * 100).toFixed(0);
+    return `
+      <div class="detail-row">
+        <span class="detail-label">Cash needed</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
+        <span class="detail-value">After ₹1.25L exemption</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Missed growth at ${growthRate}% for 10 years</span>
+        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
+      </div>
+    `;
+  }
+
+  if (strategyId === 'sell-rsus') {
+    const taxRate = (inputs.assets.foreignRsu.ltcgTaxRatePct * 100).toFixed(1);
+    const growthRate = (inputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0);
+    return `
+      <div class="detail-row">
+        <span class="detail-label">Cash needed</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
+        <span class="detail-value">No exemption</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Missed growth at ${growthRate}% + rupee depreciation</span>
+        <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
+      </div>
+    `;
+  }
+
+  if (strategyId === 'zinc-loan') {
+    const zincRate = Math.min(inputs.selectedHomeLoanRatePct + 0.02, 0.125);
+    const zincRatePct = (zincRate * 100).toFixed(1);
+    const strategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+    return `
+      <div class="detail-row">
+        <span class="detail-label">Loan against RSUs</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Zinc interest rate</span>
+        <span class="detail-value">${zincRatePct}%</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Your RSUs keep growing</span>
+        <span class="detail-value">Yes</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Net benefit after 10 years</span>
+        <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
+      </div>
+      <p class="calc-note">RSU growth minus loan interest = you come out ahead!</p>
+    `;
+  }
+
+  return '';
 }
 
 function showOptionDetails(strategyId, results) {
@@ -357,6 +460,8 @@ function showOptionDetails(strategyId, results) {
     ? `You'll be <strong>${formatCurrency(Math.abs(strategy.impact))}</strong> richer`
     : `You'll be down by <strong>${formatCurrency(strategy.impact)}</strong>`;
 
+  const strategyExplanation = getStrategyCalculation(strategyId, results, modelInputs);
+
   let content = `
     <p class="detail-description">${description}</p>
     <div class="detail-highlight">
@@ -364,6 +469,10 @@ function showOptionDetails(strategyId, results) {
       <span class="highlight-value">${impactText}</span>
     </div>
     <div class="detail-table">
+      <div class="detail-group">
+        <p class="group-heading">How we calculated this</p>
+        ${strategyExplanation}
+      </div>
       <div class="detail-group">
         <p class="group-heading">Your home loan</p>
         <div class="detail-row">

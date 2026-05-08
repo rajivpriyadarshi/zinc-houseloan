@@ -634,6 +634,15 @@ body {
   color: #000;
 }
 
+.calc-note {
+  font-size: 13px;
+  color: #666;
+  font-style: italic;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #ddd;
+}
+
 /* Page transition */
 body {
   animation: pageIn 0.6s ease-out;
