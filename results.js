@@ -370,19 +370,26 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const taxRate = (inputs.assets.land.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.land.cagrPct * 100).toFixed(0);
     const years = inputs.zincLoanTenureYears;
+    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.land.embeddedGainPct, inputs.assets.land.ltcgTaxRatePct, inputs.assets.land.exemptionAmount);
+    const taxPaid = grossSale - fundingGap;
     return `
       <div class="detail-row">
-        <span class="detail-label">Cash needed</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+        <span class="detail-label">Land you need to sell</span>
+        <span class="detail-value">${formatCurrency(grossSale)}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">Capital gains tax (${taxRate}%)</span>
-        <span class="detail-value">Included</span>
+        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% for ${years} years</span>
+        <span class="detail-label">Cash you get</span>
+        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">If land grew at ${growthRate}% for ${years} years instead</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
       </div>
+      <p class="calc-note">This is what that land would have been worth if you didn't sell it.</p>
     `;
   }
 
@@ -390,19 +397,26 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const taxRate = (inputs.assets.indianEquity.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.indianEquity.cagrPct * 100).toFixed(0);
     const years = inputs.zincLoanTenureYears;
+    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.indianEquity.embeddedGainPct, inputs.assets.indianEquity.ltcgTaxRatePct, inputs.assets.indianEquity.exemptionAmount);
+    const taxPaid = grossSale - fundingGap;
     return `
       <div class="detail-row">
-        <span class="detail-label">Cash needed</span>
+        <span class="detail-label">Stocks you need to sell</span>
+        <span class="detail-value">${formatCurrency(grossSale)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Capital gains tax (${taxRate}%, after ₹1.25L exemption)</span>
+        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Cash you get</span>
         <span class="detail-value">${formatCurrency(fundingGap)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
-        <span class="detail-value">After ₹1.25L exemption</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% for ${years} years</span>
+        <span class="detail-label">If stocks grew at ${growthRate}% for ${years} years instead</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
       </div>
+      <p class="calc-note">This is what those stocks would have been worth if you didn't sell them.</p>
     `;
   }
 
@@ -410,19 +424,26 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const taxRate = (inputs.assets.foreignRsu.ltcgTaxRatePct * 100).toFixed(1);
     const growthRate = (inputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0);
     const years = inputs.zincLoanTenureYears;
+    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.foreignRsu.embeddedGainPct, inputs.assets.foreignRsu.ltcgTaxRatePct, inputs.assets.foreignRsu.exemptionAmount);
+    const taxPaid = grossSale - fundingGap;
     return `
       <div class="detail-row">
-        <span class="detail-label">Cash needed</span>
+        <span class="detail-label">RSUs you need to sell</span>
+        <span class="detail-value">${formatCurrency(grossSale)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Capital gains tax (${taxRate}%, no exemption)</span>
+        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Cash you get</span>
         <span class="detail-value">${formatCurrency(fundingGap)}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
-        <span class="detail-value">No exemption</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Missed growth at ${growthRate}% + rupee depreciation for ${years} years</span>
+        <span class="detail-label">If RSUs grew at ${growthRate}% + rupee gains for ${years} years</span>
         <span class="detail-value">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
       </div>
+      <p class="calc-note">This is what those RSUs would have been worth if you didn't sell them.</p>
     `;
   }
 
