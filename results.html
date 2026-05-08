@@ -18,7 +18,16 @@
 
       <div class="funding-info">
         <p class="funding-label">You still need</p>
-        <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
+        <div class="funding-amount-row">
+          <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
+          <button class="funding-info-btn" id="funding-info-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+          </button>
+        </div>
         <p class="funding-subtitle">even after taking a home loan to get in your house</p>
       </div>
 
@@ -214,6 +223,17 @@
       <div class="modal-actions">
         <button class="modal-cancel" id="construction-modal-cancel">Cancel</button>
         <button class="modal-save" id="construction-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Funding Gap Breakdown Modal -->
+  <div class="modal-overlay" id="funding-breakdown-modal">
+    <div class="modal">
+      <h3 class="modal-title">Funding Gap Breakdown</h3>
+      <div id="funding-breakdown-content"></div>
+      <div class="modal-actions">
+        <button class="modal-save" id="funding-breakdown-close">Close</button>
       </div>
     </div>
   </div>

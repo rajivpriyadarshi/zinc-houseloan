@@ -752,6 +752,58 @@ houseValueModal.addEventListener('click', (e) => {
   if (e.target === houseValueModal) houseValueModal.classList.remove('visible');
 });
 
+// Funding gap breakdown modal
+const fundingBreakdownModal = document.getElementById('funding-breakdown-modal');
+
+document.getElementById('funding-info-btn').addEventListener('click', () => {
+  const results = calculateModel(modelInputs);
+  const downPaymentPct = ((1 - modelInputs.homeLoanLtvPct) * 100).toFixed(0);
+  const interiorsPct = (modelInputs.interiorsPct * 100).toFixed(0);
+  const transactionDutyPct = (modelInputs.transactionDutyPct * 100).toFixed(1);
+
+  document.getElementById('funding-breakdown-content').innerHTML = `
+    <div class="detail-table">
+      <div class="detail-row">
+        <span class="detail-label">Property Value</span>
+        <span class="detail-value">${formatCurrency(results.propertyPrice)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Home Loan (${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}% LTV)</span>
+        <span class="detail-value">-${formatCurrency(results.homeLoanAmount)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Down Payment (${downPaymentPct}%)</span>
+        <span class="detail-value">${formatCurrency(results.downPayment)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Stamp Duty & Registration (${transactionDutyPct}%)</span>
+        <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Interior Budget (${interiorsPct}%)</span>
+        <span class="detail-value">${formatCurrency(results.interiors)}</span>
+      </div>
+      ${results.gst > 0 ? `<div class="detail-row">
+        <span class="detail-label">GST (5%)</span>
+        <span class="detail-value">${formatCurrency(results.gst)}</span>
+      </div>` : ''}
+      <div class="detail-row total-row">
+        <span class="detail-label">Total Funding Gap</span>
+        <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
+      </div>
+    </div>
+  `;
+  fundingBreakdownModal.classList.add('visible');
+});
+
+document.getElementById('funding-breakdown-close').addEventListener('click', () => {
+  fundingBreakdownModal.classList.remove('visible');
+});
+
+fundingBreakdownModal.addEventListener('click', (e) => {
+  if (e.target === fundingBreakdownModal) fundingBreakdownModal.classList.remove('visible');
+});
+
 let carouselInterval = null;
 let modalCarouselInterval = null;
 
