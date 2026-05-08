@@ -22,7 +22,7 @@ let modelInputs = {
     { id: 'drawdown-4', year: 3, percentage: 0.2 },
   ],
   zincLoanStructure: 'Interest Only',
-  zincLoanTenureYears: 5,
+  zincLoanTenureYears: 10,
   zincPaymentReinvestmentCagrPct: 0.06,
   assets: {
     cash: { cagrPct: 0.06 },
