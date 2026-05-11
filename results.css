@@ -372,7 +372,7 @@ body {
 }
 
 .option-card.best {
-  border-color: #000;
+  border-color: #b8b97d;
   background: #FAF2D1;
   flex-direction: column;
   padding: 0;
@@ -528,7 +528,7 @@ body {
 .modal-title {
   font-family: 'Butler Pro', serif;
   font-size: 1.5rem;
-  margin-bottom: 24px;
+  margin-bottom: 0px;
 }
 
 .modal-field {
@@ -649,7 +649,7 @@ body {
 .detail-row {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 16px 0;
   border-bottom: 1px solid #eee;
 }
 
@@ -683,6 +683,12 @@ body {
   border-radius: 0;
   margin-bottom: 24px;
   text-align: center;
+  border: 1px solid #b8b97d;
+}
+
+.detail-highlight.negative {
+  background: rgb(249, 233, 233);
+  border: 1px solid #e39c9c;
 }
 
 .highlight-label {
@@ -699,7 +705,7 @@ body {
 }
 
 .highlight-value strong {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -745,7 +751,7 @@ body {
 }
 
 .detail-group {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .detail-group:last-child {
@@ -755,6 +761,7 @@ body {
 .group-heading {
   font-size: 14px;
   font-weight: 600;
+  font-style: italic;
   color: #000;
   margin-bottom: 12px;
   padding-bottom: 8px;
@@ -762,17 +769,20 @@ body {
 }
 
 .detail-row.sub-row .detail-label {
-  padding-left: 12px;
+  padding-left: 0;
   color: #888;
 }
 
 .detail-row.total-row {
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
+  border-top: none;
 }
 
-.detail-row.total-row .detail-label,
+.detail-row.total-row .detail-label {
+  padding-left: 0;
+  font-weight: 600;
+  color: #000;
+}
+
 .detail-row.total-row .detail-value {
   font-weight: 600;
   color: #000;

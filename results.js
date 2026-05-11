@@ -549,13 +549,15 @@ function showOptionDetails(strategyId, results) {
     const bestStrategy = sortedStrategies[0];
     const comparisonDiff = Math.abs(strategy.impact - bestStrategy.impact);
     const bestName = bestStrategy.strategyId === 'zinc-loan' ? 'taking a Zinc loan against RSUs' : bestStrategy.strategyName;
-    const impactText = `You'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${bestName}`;
+    const opportunityCost = strategy.impact;
+    const impactText = `The opportunity cost for using this method is about <strong>${formatCurrency(opportunityCost)}</strong>. This effectively means you'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${bestName}`;
     comparisonHtml = `<span class="highlight-value">${impactText}</span>`;
   }
 
+  const highlightClass = strategyId === 'zinc-loan' ? 'detail-highlight' : 'detail-highlight negative';
   let content = `
     <p class="detail-description">${description}</p>
-    <div class="detail-highlight">
+    <div class="${highlightClass}">
       <span class="highlight-label">After ${years} years</span>
       ${comparisonHtml}
     </div>
