@@ -133,6 +133,14 @@ body {
   color: #fff;
   margin-bottom: 24px;
   letter-spacing: 0px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.funding-label.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .funding-amount-row {
@@ -140,6 +148,14 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.funding-amount-row.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .funding-amount {
@@ -194,6 +210,14 @@ body {
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.3;
   letter-spacing: 0px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.funding-subtitle.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .house-info {
@@ -204,6 +228,14 @@ body {
   position: relative;
   flex: 1;
   min-height: 0;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.house-info.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .house-float-wrapper {
@@ -311,6 +343,14 @@ body {
   align-items: center;
   gap: 12px;
   padding-bottom: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.settings-section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .settings-btn {
@@ -359,15 +399,46 @@ body {
   padding: 78px 0;
   overflow-y: auto;
   overflow-x: hidden;
-  opacity: 0;
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease-out, padding 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1), padding 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .right-column.visible {
   width: 50%;
   padding: 78px 50px;
-  opacity: 1;
 }
+
+.right-column > * {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.right-column.content-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.right-column.content-visible > *:nth-child(1) { transition-delay: 0s; }
+.right-column.content-visible > *:nth-child(2) { transition-delay: 0.3s; }
+.right-column.content-visible > *:nth-child(3) { transition-delay: 0.6s; }
+
+/* Staggered animation for option cards */
+#other-options .option-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s;
+}
+
+.right-column.content-visible #other-options .option-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.right-column.content-visible #other-options .option-card:nth-child(1) { transition-delay: 0.8s; }
+.right-column.content-visible #other-options .option-card:nth-child(2) { transition-delay: 1s; }
+.right-column.content-visible #other-options .option-card:nth-child(3) { transition-delay: 1.2s; }
+.right-column.content-visible #other-options .option-card:nth-child(4) { transition-delay: 1.4s; }
+.right-column.content-visible #other-options .option-card:nth-child(5) { transition-delay: 1.6s; }
 
 .options-title {
   font-family: 'Butler Pro', serif;

@@ -912,16 +912,44 @@ updateUI();
 // Page load animation - left column starts full width, then shrinks
 const leftColumn = document.querySelector('.left-column');
 const rightColumn = document.querySelector('.right-column');
+const settingsSection = document.querySelector('.settings-section');
+const fundingLabel = document.querySelector('.funding-label');
+const fundingAmountRow = document.querySelector('.funding-amount-row');
+const fundingSubtitle = document.querySelector('.funding-subtitle');
+const houseInfo = document.querySelector('.house-info');
 
 // Start with left column full width
 leftColumn.classList.add('fullwidth');
+
+// Staggered animation for left column content on page load
+setTimeout(() => {
+  fundingLabel.classList.add('visible');
+}, 300);
+
+setTimeout(() => {
+  fundingAmountRow.classList.add('visible');
+}, 600);
+
+setTimeout(() => {
+  fundingSubtitle.classList.add('visible');
+}, 900);
+
+setTimeout(() => {
+  houseInfo.classList.add('visible');
+}, 1200);
 
 // After 5 seconds, shrink left column and reveal right column
 setTimeout(() => {
   leftColumn.classList.remove('fullwidth');
 
-  // After left column starts shrinking, fade in right column
+  // After left column starts shrinking, expand right column and show settings
   setTimeout(() => {
     rightColumn.classList.add('visible');
+    settingsSection.classList.add('visible');
+
+    // After right column has fully expanded, fade in content
+    setTimeout(() => {
+      rightColumn.classList.add('content-visible');
+    }, 1000);
   }, 400);
 }, 5000);
