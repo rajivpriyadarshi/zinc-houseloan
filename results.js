@@ -395,15 +395,25 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const rate = (inputs.assets.cash.cagrPct * 100).toFixed(0);
     const years = inputs.zincLoanTenureYears;
     return `
-      <div class="detail-row">
-        <span class="detail-label">Cash needed today</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="detail-label">Cash needed today</span>
+          <span class="detail-value">${formatCurrency(fundingGap)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">If invested at ${rate}% for ${years} years
+            <span class="info-icon-wrapper">
+              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span class="info-tooltip">This is the opportunity cost - what your money could have grown to.</span>
+            </span>
+          </span>
+          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">If invested at ${rate}% for ${years} years</span>
-        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
-      </div>
-      <p class="calc-note">This is the opportunity cost - what your money could have grown to.</p>
     `;
   }
 
@@ -414,23 +424,25 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.land.embeddedGainPct, inputs.assets.land.ltcgTaxRatePct, inputs.assets.land.exemptionAmount);
     const taxPaid = grossSale - fundingGap;
     return `
-      <div class="detail-row">
-        <span class="detail-label">Land you need to sell</span>
-        <span class="detail-value">${formatCurrency(grossSale)}</span>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="detail-label">Land you need to sell</span>
+          <span class="detail-value">${formatCurrency(grossSale)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">If land grew at ${growthRate}% for ${years} years
+            <span class="info-icon-wrapper">
+              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span class="info-tooltip">This is the opportunity cost - what your land could have been worth.</span>
+            </span>
+          </span>
+          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Capital gains tax (${taxRate}%)</span>
-        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Cash you get</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">If land grew at ${growthRate}% for ${years} years instead</span>
-        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
-      </div>
-      <p class="calc-note">This is what that land would have been worth if you didn't sell it.</p>
     `;
   }
 
@@ -441,23 +453,25 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.indianEquity.embeddedGainPct, inputs.assets.indianEquity.ltcgTaxRatePct, inputs.assets.indianEquity.exemptionAmount);
     const taxPaid = grossSale - fundingGap;
     return `
-      <div class="detail-row">
-        <span class="detail-label">Stocks you need to sell</span>
-        <span class="detail-value">${formatCurrency(grossSale)}</span>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="detail-label">Stocks you need to sell</span>
+          <span class="detail-value">${formatCurrency(grossSale)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">If stocks grew at ${growthRate}% for ${years} years
+            <span class="info-icon-wrapper">
+              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span class="info-tooltip">This is the opportunity cost - what your stocks could have been worth.</span>
+            </span>
+          </span>
+          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Capital gains tax (${taxRate}%, after ₹1.25L exemption)</span>
-        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Cash you get</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">If stocks grew at ${growthRate}% for ${years} years instead</span>
-        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
-      </div>
-      <p class="calc-note">This is what those stocks would have been worth if you didn't sell them.</p>
     `;
   }
 
@@ -468,23 +482,25 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.foreignRsu.embeddedGainPct, inputs.assets.foreignRsu.ltcgTaxRatePct, inputs.assets.foreignRsu.exemptionAmount);
     const taxPaid = grossSale - fundingGap;
     return `
-      <div class="detail-row">
-        <span class="detail-label">RSUs you need to sell</span>
-        <span class="detail-value">${formatCurrency(grossSale)}</span>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="detail-label">RSUs you need to sell</span>
+          <span class="detail-value">${formatCurrency(grossSale)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">If RSUs grew at ${growthRate}% for ${years} years
+            <span class="info-icon-wrapper">
+              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span class="info-tooltip">This is the opportunity cost - what your RSUs could have been worth.</span>
+            </span>
+          </span>
+          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Capital gains tax (${taxRate}%, no exemption)</span>
-        <span class="detail-value">-${formatCurrency(taxPaid)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Cash you get</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">If RSUs grew at ${growthRate}% + rupee gains for ${years} years</span>
-        <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
-      </div>
-      <p class="calc-note">This is what those RSUs would have been worth if you didn't sell them.</p>
     `;
   }
 
@@ -494,23 +510,24 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const years = inputs.zincLoanTenureYears;
     const strategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
     return `
-      <div class="detail-row">
-        <span class="detail-label">Loan against RSUs</span>
-        <span class="detail-value">${formatCurrency(fundingGap)}</span>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span class="detail-label">Loan against RSUs</span>
+          <span class="detail-value">${formatCurrency(fundingGap)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Zinc interest rate</span>
+          <span class="detail-value">${zincRatePct}%</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Your RSUs keep growing</span>
+          <span class="detail-value">Yes</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Net benefit after ${years} years</span>
+          <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Zinc interest rate</span>
-        <span class="detail-value">${zincRatePct}%</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Your RSUs keep growing</span>
-        <span class="detail-value">Yes</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Net benefit after ${years} years</span>
-        <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
-      </div>
-      <p class="calc-note">RSU growth minus loan interest = you come out ahead!</p>
     `;
   }
 
@@ -520,8 +537,6 @@ function getStrategyCalculation(strategyId, results, inputs) {
 function showOptionDetails(strategyId, results) {
   const strategy = results.strategies.find(s => s.strategyId === strategyId);
   if (!strategy) return;
-
-  document.getElementById('detail-modal-title').textContent = strategy.strategyName;
 
   const description = getStrategyDescription(strategyId, results);
 
@@ -567,44 +582,55 @@ function showOptionDetails(strategyId, results) {
 
   const highlightClass = strategyId === 'zinc-loan' ? 'detail-highlight' : 'detail-highlight negative';
   let content = `
-    <p class="detail-description">${description}</p>
-    <div class="${highlightClass}">
-      <span class="highlight-label">After ${years} years</span>
-      ${comparisonHtml}
-    </div>
-    <div class="detail-table">
-      <div class="detail-group">
-        <p class="group-heading">How we calculated this</p>
-        ${strategyExplanation}
-      </div>
-      <div class="detail-group">
-        <p class="group-heading">Your home loan</p>
-        <div class="detail-row">
-          <span class="detail-label">Loan amount</span>
-          <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
+    <div class="detail-modal-container">
+      <div class="detail-header">
+        <div class="detail-title-section">
+          <h2 class="detail-modal-title">${strategy.strategyName}</h2>
+          <p class="detail-description">${description}</p>
         </div>
-        <div class="detail-row">
-          <span class="detail-label">Monthly EMI</span>
-          <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
+        <div class="${highlightClass}">
+          <span class="highlight-label">After ${years} years</span>
+          ${comparisonHtml}
         </div>
       </div>
-      <div class="detail-group">
-        <p class="group-heading">Cash you need upfront</p>
-        <div class="detail-row sub-row">
-          <span class="detail-label">Down payment (20%)</span>
-          <span class="detail-value">${formatCurrency(results.downPayment)}</span>
+      <div class="detail-sections">
+        <div class="detail-group">
+          <h3 class="group-heading">How we calculated this</h3>
+          ${strategyExplanation}
         </div>
-        <div class="detail-row sub-row">
-          <span class="detail-label">Stamp duty & registration</span>
-          <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
+        <div class="detail-group">
+          <h3 class="group-heading">Your home loan</h3>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Loan amount</span>
+              <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Monthly EMI</span>
+              <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
+            </div>
+          </div>
         </div>
-        <div class="detail-row sub-row">
-          <span class="detail-label">Interior budget</span>
-          <span class="detail-value">${formatCurrency(results.interiors)}</span>
-        </div>
-        <div class="detail-row total-row">
-          <span class="detail-label">Total</span>
-          <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
+        <div class="detail-group">
+          <h3 class="group-heading">Cash you need upfront</h3>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Down payment (20%)</span>
+              <span class="detail-value">${formatCurrency(results.downPayment)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Stamp duty & registration</span>
+              <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Interior budget</span>
+              <span class="detail-value">${formatCurrency(results.interiors)}</span>
+            </div>
+            <div class="detail-row total-row">
+              <span class="detail-label">Total</span>
+              <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
