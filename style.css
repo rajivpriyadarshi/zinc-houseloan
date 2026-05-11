@@ -115,12 +115,12 @@ body {
 .title {
   font-family: 'Butler Pro', serif;
   font-weight: 300;
-  font-size: clamp(4rem, 7vw, 6.5rem);
+  font-size: 90px;
   color: #fff;
   text-align: center;
-  margin-top: 12vh;
+  margin-top: 16vh;
   line-height: 1.1;
-  letter-spacing: -3px;
+  letter-spacing: -0.06em;
   z-index: 2;
 }
 

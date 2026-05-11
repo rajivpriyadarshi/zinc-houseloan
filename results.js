@@ -908,3 +908,20 @@ function stopModalCarousel() {
 }
 
 updateUI();
+
+// Page load animation - left column starts full width, then shrinks
+const leftColumn = document.querySelector('.left-column');
+const rightColumn = document.querySelector('.right-column');
+
+// Start with left column full width
+leftColumn.classList.add('fullwidth');
+
+// After 5 seconds, shrink left column and reveal right column
+setTimeout(() => {
+  leftColumn.classList.remove('fullwidth');
+
+  // After left column starts shrinking, fade in right column
+  setTimeout(() => {
+    rightColumn.classList.add('visible');
+  }, 400);
+}, 5000);
