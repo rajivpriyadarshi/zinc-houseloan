@@ -699,6 +699,59 @@ document.getElementById('back-btn').addEventListener('click', () => {
   setTimeout(() => window.location.href = 'location.html', 400);
 });
 
+// Assumptions modal
+const assumptionsModal = document.getElementById('assumptions-modal');
+
+document.getElementById('modify-assumptions-btn').addEventListener('click', () => {
+  // Populate current values
+  document.getElementById('assumption-zinc-tenure').value = modelInputs.zincLoanTenureYears;
+  document.getElementById('assumption-zinc-reinvestment').value = modelInputs.zincPaymentReinvestmentCagrPct;
+  document.getElementById('assumption-interiors').value = modelInputs.interiorsPct;
+  document.getElementById('assumption-cash-cagr').value = modelInputs.assets.cash.cagrPct;
+  document.getElementById('assumption-land-gain').value = modelInputs.assets.land.embeddedGainPct;
+  document.getElementById('assumption-land-tax').value = modelInputs.assets.land.ltcgTaxRatePct;
+  document.getElementById('assumption-land-cagr').value = modelInputs.assets.land.cagrPct;
+  document.getElementById('assumption-equity-gain').value = modelInputs.assets.indianEquity.embeddedGainPct;
+  document.getElementById('assumption-equity-tax').value = modelInputs.assets.indianEquity.ltcgTaxRatePct;
+  document.getElementById('assumption-equity-exemption').value = modelInputs.assets.indianEquity.exemptionAmount;
+  document.getElementById('assumption-equity-cagr').value = modelInputs.assets.indianEquity.cagrPct;
+  document.getElementById('assumption-rsu-gain').value = modelInputs.assets.foreignRsu.embeddedGainPct;
+  document.getElementById('assumption-rsu-tax').value = modelInputs.assets.foreignRsu.ltcgTaxRatePct;
+  document.getElementById('assumption-rsu-cagr').value = modelInputs.assets.foreignRsu.usdCagrPct;
+  document.getElementById('assumption-rsu-inr-dep').value = modelInputs.assets.foreignRsu.inrDepreciationPct;
+
+  assumptionsModal.classList.add('visible');
+});
+
+document.getElementById('assumptions-modal-cancel').addEventListener('click', () => {
+  assumptionsModal.classList.remove('visible');
+});
+
+document.getElementById('assumptions-modal-save').addEventListener('click', () => {
+  modelInputs.zincLoanTenureYears = parseInt(document.getElementById('assumption-zinc-tenure').value);
+  modelInputs.zincPaymentReinvestmentCagrPct = parseFloat(document.getElementById('assumption-zinc-reinvestment').value);
+  modelInputs.interiorsPct = parseFloat(document.getElementById('assumption-interiors').value);
+  modelInputs.assets.cash.cagrPct = parseFloat(document.getElementById('assumption-cash-cagr').value);
+  modelInputs.assets.land.embeddedGainPct = parseFloat(document.getElementById('assumption-land-gain').value);
+  modelInputs.assets.land.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-land-tax').value);
+  modelInputs.assets.land.cagrPct = parseFloat(document.getElementById('assumption-land-cagr').value);
+  modelInputs.assets.indianEquity.embeddedGainPct = parseFloat(document.getElementById('assumption-equity-gain').value);
+  modelInputs.assets.indianEquity.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-equity-tax').value);
+  modelInputs.assets.indianEquity.exemptionAmount = parseFloat(document.getElementById('assumption-equity-exemption').value);
+  modelInputs.assets.indianEquity.cagrPct = parseFloat(document.getElementById('assumption-equity-cagr').value);
+  modelInputs.assets.foreignRsu.embeddedGainPct = parseFloat(document.getElementById('assumption-rsu-gain').value);
+  modelInputs.assets.foreignRsu.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-rsu-tax').value);
+  modelInputs.assets.foreignRsu.usdCagrPct = parseFloat(document.getElementById('assumption-rsu-cagr').value);
+  modelInputs.assets.foreignRsu.inrDepreciationPct = parseFloat(document.getElementById('assumption-rsu-inr-dep').value);
+
+  assumptionsModal.classList.remove('visible');
+  updateUI();
+});
+
+assumptionsModal.addEventListener('click', (e) => {
+  if (e.target === assumptionsModal) assumptionsModal.classList.remove('visible');
+});
+
 // House value edit functionality
 const houseValueModal = document.getElementById('house-value-modal');
 const modalHouseValue = document.getElementById('modal-house-value');

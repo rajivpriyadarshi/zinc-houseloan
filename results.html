@@ -10,11 +10,20 @@
   <div class="page-container">
     <!-- Left Column -->
     <div class="left-column">
-      <button class="back-btn" id="back-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-      </button>
+      <div class="top-nav">
+        <button class="back-btn" id="back-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button class="modify-assumptions-btn" id="modify-assumptions-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Modify assumptions</span>
+        </button>
+      </div>
 
       <div class="funding-info">
         <p class="funding-label">You still need</p>
@@ -262,6 +271,190 @@
       <div id="detail-modal-content"></div>
       <div class="modal-actions">
         <button class="modal-save" id="detail-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Assumptions Modal -->
+  <div class="modal-overlay" id="assumptions-modal">
+    <div class="modal modal-large modal-scrollable">
+      <h3 class="modal-title">Modify Assumptions</h3>
+
+      <div class="assumptions-content">
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Zinc Loan</h4>
+        <div class="modal-field">
+          <label>Analysis Horizon (Years)</label>
+          <select id="assumption-zinc-tenure">
+            <option value="5">5 years</option>
+            <option value="7">7 years</option>
+            <option value="10">10 years</option>
+            <option value="15">15 years</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Payment Reinvestment CAGR</label>
+          <select id="assumption-zinc-reinvestment">
+            <option value="0.04">4%</option>
+            <option value="0.05">5%</option>
+            <option value="0.06">6%</option>
+            <option value="0.07">7%</option>
+            <option value="0.08">8%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Property</h4>
+        <div class="modal-field">
+          <label>Interior Budget (%)</label>
+          <select id="assumption-interiors">
+            <option value="0.1">10%</option>
+            <option value="0.15">15%</option>
+            <option value="0.2">20%</option>
+            <option value="0.25">25%</option>
+            <option value="0.3">30%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Cash</h4>
+        <div class="modal-field">
+          <label>Expected CAGR</label>
+          <select id="assumption-cash-cagr">
+            <option value="0.04">4%</option>
+            <option value="0.05">5%</option>
+            <option value="0.06">6%</option>
+            <option value="0.07">7%</option>
+            <option value="0.08">8%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Land</h4>
+        <div class="modal-field">
+          <label>Embedded Gain (%)</label>
+          <select id="assumption-land-gain">
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+            <option value="0.6">60%</option>
+            <option value="0.7">70%</option>
+            <option value="0.8">80%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>LTCG Tax Rate</label>
+          <select id="assumption-land-tax">
+            <option value="0.1">10%</option>
+            <option value="0.125">12.5%</option>
+            <option value="0.15">15%</option>
+            <option value="0.2">20%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Expected CAGR</label>
+          <select id="assumption-land-cagr">
+            <option value="0.05">5%</option>
+            <option value="0.06">6%</option>
+            <option value="0.07">7%</option>
+            <option value="0.08">8%</option>
+            <option value="0.1">10%</option>
+            <option value="0.12">12%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Indian Equity</h4>
+        <div class="modal-field">
+          <label>Embedded Gain (%)</label>
+          <select id="assumption-equity-gain">
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+            <option value="0.6">60%</option>
+            <option value="0.7">70%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>LTCG Tax Rate</label>
+          <select id="assumption-equity-tax">
+            <option value="0.1">10%</option>
+            <option value="0.125">12.5%</option>
+            <option value="0.15">15%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>LTCG Exemption (₹)</label>
+          <select id="assumption-equity-exemption">
+            <option value="0">₹0</option>
+            <option value="100000">₹1 Lac</option>
+            <option value="125000">₹1.25 Lac</option>
+            <option value="150000">₹1.5 Lac</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Expected CAGR</label>
+          <select id="assumption-equity-cagr">
+            <option value="0.08">8%</option>
+            <option value="0.1">10%</option>
+            <option value="0.12">12%</option>
+            <option value="0.14">14%</option>
+            <option value="0.15">15%</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="assumptions-section">
+        <h4 class="assumptions-section-title">Foreign RSUs</h4>
+        <div class="modal-field">
+          <label>Embedded Gain (%)</label>
+          <select id="assumption-rsu-gain">
+            <option value="0.2">20%</option>
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+            <option value="0.6">60%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>LTCG Tax Rate</label>
+          <select id="assumption-rsu-tax">
+            <option value="0.1">10%</option>
+            <option value="0.125">12.5%</option>
+            <option value="0.15">15%</option>
+            <option value="0.2">20%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>Expected USD CAGR</label>
+          <select id="assumption-rsu-cagr">
+            <option value="0.08">8%</option>
+            <option value="0.1">10%</option>
+            <option value="0.12">12%</option>
+            <option value="0.14">14%</option>
+            <option value="0.15">15%</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>INR Depreciation</label>
+          <select id="assumption-rsu-inr-dep">
+            <option value="0.015">1.5%</option>
+            <option value="0.02">2%</option>
+            <option value="0.025">2.5%</option>
+            <option value="0.03">3%</option>
+            <option value="0.035">3.5%</option>
+          </select>
+        </div>
+      </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel" id="assumptions-modal-cancel">Cancel</button>
+        <button class="modal-save" id="assumptions-modal-save">Save</button>
       </div>
     </div>
   </div>
