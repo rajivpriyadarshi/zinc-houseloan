@@ -539,6 +539,13 @@ body {
   gap: 14px;
 }
 
+.option-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 .option-rank {
   width: 42px;
   height: 42px;

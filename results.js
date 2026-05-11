@@ -321,6 +321,17 @@ function updateUI() {
     return 'this option';
   }
 
+  function getStrategyIcon(strategyId) {
+    const icons = {
+      'zinc-loan': '/icons/Zinc loan.jpg',
+      'use-cash': '/icons/cash.jpg',
+      'sell-land': '/icons/land.jpg',
+      'sell-indian-equity': '/icons/loan.jpg',
+      'sell-rsus': '/icons/RSU.jpg'
+    };
+    return icons[strategyId] || '/icons/cash.jpg';
+  }
+
   const comparisonCards = otherOptions.map(opt => {
     const savings = opt.impact - bestOption.impact;
     return `<div class="carousel-card">You'll be <strong>${formatCurrency(savings)}</strong> richer than if you were to ${getComparisonPhrase(opt.strategyId)}</div>`;
@@ -329,7 +340,7 @@ function updateUI() {
   document.getElementById('best-option').innerHTML = `
     <div class="best-option-header">
       <div class="option-left">
-        <div class="option-rank rank-1">1</div>
+        <img class="option-icon" src="${getStrategyIcon(bestOption.strategyId)}" alt="">
         <div class="option-name">${getStrategyDisplayName(bestOption.strategyId)}</div>
       </div>
       <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
@@ -347,7 +358,7 @@ function updateUI() {
   const otherOptionsHtml = otherOptions.map(opt => `
     <div class="option-card" data-strategy-id="${opt.strategyId}">
       <div class="option-left">
-        <div class="option-rank rank-other">${opt.rank}</div>
+        <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
         <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
       </div>
       <div class="option-right">
