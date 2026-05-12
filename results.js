@@ -323,7 +323,7 @@ function updateUI() {
 
   function getStrategyIcon(strategyId) {
     const icons = {
-      'zinc-loan': '/icons/Zinc loan.jpg',
+      'zinc-loan': '/icons/zinc-loan.jpg',
       'use-cash': '/icons/cash.jpg',
       'sell-land': '/icons/land.jpg',
       'sell-indian-equity': '/icons/loan.jpg',
