@@ -372,7 +372,48 @@ function updateUI() {
 
   initCarousel();
 
-  const otherOptionsHtml = otherOptions.map(opt => `
+  const otherOptionsHtml = otherOptions.map(opt => {
+    const fundingGap = results.fundingGap;
+    const futureValue = opt.impact;
+    const growthPercent = ((futureValue / fundingGap) * 100).toFixed(0);
+    const presentBarWidth = 50;
+    const futureBarWidth = Math.min((futureValue / fundingGap) * 50, 100);
+
+    if (opt.strategyId === 'use-cash') {
+      return `
+        <div class="option-card option-card-visual" data-strategy-id="${opt.strategyId}">
+          <div class="option-visual-header">
+            <div class="option-left-info">
+              <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
+              <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
+            </div>
+            <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
+          </div>
+          <div class="option-visual-content">
+            <div class="visual-bar-row">
+              <div class="visual-bar-label">Today</div>
+              <div class="visual-bar-container">
+                <div class="visual-bar visual-bar-present" style="width: ${presentBarWidth}%"></div>
+              </div>
+              <div class="visual-bar-value">${formatCurrency(fundingGap)}</div>
+            </div>
+            <div class="visual-bar-row">
+              <div class="visual-bar-label">In ${analysisYears}yr</div>
+              <div class="visual-bar-container">
+                <div class="visual-bar visual-bar-future" style="width: ${futureBarWidth}%"></div>
+              </div>
+              <div class="visual-bar-value visual-bar-value-future">${formatCurrency(futureValue)}</div>
+            </div>
+          </div>
+          <div class="option-visual-footer">
+            <span class="visual-loss-label">Opportunity cost</span>
+            <span class="visual-loss-value">${formatCurrency(futureValue - fundingGap)}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
     <div class="option-card" data-strategy-id="${opt.strategyId}">
       <div class="option-left">
         <div class="option-left-info">
@@ -389,7 +430,8 @@ function updateUI() {
         <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
   document.getElementById('other-options').innerHTML = otherOptionsHtml;
 
   document.querySelectorAll('.option-card').forEach(card => {
