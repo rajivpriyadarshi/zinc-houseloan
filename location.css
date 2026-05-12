@@ -338,3 +338,57 @@ body.page-exit {
     opacity: 1;
   }
 }
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .back-btn {
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .content {
+    padding-top: 90px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .title {
+    font-size: 42px;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  .city-options {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .city-btn {
+    font-size: 15px;
+    padding: 14px 20px;
+    border-radius: 16px;
+  }
+
+  .state-dropdown {
+    font-size: 16px;
+    padding: 14px 20px;
+    min-width: 220px;
+  }
+
+  .proceed-btn {
+    font-size: 16px;
+    padding: 20px 28px;
+    min-width: 180px;
+  }
+
+  .city-image-container {
+    margin-top: 16px;
+  }
+
+  .city-image {
+    max-width: 95vw;
+    max-height: 35vh;
+  }
+}

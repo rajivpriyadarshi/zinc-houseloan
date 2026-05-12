@@ -411,3 +411,76 @@ body.page-exit {
     opacity: 1;
   }
 }
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .back-btn {
+    top: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .content {
+    padding-top: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .amount-value {
+    font-size: 56px;
+    letter-spacing: -1px;
+  }
+
+  .amount-input-hidden {
+    font-size: 56px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .slider-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+
+  #amount-slider {
+    height: 12px;
+  }
+
+  #amount-slider::-webkit-slider-thumb {
+    width: 72px;
+    height: 40px;
+  }
+
+  #amount-slider::-moz-range-thumb {
+    width: 72px;
+    height: 40px;
+  }
+
+  .proceed-btn {
+    font-size: 16px;
+    padding: 20px 28px;
+    margin-top: 32px;
+    min-width: 160px;
+  }
+
+  .house-container {
+    margin-top: 20px;
+  }
+
+  .house-image {
+    max-width: 85vw;
+    max-height: 40vh;
+    margin-top: -20px;
+  }
+
+  .house-shadow {
+    max-width: 85vw;
+    max-height: 40vh;
+  }
+}
