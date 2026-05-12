@@ -429,7 +429,7 @@ body.page-exit {
 
   .subtitle {
     font-size: 20px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .amount-value {
