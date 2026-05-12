@@ -300,6 +300,22 @@ function updateUI() {
     if (strategyId === 'zinc-loan') {
       return impact < 0 ? `You'll be richer after ${analysisYears} years` : `Net cost after ${analysisYears} years`;
     }
+    const fundingGap = results.fundingGap;
+    const additionalEarnings = impact - fundingGap;
+    const formattedEarnings = formatCurrency(additionalEarnings);
+
+    if (strategyId === 'use-cash') {
+      return `${formatCurrency(fundingGap)} cash could grow by ${formattedEarnings} in ${analysisYears} years`;
+    }
+    if (strategyId === 'sell-land') {
+      return `${formatCurrency(fundingGap)} land could appreciate by ${formattedEarnings} in ${analysisYears} years`;
+    }
+    if (strategyId === 'sell-indian-equity') {
+      return `${formatCurrency(fundingGap)} equity could grow by ${formattedEarnings} in ${analysisYears} years`;
+    }
+    if (strategyId === 'sell-rsus') {
+      return `${formatCurrency(fundingGap)} RSUs could grow by ${formattedEarnings} in ${analysisYears} years`;
+    }
     return `Opportunity cost over ${analysisYears} years`;
   }
 
