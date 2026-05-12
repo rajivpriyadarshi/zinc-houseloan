@@ -302,19 +302,20 @@ function updateUI() {
     }
     const fundingGap = results.fundingGap;
     const additionalEarnings = impact - fundingGap;
-    const formattedEarnings = formatCurrency(additionalEarnings);
+    const formattedGap = `<span class="label-amount">${formatCurrency(fundingGap)}</span>`;
+    const formattedEarnings = `<span class="label-amount">${formatCurrency(additionalEarnings)}</span>`;
 
     if (strategyId === 'use-cash') {
-      return `${formatCurrency(fundingGap)} cash could grow by ${formattedEarnings} in ${analysisYears} years`;
+      return `${formattedGap} cash could grow by ${formattedEarnings} in ${analysisYears} years`;
     }
     if (strategyId === 'sell-land') {
-      return `${formatCurrency(fundingGap)} land could appreciate by ${formattedEarnings} in ${analysisYears} years`;
+      return `${formattedGap} land could appreciate by ${formattedEarnings} in ${analysisYears} years`;
     }
     if (strategyId === 'sell-indian-equity') {
-      return `${formatCurrency(fundingGap)} equity could grow by ${formattedEarnings} in ${analysisYears} years`;
+      return `${formattedGap} equity could grow by ${formattedEarnings} in ${analysisYears} years`;
     }
     if (strategyId === 'sell-rsus') {
-      return `${formatCurrency(fundingGap)} RSUs could grow by ${formattedEarnings} in ${analysisYears} years`;
+      return `${formattedGap} RSUs could grow by ${formattedEarnings} in ${analysisYears} years`;
     }
     return `Opportunity cost over ${analysisYears} years`;
   }

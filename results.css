@@ -615,6 +615,11 @@ body {
   letter-spacing: 0px;
 }
 
+.option-label .label-amount {
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: 600;
+}
+
 .option-expand {
   color: #000;
 }
