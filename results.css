@@ -1437,7 +1437,9 @@ body.page-exit {
 
   .best-option-header .option-left {
     width: auto;
-    flex: 1;
+    flex: none;
+    justify-content: flex-start;
+    gap: 14px;
   }
 
   .option-left {
