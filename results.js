@@ -374,8 +374,11 @@ function updateUI() {
   const otherOptionsHtml = otherOptions.map(opt => `
     <div class="option-card" data-strategy-id="${opt.strategyId}">
       <div class="option-left">
-        <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
-        <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
+        <div class="option-left-info">
+          <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
+          <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
+        </div>
+        <div class="option-amount-mobile">${formatCurrency(opt.impact)}</div>
       </div>
       <div class="option-right">
         <div class="option-impact">

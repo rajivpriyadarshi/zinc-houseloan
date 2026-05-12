@@ -539,6 +539,20 @@ body {
   gap: 14px;
 }
 
+.option-left-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.option-amount-mobile {
+  display: none;
+  font-weight: 700;
+  font-size: 18px;
+  color: #af5c5c;
+  letter-spacing: -0.96px;
+}
+
 .option-icon {
   width: 42px;
   height: 42px;
@@ -1406,7 +1420,7 @@ body.page-exit {
     margin-bottom: 16px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .option-card.best {
@@ -1418,16 +1432,26 @@ body.page-exit {
     padding: 16px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
   .option-left {
     width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .option-amount-mobile {
+    display: block;
   }
 
   .option-right {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .option-right .option-amount {
+    display: none;
   }
 
   .option-impact {
