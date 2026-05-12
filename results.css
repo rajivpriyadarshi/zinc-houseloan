@@ -605,6 +605,17 @@ body {
   color: #000;
 }
 
+.option-info-icon {
+  opacity: 0.3;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.option-card:hover .option-info-icon,
+.option-card.best:hover .option-info-icon {
+  opacity: 1;
+}
+
 /* Modal */
 .modal-overlay {
   position: fixed;

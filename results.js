@@ -343,7 +343,7 @@ function updateUI() {
         <img class="option-icon" src="${getStrategyIcon(bestOption.strategyId)}" alt="">
         <div class="option-name">${getStrategyDisplayName(bestOption.strategyId)}</div>
       </div>
-      <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
     </div>
     <div class="carousel-container">
       <div class="carousel-track" id="carousel-track">
@@ -366,7 +366,7 @@ function updateUI() {
           <div class="option-amount">${formatCurrency(opt.impact)}</div>
           <div class="option-label">${getImpactLabel(opt.strategyId, opt.impact)}</div>
         </div>
-        <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
       </div>
     </div>
   `).join('');
