@@ -616,8 +616,7 @@ body {
 }
 
 .option-label .label-amount {
-  color: rgba(0, 0, 0, 0.8);
-  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .option-expand {
