@@ -35,28 +35,6 @@
     </div>
   </div>
 
-  <script>
-    const loginModal = document.getElementById('login-modal');
-
-    document.getElementById('get-started-btn').addEventListener('click', () => {
-      loginModal.classList.add('visible');
-    });
-
-    function proceedToPlanner() {
-      sessionStorage.setItem('zinc-flow-started', 'true');
-      loginModal.classList.remove('visible');
-      document.body.classList.add('page-exit');
-      setTimeout(() => window.location.href = 'planner.html', 400);
-    }
-
-    document.getElementById('login-submit').addEventListener('click', proceedToPlanner);
-    document.getElementById('login-skip').addEventListener('click', proceedToPlanner);
-
-    loginModal.addEventListener('click', (e) => {
-      if (e.target === loginModal) {
-        loginModal.classList.remove('visible');
-      }
-    });
-  </script>
+  <script type="module" src="index.js"></script>
 </body>
 </html>

@@ -1,9 +1,11 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
+import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
 
 // Get stored values
 const propertyPrice = parseInt(localStorage.getItem('houseValue')) || 10000000;
 const selectedCity = localStorage.getItem('selectedCity') || 'Bangalore';
 const transactionDutyPct = getTransactionDutyRate(selectedCity);
+trackPageView('results');
 
 // Default model inputs
 let modelInputs = {
@@ -683,6 +685,11 @@ document.getElementById('loan-modal-save').addEventListener('click', () => {
   modelInputs.selectedHomeLoanRatePct = parseFloat(document.getElementById('modal-loan-rate').value);
   modelInputs.homeLoanTenureYears = parseInt(document.getElementById('modal-loan-tenure').value);
   modelInputs.homeLoanLtvPct = parseFloat(document.getElementById('modal-loan-ltv').value);
+  trackValueSubmit('loan_settings_submit', JSON.stringify({
+    rate: modelInputs.selectedHomeLoanRatePct,
+    tenure_years: modelInputs.homeLoanTenureYears,
+    ltv_pct: modelInputs.homeLoanLtvPct,
+  }));
   loanModal.classList.remove('visible');
   updateUI();
 });
@@ -733,6 +740,10 @@ document.getElementById('construction-modal-save').addEventListener('click', () 
     ];
   }
 
+  trackValueSubmit('construction_settings_submit', JSON.stringify({
+    property_status: modelInputs.propertyStatus,
+    construction_duration_years: modelInputs.constructionDurationYears,
+  }));
   constructionModal.classList.remove('visible');
   updateUI();
 });
@@ -801,6 +812,11 @@ document.getElementById('assumptions-modal-save').addEventListener('click', () =
   modelInputs.assets.foreignRsu.usdCagrPct = parseFloat(document.getElementById('assumption-rsu-cagr').value);
   modelInputs.assets.foreignRsu.inrDepreciationPct = parseFloat(document.getElementById('assumption-rsu-inr-dep').value);
 
+  trackValueSubmit('assumptions_submit', JSON.stringify({
+    zinc_loan_tenure_years: modelInputs.zincLoanTenureYears,
+    interiors_pct: modelInputs.interiorsPct,
+    cash_cagr_pct: modelInputs.assets.cash.cagrPct,
+  }));
   assumptionsModal.classList.remove('visible');
   updateUI();
 });
@@ -855,6 +871,7 @@ document.getElementById('house-value-modal-save').addEventListener('click', () =
   if (newHouseValue > 0) {
     modelInputs.propertyPrice = newHouseValue;
     localStorage.setItem('houseValue', newHouseValue);
+    trackValueSubmit('house_value_edit_submit', newHouseValue);
   }
   houseValueModal.classList.remove('visible');
   updateUI();
@@ -974,6 +991,13 @@ const fundingLabel = document.querySelector('.funding-label');
 const fundingAmountRow = document.querySelector('.funding-amount-row');
 const fundingSubtitle = document.querySelector('.funding-subtitle');
 const houseInfo = document.querySelector('.house-info');
+
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('button');
+  if (!button) return;
+  const buttonName = button.id || button.textContent?.trim() || 'unknown_button';
+  trackButtonClick(buttonName);
+});
 
 // Start with left column full width
 leftColumn.classList.add('fullwidth');

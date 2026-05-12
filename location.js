@@ -1,8 +1,11 @@
+import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
+
 const cityButtons = document.querySelectorAll('.city-btn');
 const proceedBtn = document.getElementById('proceed-btn');
 const cityImage = document.getElementById('city-image');
 const dropdownContainer = document.getElementById('dropdown-container');
 const stateDropdown = document.getElementById('state-dropdown');
+trackPageView('location');
 
 const cityImages = {
   'Bangalore': '/new-cities/Bangalore.png',
@@ -54,6 +57,7 @@ function switchImage(city) {
 cityButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const city = btn.dataset.city;
+    trackButtonClick('city_select', { city });
 
     cityButtons.forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
@@ -86,6 +90,8 @@ stateDropdown.addEventListener('change', () => {
 
 proceedBtn.addEventListener('click', () => {
   if (selectedCity) {
+    trackButtonClick('location_proceed');
+    trackValueSubmit('city_submit', selectedCity);
     localStorage.setItem('selectedCity', selectedCity);
     document.body.classList.add('page-exit');
     setTimeout(() => window.location.href = 'results.html', 400);
@@ -94,6 +100,7 @@ proceedBtn.addEventListener('click', () => {
 
 document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
+  trackButtonClick('location_back');
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'planner.html', 400);
 });

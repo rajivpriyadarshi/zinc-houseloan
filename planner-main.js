@@ -1,3 +1,5 @@
+import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
+
 const slider = document.getElementById('amount-slider');
 const amountInput = document.getElementById('amount-input');
 const amountDisplay = document.getElementById('amount-display');
@@ -6,6 +8,7 @@ const houseShadow = document.getElementById('house-shadow');
 
 const MIN_VALUE = 100000;
 const MAX_VALUE = 100000000;
+trackPageView('planner');
 
 function getHouseLevel(value) {
   const range = MAX_VALUE - MIN_VALUE;
@@ -184,6 +187,8 @@ amountInput.addEventListener('blur', () => {
 
 document.getElementById('proceed-btn').addEventListener('click', () => {
   const value = parseInt(slider.value, 10);
+  trackButtonClick('planner_proceed');
+  trackValueSubmit('house_value_submit', value);
   localStorage.setItem('houseValue', value);
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'location.html', 400);
@@ -191,6 +196,7 @@ document.getElementById('proceed-btn').addEventListener('click', () => {
 
 document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
+  trackButtonClick('planner_back');
   document.body.classList.add('page-exit');
   setTimeout(() => window.location.href = 'index.html', 400);
 });
