@@ -422,8 +422,8 @@ function updateUI() {
               <div class="visual-dashed-line"></div>
             </div>
               <div class="visual-value-end">
-                <span class="visual-value-amount visual-value-green">${formatCurrency(futureValue)}</span>
-                <span class="visual-value-label">Value after ${analysisYears} years</span>
+                <span class="visual-value-amount visual-value-green" id="animated-future-value">${formatCurrency(fundingGap)}</span>
+                <span class="visual-value-label" id="animated-year-label">Value after 0 years</span>
               </div>
             </div>
             <div class="visual-chart-container">
@@ -436,6 +436,7 @@ function updateUI() {
                 </defs>
                 <path d="${areaD}" fill="url(#growthGradientGreen)" />
                 <path d="${pathD}" fill="none" stroke="#4a7d61" stroke-width="2" stroke-linecap="round" />
+                <circle class="chart-animated-dot" cx="0" cy="${height - 5}" r="6" fill="#4a7d61" />
               </svg>
               <div class="visual-chart-labels">
                 <span class="chart-time-label">Today</span>
@@ -475,6 +476,52 @@ function updateUI() {
   document.querySelectorAll('.option-card').forEach(card => {
     card.addEventListener('click', () => showOptionDetails(card.dataset.strategyId, results));
   });
+
+  // Animate the growth chart for use-cash option
+  const animatedDot = document.querySelector('.chart-animated-dot');
+  const animatedValue = document.getElementById('animated-future-value');
+  const animatedYearLabel = document.getElementById('animated-year-label');
+
+  if (animatedDot && animatedValue && animatedYearLabel) {
+    const fundingGap = results.fundingGap;
+    const cagr = modelInputs.assets.cash.cagrPct;
+    const width = 726;
+    const height = 139;
+    const totalYears = analysisYears;
+    const animationDuration = 2000;
+    const startTime = performance.now();
+
+    function animateChart(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / animationDuration, 1);
+
+      // Eased progress for smooth animation
+      const easedProgress = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      const currentYear = Math.round(easedProgress * totalYears);
+      const currentValue = fundingGap * Math.pow(1 + cagr, currentYear);
+
+      // Calculate dot position on curve (using same easeInQuad as curve)
+      const t = easedProgress;
+      const x = t * width;
+      const curveT = t * t;
+      const y = height - curveT * (height - 20) - 10;
+
+      animatedDot.setAttribute('cx', x);
+      animatedDot.setAttribute('cy', y);
+      animatedValue.textContent = formatCurrency(currentValue);
+      animatedYearLabel.textContent = `Value after ${currentYear} year${currentYear !== 1 ? 's' : ''}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateChart);
+      }
+    }
+
+    // Start animation after a short delay
+    setTimeout(() => requestAnimationFrame(animateChart), 500);
+  }
 }
 
 function getStrategyDescription(strategyId, results) {

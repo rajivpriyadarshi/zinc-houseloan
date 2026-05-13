@@ -731,6 +731,10 @@ body {
   height: 80px;
 }
 
+.chart-animated-dot {
+  filter: drop-shadow(0 2px 4px rgba(74, 125, 97, 0.4));
+}
+
 .visual-chart-labels {
   display: flex;
   justify-content: space-between;
