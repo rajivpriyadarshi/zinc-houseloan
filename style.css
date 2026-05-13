@@ -124,6 +124,30 @@ body {
   z-index: 2;
 }
 
+.subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.5;
+  margin-top: 16px;
+  z-index: 2;
+  animation: fadeSlideUp 0.6s ease-out 0.3s backwards;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .get-started-btn {
   font-family: 'Satoshi', sans-serif;
   font-size: 18px;
