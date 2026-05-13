@@ -709,7 +709,7 @@ body {
   background: rgba(191, 232, 196, 0.4);
   backdrop-filter: blur(17px);
   border: 1px dashed #b0dbb5;
-  padding: 10px 12px 12px 12px;
+  padding: 10px;
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
   color: #000;
