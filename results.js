@@ -383,16 +383,17 @@ function updateUI() {
       const growth = futureValue - fundingGap;
       const cagr = modelInputs.assets.cash.cagrPct;
 
-      // Generate points for growth curve
+      // Generate points for growth curve with exaggerated curvature
       const points = [];
       const width = 726;
       const height = 139;
       const numPoints = 50;
       for (let i = 0; i <= numPoints; i++) {
-        const year = (i / numPoints) * analysisYears;
-        const value = fundingGap * Math.pow(1 + cagr, year);
-        const x = (i / numPoints) * width;
-        const y = height - ((value - fundingGap) / (futureValue - fundingGap)) * (height - 20) - 10;
+        const t = i / numPoints;
+        const x = t * width;
+        // Use easeInQuad to make curve more visually exponential
+        const easedT = t * t;
+        const y = height - easedT * (height - 20) - 10;
         points.push(`${x},${y}`);
       }
       const pathD = `M0,${height - 5} L${points.join(' L')}`;
