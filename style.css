@@ -310,6 +310,15 @@ body.page-exit {
   color: #aaa;
 }
 
+.login-status {
+  min-height: 20px;
+  margin: 0 0 8px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.6);
+}
+
 .login-btn {
   width: 100%;
   padding: 18px;
@@ -327,6 +336,16 @@ body.page-exit {
 
 .login-btn:hover {
   transform: scale(1.02);
+}
+
+.login-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-google-btn {
+  margin-top: 6px;
 }
 
 .login-skip {
@@ -379,4 +398,3 @@ body.page-exit {
     margin-top: 24px;
   }
 }
-
