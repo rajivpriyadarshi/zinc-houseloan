@@ -444,7 +444,8 @@ function updateUI() {
             </div>
           </div>
           <div class="option-visual-description">
-            By using cash worth <span class="desc-highlight">${formatCurrency(fundingGap)}</span>, you will effectively lose the opportunity to make <span class="desc-highlight">${formatCurrency(futureValue)}</span> in future, if you were to invest that cash in a safe fund.
+            <div class="desc-label">The problem with this method</div>
+            <p>By using cash worth <span class="desc-highlight">${formatCurrency(fundingGap)}</span>, you will effectively lose the opportunity to make <span class="desc-highlight-red">${formatCurrency(futureValue)}</span> in future, if you were to invest that cash in a safe fund.</p>
           </div>
         </div>
       `;
