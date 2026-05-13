@@ -749,9 +749,9 @@ body {
 .option-visual-description {
   font-family: 'Satoshi', sans-serif;
   font-weight: 400;
-  font-size: 22px;
+  font-size: 16px;
   color: #000;
-  letter-spacing: -0.22px;
+  letter-spacing: -0.16px;
   line-height: 1.5;
   padding: 0 21px 21px 21px;
 }
