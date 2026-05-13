@@ -689,11 +689,23 @@ body {
   letter-spacing: -0.14px;
 }
 
-.visual-growth-pill {
+.visual-growth-pill-container {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.visual-dashed-line {
+  width: 80px;
+  height: 1px;
+  border-top: 1px dashed #b0dbb5;
+}
+
+.visual-growth-pill {
   background: rgba(191, 232, 196, 0.4);
   backdrop-filter: blur(17px);
   border: 1px dashed #b0dbb5;

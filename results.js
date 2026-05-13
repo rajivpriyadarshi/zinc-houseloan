@@ -414,9 +414,13 @@ function updateUI() {
                 <span class="visual-value-amount">${formatCurrency(fundingGap)}</span>
                 <span class="visual-value-label">Value today</span>
               </div>
+              <div class="visual-growth-pill-container">
+              <div class="visual-dashed-line"></div>
               <div class="visual-growth-pill">
                 <span>+<strong>${formatCurrency(growth)}</strong> growth opportunity</span>
               </div>
+              <div class="visual-dashed-line"></div>
+            </div>
               <div class="visual-value-end">
                 <span class="visual-value-amount visual-value-green">${formatCurrency(futureValue)}</span>
                 <span class="visual-value-label">Value after ${analysisYears} years</span>
