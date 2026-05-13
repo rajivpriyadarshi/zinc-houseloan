@@ -383,19 +383,19 @@ function updateUI() {
       const growth = futureValue - fundingGap;
       const cagr = modelInputs.assets.cash.cagrPct;
 
-      // Generate points for growth curve - more points for smoother curve
+      // Generate points for growth curve
       const points = [];
-      const width = 200;
-      const height = 60;
+      const width = 726;
+      const height = 139;
       const numPoints = 50;
       for (let i = 0; i <= numPoints; i++) {
         const year = (i / numPoints) * analysisYears;
         const value = fundingGap * Math.pow(1 + cagr, year);
         const x = (i / numPoints) * width;
-        const y = height - ((value - fundingGap) / (futureValue - fundingGap)) * (height - 10) - 5;
+        const y = height - ((value - fundingGap) / (futureValue - fundingGap)) * (height - 20) - 10;
         points.push(`${x},${y}`);
       }
-      const pathD = `M${points.join(' L')}`;
+      const pathD = `M0,${height - 5} L${points.join(' L')}`;
       const areaD = `${pathD} L${width},${height} L0,${height} Z`;
 
       return `
@@ -403,38 +403,43 @@ function updateUI() {
           <div class="option-visual-header">
             <div class="option-left-info">
               <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
-              <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
+              <div class="option-name">Use cash worth ${formatCurrency(fundingGap)}</div>
             </div>
-            <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
+            <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="24" height="24">
           </div>
-          <div class="option-visual-chart">
-            <div class="chart-labels">
-              <div class="chart-label-start">
-                <span class="chart-label-value">${formatCurrency(fundingGap)}</span>
-                <span class="chart-label-text">Today</span>
+          <div class="option-visual-content">
+            <div class="visual-values-row">
+              <div class="visual-value-start">
+                <span class="visual-value-amount">${formatCurrency(fundingGap)}</span>
+                <span class="visual-value-label">Value today</span>
               </div>
-              <div class="chart-label-end">
-                <span class="chart-label-value chart-value-future">${formatCurrency(futureValue)}</span>
-                <span class="chart-label-text">${analysisYears} years</span>
+              <div class="visual-growth-pill">
+                <span>+<strong>${formatCurrency(growth)}</strong> growth opportunity</span>
+              </div>
+              <div class="visual-value-end">
+                <span class="visual-value-amount visual-value-green">${formatCurrency(futureValue)}</span>
+                <span class="visual-value-label">Value after ${analysisYears} years</span>
               </div>
             </div>
-            <svg class="growth-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="growthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:#8B3A3A;stop-opacity:0.3" />
-                  <stop offset="100%" style="stop-color:#8B3A3A;stop-opacity:0.05" />
-                </linearGradient>
-              </defs>
-              <path d="${areaD}" fill="url(#growthGradient)" />
-              <path d="${pathD}" fill="none" stroke="#8B3A3A" stroke-width="2" stroke-linecap="round" />
-              <circle cx="0" cy="${height - 5}" r="4" fill="#666" />
-              <circle cx="${width}" cy="${height - ((futureValue - fundingGap) / (futureValue - fundingGap)) * (height - 10) - 5}" r="4" fill="#8B3A3A" />
-            </svg>
+            <div class="visual-chart-container">
+              <svg class="growth-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="growthGradientGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4a7d61;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#4a7d61;stop-opacity:0.05" />
+                  </linearGradient>
+                </defs>
+                <path d="${areaD}" fill="url(#growthGradientGreen)" />
+                <path d="${pathD}" fill="none" stroke="#4a7d61" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <div class="visual-chart-labels">
+                <span class="chart-time-label">Today</span>
+                <span class="chart-time-label">After ${analysisYears} year</span>
+              </div>
+            </div>
           </div>
-          <div class="option-visual-footer">
-            <span class="visual-footer-text">You miss out on</span>
-            <span class="visual-footer-amount">${formatCurrency(growth)}</span>
-            <span class="visual-footer-text">growth</span>
+          <div class="option-visual-description">
+            By using cash worth <span class="desc-highlight">${formatCurrency(fundingGap)}</span>, you will effectively lose the opportunity to make <span class="desc-highlight">${formatCurrency(futureValue)}</span> in future, if you were to invest that cash in a safe fund.
           </div>
         </div>
       `;

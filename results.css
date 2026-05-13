@@ -623,76 +623,129 @@ body {
 .option-card-visual {
   flex-direction: column;
   align-items: stretch;
-  padding: 20px;
+  padding: 0;
   gap: 0;
 }
 
-.option-visual-header {
+.option-card-visual .option-visual-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  padding: 16px;
+  background: #f2f2f2;
 }
 
-.option-visual-chart {
+.option-card-visual .option-name {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+  font-size: 21px;
+  color: #000;
+  letter-spacing: -0.42px;
+}
+
+.option-visual-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 21px;
+}
+
+.visual-values-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   position: relative;
 }
 
-.chart-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.chart-label-start,
-.chart-label-end {
+.visual-value-start,
+.visual-value-end {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  line-height: 1.3;
 }
 
-.chart-label-end {
+.visual-value-end {
   text-align: right;
 }
 
-.chart-label-value {
-  font-size: 18px;
+.visual-value-amount {
+  font-family: 'Satoshi', sans-serif;
   font-weight: 700;
+  font-size: 24px;
   color: #000;
+  letter-spacing: -0.48px;
 }
 
-.chart-value-future {
-  color: #8B3A3A;
+.visual-value-green {
+  color: #4a7d61;
 }
 
-.chart-label-text {
-  font-size: 12px;
+.visual-value-label {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
   color: rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.14px;
+}
+
+.visual-growth-pill {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(191, 232, 196, 0.4);
+  backdrop-filter: blur(17px);
+  border: 1px dashed #b0dbb5;
+  padding: 10px 12px 12px 12px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: #000;
+  letter-spacing: -0.16px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.visual-growth-pill strong {
+  font-weight: 700;
+}
+
+.visual-chart-container {
+  position: relative;
 }
 
 .growth-chart {
   width: 100%;
-  height: 60px;
+  height: 139px;
 }
 
-.option-visual-footer {
+.visual-chart-labels {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding-top: 16px;
-  margin-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  margin-top: 8px;
 }
 
-.visual-footer-text {
+.chart-time-label {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.5);
+  color: #000;
+  letter-spacing: -0.14px;
+  line-height: 1.4;
 }
 
-.visual-footer-amount {
-  font-size: 14px;
-  font-weight: 700;
-  color: #8B3A3A;
+.option-visual-description {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  color: #000;
+  letter-spacing: -0.22px;
+  line-height: 1.5;
+  padding: 0 21px 21px 21px;
+}
+
+.option-visual-description .desc-highlight {
+  font-weight: 500;
 }
 
 .option-expand {
