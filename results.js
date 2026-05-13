@@ -381,7 +381,21 @@ function updateUI() {
 
     if (opt.strategyId === 'use-cash') {
       const growth = futureValue - fundingGap;
-      const cagrPercent = ((modelInputs.assets.cash.cagrPct) * 100).toFixed(0);
+      const cagr = modelInputs.assets.cash.cagrPct;
+
+      // Generate points for growth curve
+      const points = [];
+      const width = 200;
+      const height = 60;
+      for (let year = 0; year <= analysisYears; year++) {
+        const value = fundingGap * Math.pow(1 + cagr, year);
+        const x = (year / analysisYears) * width;
+        const y = height - ((value - fundingGap) / (futureValue - fundingGap)) * (height - 10) - 5;
+        points.push(`${x},${y}`);
+      }
+      const pathD = `M0,${height - 5} L${points.join(' L')}`;
+      const areaD = `${pathD} L${width},${height} L0,${height} Z`;
+
       return `
         <div class="option-card option-card-visual" data-strategy-id="${opt.strategyId}">
           <div class="option-visual-header">
@@ -391,25 +405,34 @@ function updateUI() {
             </div>
             <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
           </div>
-          <div class="option-story">
-            <div class="story-line">
-              <span class="story-text">Your</span>
-              <span class="story-highlight">${formatCurrency(fundingGap)}</span>
-              <span class="story-text">cash growing at ${cagrPercent}%</span>
+          <div class="option-visual-chart">
+            <div class="chart-labels">
+              <div class="chart-label-start">
+                <span class="chart-label-value">${formatCurrency(fundingGap)}</span>
+                <span class="chart-label-text">Today</span>
+              </div>
+              <div class="chart-label-end">
+                <span class="chart-label-value chart-value-future">${formatCurrency(futureValue)}</span>
+                <span class="chart-label-text">${analysisYears} years</span>
+              </div>
             </div>
-            <div class="story-line">
-              <span class="story-text">would become</span>
-              <span class="story-highlight story-highlight-big">${formatCurrency(futureValue)}</span>
-            </div>
-            <div class="story-line">
-              <span class="story-text">in ${analysisYears} years</span>
-            </div>
+            <svg class="growth-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="growthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#8B3A3A;stop-opacity:0.3" />
+                  <stop offset="100%" style="stop-color:#8B3A3A;stop-opacity:0.05" />
+                </linearGradient>
+              </defs>
+              <path d="${areaD}" fill="url(#growthGradient)" />
+              <path d="${pathD}" fill="none" stroke="#8B3A3A" stroke-width="2" stroke-linecap="round" />
+              <circle cx="0" cy="${height - 5}" r="4" fill="#666" />
+              <circle cx="${width}" cy="${height - ((futureValue - fundingGap) / (futureValue - fundingGap)) * (height - 10) - 5}" r="4" fill="#8B3A3A" />
+            </svg>
           </div>
           <div class="option-visual-footer">
-            <div class="visual-cost-pill">
-              <span class="cost-pill-label">Opportunity cost</span>
-              <span class="cost-pill-value">${formatCurrency(growth)}</span>
-            </div>
+            <span class="visual-footer-text">You miss out on</span>
+            <span class="visual-footer-amount">${formatCurrency(growth)}</span>
+            <span class="visual-footer-text">growth</span>
           </div>
         </div>
       `;
