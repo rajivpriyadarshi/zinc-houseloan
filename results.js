@@ -380,6 +380,7 @@ function updateUI() {
     const futureBarWidth = Math.min((futureValue / fundingGap) * 50, 100);
 
     if (opt.strategyId === 'use-cash') {
+      const growth = futureValue - fundingGap;
       return `
         <div class="option-card option-card-visual" data-strategy-id="${opt.strategyId}">
           <div class="option-visual-header">
@@ -389,25 +390,24 @@ function updateUI() {
             </div>
             <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
           </div>
-          <div class="option-visual-content">
-            <div class="visual-bar-row">
-              <div class="visual-bar-label">Today</div>
-              <div class="visual-bar-container">
-                <div class="visual-bar visual-bar-present" style="width: ${presentBarWidth}%"></div>
-              </div>
-              <div class="visual-bar-value">${formatCurrency(fundingGap)}</div>
+          <div class="option-visual-comparison">
+            <div class="visual-box visual-box-today">
+              <span class="visual-box-label">Today</span>
+              <span class="visual-box-amount">${formatCurrency(fundingGap)}</span>
             </div>
-            <div class="visual-bar-row">
-              <div class="visual-bar-label">In ${analysisYears}yr</div>
-              <div class="visual-bar-container">
-                <div class="visual-bar visual-bar-future" style="width: ${futureBarWidth}%"></div>
-              </div>
-              <div class="visual-bar-value visual-bar-value-future">${formatCurrency(futureValue)}</div>
+            <div class="visual-arrow">
+              <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
+                <path d="M0 12H36M36 12L28 4M36 12L28 20" stroke="#8B3A3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="visual-arrow-label">+${formatCurrency(growth)}</span>
+            </div>
+            <div class="visual-box visual-box-future">
+              <span class="visual-box-label">In ${analysisYears} years</span>
+              <span class="visual-box-amount">${formatCurrency(futureValue)}</span>
             </div>
           </div>
           <div class="option-visual-footer">
-            <span class="visual-loss-label">Opportunity cost</span>
-            <span class="visual-loss-value">${formatCurrency(futureValue - fundingGap)}</span>
+            <span class="visual-loss-label">You lose this growth by using cash now</span>
           </div>
         </div>
       `;
