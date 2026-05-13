@@ -623,79 +623,70 @@ body {
 .option-card-visual {
   flex-direction: column;
   align-items: stretch;
-  padding: 20px;
-  gap: 16px;
+  padding: 24px;
+  gap: 0;
 }
 
 .option-visual-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-.option-visual-comparison {
+.option-story {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: 4px;
   padding: 20px 0;
 }
 
-.visual-box {
+.story-line {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 20px;
-  border-radius: 12px;
-  min-width: 120px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
 }
 
-.visual-box-today {
-  background: #f5f5f5;
-}
-
-.visual-box-future {
-  background: #fee8e9;
-}
-
-.visual-box-label {
-  font-size: 12px;
+.story-text {
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.5);
-  margin-bottom: 4px;
 }
 
-.visual-box-amount {
-  font-size: 18px;
+.story-highlight {
+  font-size: 20px;
   font-weight: 700;
   color: #000;
 }
 
-.visual-box-future .visual-box-amount {
-  color: #8B3A3A;
-}
-
-.visual-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.visual-arrow-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #8B3A3A;
+.story-highlight-big {
+  font-size: 28px;
+  color: #000;
 }
 
 .option-visual-footer {
-  text-align: center;
-  padding-top: 12px;
+  padding-top: 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.visual-loss-label {
+.visual-cost-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fee8e9;
+  padding: 10px 16px;
+  border-radius: 20px;
+}
+
+.cost-pill-label {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.cost-pill-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #8B3A3A;
 }
 
 .option-expand {

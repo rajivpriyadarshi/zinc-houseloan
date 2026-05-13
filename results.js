@@ -381,6 +381,7 @@ function updateUI() {
 
     if (opt.strategyId === 'use-cash') {
       const growth = futureValue - fundingGap;
+      const cagrPercent = ((modelInputs.assets.cash.cagrPct) * 100).toFixed(0);
       return `
         <div class="option-card option-card-visual" data-strategy-id="${opt.strategyId}">
           <div class="option-visual-header">
@@ -390,24 +391,25 @@ function updateUI() {
             </div>
             <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
           </div>
-          <div class="option-visual-comparison">
-            <div class="visual-box visual-box-today">
-              <span class="visual-box-label">Today</span>
-              <span class="visual-box-amount">${formatCurrency(fundingGap)}</span>
+          <div class="option-story">
+            <div class="story-line">
+              <span class="story-text">Your</span>
+              <span class="story-highlight">${formatCurrency(fundingGap)}</span>
+              <span class="story-text">cash growing at ${cagrPercent}%</span>
             </div>
-            <div class="visual-arrow">
-              <svg width="40" height="24" viewBox="0 0 40 24" fill="none">
-                <path d="M0 12H36M36 12L28 4M36 12L28 20" stroke="#8B3A3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span class="visual-arrow-label">+${formatCurrency(growth)}</span>
+            <div class="story-line">
+              <span class="story-text">would become</span>
+              <span class="story-highlight story-highlight-big">${formatCurrency(futureValue)}</span>
             </div>
-            <div class="visual-box visual-box-future">
-              <span class="visual-box-label">In ${analysisYears} years</span>
-              <span class="visual-box-amount">${formatCurrency(futureValue)}</span>
+            <div class="story-line">
+              <span class="story-text">in ${analysisYears} years</span>
             </div>
           </div>
           <div class="option-visual-footer">
-            <span class="visual-loss-label">You lose this growth by using cash now</span>
+            <div class="visual-cost-pill">
+              <span class="cost-pill-label">Opportunity cost</span>
+              <span class="cost-pill-value">${formatCurrency(growth)}</span>
+            </div>
           </div>
         </div>
       `;
