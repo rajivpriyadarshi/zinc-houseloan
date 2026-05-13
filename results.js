@@ -383,17 +383,19 @@ function updateUI() {
       const growth = futureValue - fundingGap;
       const cagr = modelInputs.assets.cash.cagrPct;
 
-      // Generate points for growth curve
+      // Generate points for growth curve - more points for smoother curve
       const points = [];
       const width = 200;
       const height = 60;
-      for (let year = 0; year <= analysisYears; year++) {
+      const numPoints = 50;
+      for (let i = 0; i <= numPoints; i++) {
+        const year = (i / numPoints) * analysisYears;
         const value = fundingGap * Math.pow(1 + cagr, year);
-        const x = (year / analysisYears) * width;
+        const x = (i / numPoints) * width;
         const y = height - ((value - fundingGap) / (futureValue - fundingGap)) * (height - 10) - 5;
         points.push(`${x},${y}`);
       }
-      const pathD = `M0,${height - 5} L${points.join(' L')}`;
+      const pathD = `M${points.join(' L')}`;
       const areaD = `${pathD} L${width},${height} L0,${height} Z`;
 
       return `
