@@ -747,24 +747,24 @@ body {
 }
 
 .option-visual-description {
-  background: #fdf5f5;
-  border-left: 3px solid #d4a5a5;
+  border: 1px solid #f5baba;
   margin: 0 21px 21px 21px;
-  padding: 16px 20px;
-  position: relative;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .option-visual-description .desc-label {
-  position: absolute;
-  top: -12px;
-  left: 16px;
-  background: #e8b4b4;
-  color: #8B3A3A;
+  background: #f3dfdf;
+  color: #c13515;
   font-family: 'Satoshi', sans-serif;
   font-weight: 500;
   font-size: 12px;
-  padding: 4px 10px;
+  padding: 4px 8px;
   letter-spacing: -0.12px;
+  line-height: 1.5;
+  align-self: flex-start;
 }
 
 .option-visual-description p {
@@ -783,7 +783,7 @@ body {
 
 .option-visual-description .desc-highlight-red {
   font-weight: 500;
-  color: #8B3A3A;
+  color: #c13515;
 }
 
 .option-expand {
