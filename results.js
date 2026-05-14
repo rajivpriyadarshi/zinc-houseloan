@@ -349,184 +349,66 @@ function updateUI() {
     return icons[strategyId] || '/icons/cash.jpg';
   }
 
-  const comparisonCards = otherOptions.map(opt => {
-    const savings = opt.impact - bestOption.impact;
-    return `<div class="carousel-card">You'll be <strong>${formatCurrency(savings)}</strong> richer than if you were to ${getComparisonPhrase(opt.strategyId)}</div>`;
-  }).join('');
+  // Calculate Zinc loan rate
+  const zincRate = Math.min(modelInputs.selectedHomeLoanRatePct + 0.02, 0.125);
+  const zincRateDisplay = (zincRate * 100).toFixed(1);
 
-  document.getElementById('best-option').innerHTML = `
-    <div class="best-option-header">
-      <div class="option-left">
-        <img class="option-icon" src="${getStrategyIcon(bestOption.strategyId)}" alt="">
-        <div class="option-name">${getStrategyDisplayName(bestOption.strategyId)}</div>
-      </div>
-      <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
-    </div>
-    <div class="carousel-container">
-      <div class="carousel-track" id="carousel-track">
-        ${comparisonCards}
-      </div>
-    </div>
-  `;
-  document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
+  // Get zinc strategy and other strategies
+  const otherStrategies = results.strategies.filter(s => s.strategyId !== 'zinc-loan');
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
 
-  initCarousel();
-
-  const otherOptionsHtml = otherOptions.map(opt => {
-    const fundingGap = results.fundingGap;
-    const futureValue = opt.impact;
-    const growthPercent = ((futureValue / fundingGap) * 100).toFixed(0);
-    const presentBarWidth = 50;
-    const futureBarWidth = Math.min((futureValue / fundingGap) * 50, 100);
-
-    if (opt.strategyId === 'use-cash') {
-      const growth = futureValue - fundingGap;
-      const cagr = modelInputs.assets.cash.cagrPct;
-
-      // Generate points for growth curve with exaggerated curvature
-      const points = [];
-      const width = 726;
-      const height = 139;
-      const numPoints = 50;
-      for (let i = 0; i <= numPoints; i++) {
-        const t = i / numPoints;
-        const x = t * width;
-        // Use easeInQuad to make curve more visually exponential
-        const easedT = t * t;
-        const y = height - easedT * (height - 20) - 10;
-        points.push(`${x},${y}`);
-      }
-      const pathD = `M0,${height - 5} L${points.join(' L')}`;
-      const areaD = `${pathD} L${width},${height} L0,${height} Z`;
-
-      return `
-        <div class="option-card option-card-visual" data-strategy-id="${opt.strategyId}">
-          <div class="option-visual-header">
-            <div class="option-left-info">
-              <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
-              <div class="option-name">Use cash worth ${formatCurrency(fundingGap)}</div>
-            </div>
-            <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="24" height="24">
-          </div>
-          <div class="option-visual-content">
-            <div class="visual-values-row">
-              <div class="visual-value-start">
-                <span class="visual-value-amount">${formatCurrency(fundingGap)}</span>
-                <span class="visual-value-label">Value today</span>
-              </div>
-              <div class="visual-growth-pill-container">
-              <div class="visual-dashed-line"></div>
-              <div class="visual-growth-pill">
-                <span>+<strong>${formatCurrency(growth)}</strong> growth opportunity</span>
-              </div>
-              <div class="visual-dashed-line"></div>
-            </div>
-              <div class="visual-value-end">
-                <span class="visual-value-amount visual-value-green" id="animated-future-value">${formatCurrency(fundingGap)}</span>
-                <span class="visual-value-label" id="animated-year-label">Value after 0 years</span>
-              </div>
-            </div>
-            <div class="visual-chart-container">
-              <svg class="growth-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="growthGradientGreen" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#4a7d61;stop-opacity:0.3" />
-                    <stop offset="100%" style="stop-color:#4a7d61;stop-opacity:0.05" />
-                  </linearGradient>
-                </defs>
-                <path d="${areaD}" fill="url(#growthGradientGreen)" />
-                <path d="${pathD}" fill="none" stroke="#4a7d61" stroke-width="2" stroke-linecap="round" />
-                <circle class="chart-animated-dot" cx="0" cy="${height - 5}" r="6" fill="#4a7d61" />
-              </svg>
-              <div class="visual-chart-labels">
-                <span class="chart-time-label">Today</span>
-                <span class="chart-time-label">After ${analysisYears} year</span>
-              </div>
-            </div>
-          </div>
-          <div class="option-visual-description">
-            <div class="desc-label">The problem with using cash</div>
-            <p>By using cash worth <span class="desc-highlight">${formatCurrency(fundingGap)}</span>, you will effectively lose the opportunity to make <span class="desc-highlight-red">${formatCurrency(futureValue)}</span> in future, if you were to invest that cash in a safe fund.</p>
-          </div>
-        </div>
-      `;
-    }
+  // Generate insight rows for the Fun Facts box
+  const insightRowsHtml = otherStrategies.map(opt => {
+    const savings = opt.impact - zincStrategy.impact;
+    let actionPhrase = '';
+    if (opt.strategyId === 'use-cash') actionPhrase = 'use equivalent cash';
+    if (opt.strategyId === 'sell-land') actionPhrase = 'sell land';
+    if (opt.strategyId === 'sell-indian-equity') actionPhrase = 'sell Indian equity';
+    if (opt.strategyId === 'sell-rsus') actionPhrase = 'sell foreign RSUs';
 
     return `
-    <div class="option-card" data-strategy-id="${opt.strategyId}">
-      <div class="option-left">
-        <div class="option-left-info">
-          <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
-          <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
+      <div class="insight-row" data-strategy-id="${opt.strategyId}">
+        <div class="insight-content">
+          <img class="insight-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
+          <p class="insight-text">You'll be <strong>${formatCurrency(savings)}</strong> richer than if you were to ${actionPhrase}</p>
         </div>
-        <div class="option-amount-mobile">${formatCurrency(opt.impact)}</div>
+        <svg class="insight-info-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
       </div>
-      <div class="option-right">
-        <div class="option-impact">
-          <div class="option-amount">${formatCurrency(opt.impact)}</div>
-          <div class="option-label">${getImpactLabel(opt.strategyId, opt.impact)}</div>
-        </div>
-        <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
+    `;
+  }).join('');
+
+  // Build the Fun Facts section
+  const funFactsHtml = `
+    <div class="fun-facts-box">
+      <p class="fun-facts-label">Fun facts</p>
+      <p class="fun-facts-subtitle">If you go ahead with Zinc's HomeGap loan</p>
+      <div class="insight-rows">
+        ${insightRowsHtml}
       </div>
     </div>
   `;
-  }).join('');
-  document.getElementById('other-options').innerHTML = otherOptionsHtml;
 
-  document.querySelectorAll('.option-card').forEach(card => {
-    card.addEventListener('click', () => showOptionDetails(card.dataset.strategyId, results));
+  document.getElementById('options-title').innerHTML = `Cover the ${formatCurrency(results.fundingGap)} funding gap with Zinc's HomeGap Loan<span class="title-rate">at just ${zincRateDisplay}%</span><button class="learn-more-btn" id="learn-more-btn">Learn more</button>`;
+  document.getElementById('all-options').innerHTML = funFactsHtml;
+
+
+  document.querySelectorAll('.insight-row').forEach(row => {
+    row.addEventListener('click', () => showOptionDetails(row.dataset.strategyId, results));
   });
 
-  // Animate the growth chart for use-cash option
-  const animatedDot = document.querySelector('.chart-animated-dot');
-  const animatedValue = document.getElementById('animated-future-value');
-  const animatedYearLabel = document.getElementById('animated-year-label');
-
-  if (animatedDot && animatedValue && animatedYearLabel) {
-    const fundingGap = results.fundingGap;
-    const cagr = modelInputs.assets.cash.cagrPct;
-    const width = 726;
-    const height = 139;
-    const totalYears = analysisYears;
-    const animationDuration = 2000;
-    const startTime = performance.now();
-
-    function animateChart(currentTime) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / animationDuration, 1);
-
-      // Eased progress for smooth animation
-      const easedProgress = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-      const currentYear = Math.round(easedProgress * totalYears);
-      const currentValue = fundingGap * Math.pow(1 + cagr, currentYear);
-
-      // Calculate dot position on curve (using same easeInQuad as curve)
-      const t = easedProgress;
-      const x = t * width;
-      const curveT = t * t;
-      const y = height - curveT * (height - 20) - 10;
-
-      animatedDot.setAttribute('cx', x);
-      animatedDot.setAttribute('cy', y);
-      animatedValue.textContent = formatCurrency(currentValue);
-      animatedYearLabel.textContent = `Value after ${currentYear} year${currentYear !== 1 ? 's' : ''}`;
-
-      if (progress < 1) {
-        requestAnimationFrame(animateChart);
-      }
-    }
-
-    // Start animation after a short delay
-    setTimeout(() => requestAnimationFrame(animateChart), 500);
-  }
+  document.getElementById('learn-more-btn').addEventListener('click', () => {
+    showOptionDetails('zinc-loan', results);
+  });
 }
+
 
 function getStrategyDescription(strategyId, results) {
   const descriptions = {
-    'zinc-loan': `Instead of selling your investments, you can take a loan against your RSUs from Zinc. This lets you keep your stocks growing while using them as collateral.`,
+    'zinc-loan': `Zinc's HomeGap Loan lets you access funding against your vested RSUs without selling them upfront. It helps you bridge funding gaps for goals like buying a home while staying invested in your company's future growth.`,
     'use-cash': `Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.`,
     'sell-land': `Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.`,
     'sell-indian-equity': `Selling stocks means paying capital gains tax and missing future growth. There's a ₹1.25 lakh exemption on LTCG.`,
@@ -656,23 +538,29 @@ function getStrategyCalculation(strategyId, results, inputs) {
     const zincRatePct = (zincRate * 100).toFixed(1);
     const years = inputs.zincLoanTenureYears;
     const strategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+    const monthlyInterest = fundingGap * zincRate / 12;
+    const totalInterest = fundingGap * zincRate * years;
     return `
       <div class="detail-rows">
         <div class="detail-row">
-          <span class="detail-label">Loan against RSUs</span>
+          <span class="detail-label">Zinc loan amount</span>
           <span class="detail-value">${formatCurrency(fundingGap)}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Zinc interest rate</span>
-          <span class="detail-value">${zincRatePct}%</span>
+          <span class="detail-value">${zincRatePct}% p.a.</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Your RSUs keep growing</span>
-          <span class="detail-value">Yes</span>
+          <span class="detail-label">Zinc loan tenure</span>
+          <span class="detail-value">${years} years</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Net benefit after ${years} years</span>
-          <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
+          <span class="detail-label">Monthly interest (EMI)</span>
+          <span class="detail-value">${formatCurrency(monthlyInterest)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Total interest over ${years} years</span>
+          <span class="detail-value">${formatCurrency(totalInterest)}</span>
         </div>
       </div>
     `;
@@ -688,6 +576,133 @@ function showOptionDetails(strategyId, results) {
   const description = getStrategyDescription(strategyId, results);
 
   const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+  const futureValue = strategy.impact;
+
+  // FAQ section for zinc-loan
+  const faqHtml = strategyId === 'zinc-loan' ? `
+    <div class="faq-section">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="faq-question-text">Do I still own my RSUs?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">Yes, you retain full ownership of your RSUs. They are pledged as collateral, but you continue to receive dividends and benefit from any stock appreciation during the loan period.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="faq-question-text">How does repayment work?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">You pay monthly interest-only EMIs throughout the loan tenure. At the end of the term, you repay the principal in full, either from savings or by selling a portion of your RSUs.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">
+          <span class="faq-question-text">What happens if I miss repayments?</span>
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-content">If you miss repayments, Zinc may liquidate a portion of your pledged RSUs to cover the outstanding amount. We always notify you in advance and work with you to avoid this scenario.</div>
+        </div>
+      </div>
+    </div>
+  ` : '';
+
+  // Get CAGR for the strategy
+  let cagr = 0.06;
+  let assetLabel = 'Asset';
+  let problemLabel = 'The problem with this approach';
+  let problemDesc = '';
+
+  // Get zinc strategy for comparison
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+  const zincDiff = strategy.impact - zincStrategy.impact;
+
+  if (strategyId === 'use-cash') {
+    cagr = modelInputs.assets.cash.cagrPct;
+    assetLabel = 'Cash';
+    problemLabel = 'The problem with using cash';
+    problemDesc = `By using cash worth <strong>${formatCurrency(fundingGap)}</strong>, you will effectively lose the opportunity to make <strong class="problem-red">${formatCurrency(futureValue)}</strong> in future, if you were to invest that cash in a safe fund.<br><br>This means you'll be <strong class="problem-red">${formatCurrency(zincDiff)}</strong> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-land') {
+    cagr = modelInputs.assets.land.cagrPct;
+    assetLabel = 'Land';
+    problemLabel = 'The problem with selling land';
+    problemDesc = `By selling land worth <strong>${formatCurrency(fundingGap)}</strong>, you will effectively lose the opportunity to see it appreciate to <strong class="problem-red">${formatCurrency(futureValue)}</strong> over ${years} years.<br><br>This means you'll be <strong class="problem-red">${formatCurrency(zincDiff)}</strong> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-indian-equity') {
+    cagr = modelInputs.assets.indianEquity.cagrPct;
+    assetLabel = 'Equity';
+    problemLabel = 'The problem with selling equity';
+    problemDesc = `By selling equity worth <strong>${formatCurrency(fundingGap)}</strong>, you will forgo its potential growth to <strong class="problem-red">${formatCurrency(futureValue)}</strong> over ${years} years.<br><br>This means you'll be <strong class="problem-red">${formatCurrency(zincDiff)}</strong> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-rsus') {
+    cagr = modelInputs.assets.foreignRsu.usdCagrPct + modelInputs.assets.foreignRsu.inrDepreciationPct;
+    assetLabel = 'RSUs';
+    problemLabel = 'The problem with selling RSUs';
+    problemDesc = `By selling RSUs worth <strong>${formatCurrency(fundingGap)}</strong>, you give up the potential to see them grow to <strong class="problem-red">${formatCurrency(futureValue)}</strong> over ${years} years.<br><br>This means you'll be <strong class="problem-red">${formatCurrency(zincDiff)}</strong> poorer than taking a Zinc HomeGap loan.`;
+  }
+
+  // Generate growth chart for non-zinc options
+  const growth = futureValue - fundingGap;
+  const width = 600;
+  const height = 120;
+  const points = [];
+  for (let i = 0; i <= 50; i++) {
+    const t = i / 50;
+    const x = t * width;
+    const easedT = t * t;
+    const y = height - easedT * (height - 15) - 8;
+    points.push(`${x},${y}`);
+  }
+  const pathD = `M0,${height - 5} L${points.join(' L')}`;
+  const areaD = `${pathD} L${width},${height} L0,${height} Z`;
+
+  const graphHtml = strategyId !== 'zinc-loan' ? `
+    <div class="modal-graph-section">
+      <div class="modal-visual-values-row">
+        <div class="modal-value-start">
+          <span class="modal-value-amount">${formatCurrency(fundingGap)}</span>
+          <span class="modal-value-label">Value today</span>
+        </div>
+        <div class="modal-growth-pill">
+          <span>+<strong>${formatCurrency(growth)}</strong> growth opportunity</span>
+        </div>
+        <div class="modal-value-end">
+          <span class="modal-value-amount modal-value-green">${formatCurrency(futureValue)}</span>
+          <span class="modal-value-label">Value after ${years} years</span>
+        </div>
+      </div>
+      <div class="modal-chart-container">
+        <svg class="modal-growth-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="modalGrowthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#4a7d61;stop-opacity:0.3" />
+              <stop offset="100%" style="stop-color:#4a7d61;stop-opacity:0.05" />
+            </linearGradient>
+          </defs>
+          <path d="${areaD}" fill="url(#modalGrowthGradient)" />
+          <path d="${pathD}" fill="none" stroke="#4a7d61" stroke-width="2" stroke-linecap="round" />
+          <circle cx="${width}" cy="15" r="6" fill="#4a7d61" />
+        </svg>
+        <div class="modal-chart-labels">
+          <span>Today</span>
+          <span>After ${years} years</span>
+        </div>
+      </div>
+      <div class="modal-problem-box">
+        <div class="modal-problem-label">${problemLabel}</div>
+        <p>${problemDesc}</p>
+      </div>
+    </div>
+  ` : '';
 
   // Build comparison section
   function getModalComparisonPhrase(strategyId) {
@@ -727,18 +742,28 @@ function showOptionDetails(strategyId, results) {
     comparisonHtml = `<span class="highlight-value">${impactText}</span>`;
   }
 
-  const highlightClass = strategyId === 'zinc-loan' ? 'detail-highlight' : 'detail-highlight negative';
+  const highlightSectionHtml = '';
+
+  // Get contextual title for each strategy
+  function getModalTitle(strategyId) {
+    if (strategyId === 'zinc-loan') return "Zinc's HomeGap loan";
+    if (strategyId === 'use-cash') return "What if you use cash to cover the funding gap?";
+    if (strategyId === 'sell-land') return "What if you sell land to cover the funding gap?";
+    if (strategyId === 'sell-indian-equity') return "What if you sell Indian equity to cover the funding gap?";
+    if (strategyId === 'sell-rsus') return "What if you sell foreign RSUs to cover the funding gap?";
+    return strategy.strategyName;
+  }
+
   let content = `
     <div class="detail-modal-container">
       <div class="detail-header">
         <div class="detail-title-section">
-          <h2 class="detail-modal-title">${strategy.strategyName}</h2>
+          <h2 class="detail-modal-title">${getModalTitle(strategyId)}</h2>
           <p class="detail-description">${description}</p>
         </div>
-        <div class="${highlightClass}">
-          <span class="highlight-label">After ${years} years</span>
-          ${comparisonHtml}
-        </div>
+        ${faqHtml}
+        ${graphHtml}
+        ${highlightSectionHtml}
       </div>
       <div class="detail-sections">
         <div class="detail-group">
@@ -788,6 +813,24 @@ function showOptionDetails(strategyId, results) {
 
   if (strategyId === 'zinc-loan') {
     setTimeout(() => initModalCarousel(), 100);
+
+    // Initialize FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const faqItem = btn.closest('.faq-item');
+        const isExpanded = faqItem.classList.contains('expanded');
+
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+          item.classList.remove('expanded');
+        });
+
+        // Toggle current item
+        if (!isExpanded) {
+          faqItem.classList.add('expanded');
+        }
+      });
+    });
   }
 }
 
@@ -1043,27 +1086,7 @@ fundingBreakdownModal.addEventListener('click', (e) => {
   if (e.target === fundingBreakdownModal) fundingBreakdownModal.classList.remove('visible');
 });
 
-let carouselInterval = null;
 let modalCarouselInterval = null;
-
-function initCarousel() {
-  const container = document.querySelector('.carousel-container');
-  if (!container) return;
-
-  const track = document.getElementById('carousel-track');
-  if (!track) return;
-
-  if (carouselInterval) clearInterval(carouselInterval);
-
-  carouselInterval = setInterval(() => {
-    const maxScroll = track.scrollWidth - container.clientWidth;
-    if (container.scrollLeft >= maxScroll - 10) {
-      container.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: 282, behavior: 'smooth' });
-    }
-  }, 3000);
-}
 
 function initModalCarousel() {
   const container = document.querySelector('.modal-carousel-container');
