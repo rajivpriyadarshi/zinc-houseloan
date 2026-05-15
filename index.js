@@ -13,6 +13,9 @@ const googleSignInBtn = document.getElementById('google-signin-btn');
 const loginSkipBtn = document.getElementById('login-skip');
 const loginStatus = document.getElementById('login-status');
 const provider = new GoogleAuthProvider();
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://labs-sbox.zinc.money').replace(/\/$/, '');
+const CUSTOMER_REGISTER_URL = `${API_BASE_URL}/api/customers/register/`;
+const APPLICATION_API_KEY = import.meta.env.VITE_APPLICATION_API_KEY || import.meta.env.VITE_API_KEY || '';
 
 trackPageView('home');
 
@@ -21,7 +24,45 @@ getStartedBtn.addEventListener('click', () => {
   loginModal.classList.add('visible');
 });
 
-function proceedToPlanner(source) {
+async function registerCustomerForLogin() {
+  const user = auth.currentUser;
+  if (!user) return;
+  if (!APPLICATION_API_KEY) {
+    console.warn('Customer register skipped: missing VITE_APPLICATION_API_KEY/VITE_API_KEY');
+    return;
+  }
+
+  const payload = {
+    phone: user.phoneNumber || '+91',
+    name: user.displayName || 'Customer Name',
+    email: user.email || undefined,
+    signup_method: user.phoneNumber ? 'PHONE' : 'EMAIL',
+  };
+
+  const response = await fetch(CUSTOMER_REGISTER_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-Key': APPLICATION_API_KEY,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '');
+    throw new Error(`Register failed (${response.status}): ${errorText}`);
+  }
+}
+
+async function proceedToPlanner(source) {
+  if (auth.currentUser) {
+    try {
+      await registerCustomerForLogin();
+    } catch (error) {
+      console.error('Customer register API failed:', error);
+    }
+  }
+
   trackButtonClick(source);
   trackValueSubmit('user_profile_submit', JSON.stringify({
     email_provided: Boolean(auth.currentUser?.email),
@@ -54,7 +95,7 @@ async function handleGoogleSignIn() {
 
   try {
     await signInWithPopup(auth, provider);
-    proceedToPlanner('google_signin_success_popup');
+    await proceedToPlanner('google_signin_success_popup');
   } catch (error) {
     const code = error?.code || '';
     if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
@@ -80,8 +121,9 @@ loginModal.addEventListener('click', (e) => {
 getRedirectResult(auth)
   .then((result) => {
     if (result?.user) {
-      proceedToPlanner('google_signin_success_redirect');
+      return proceedToPlanner('google_signin_success_redirect');
     }
+    return null;
   })
   .catch((error) => {
     loginModal.classList.add('visible');
