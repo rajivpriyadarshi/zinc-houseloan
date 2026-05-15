@@ -247,14 +247,6 @@ function formatCurrency(amount) {
   }
 }
 
-function formatLacs(amount) {
-  const lacs = amount / 100000;
-  if (lacs >= 100) {
-    return (lacs / 100).toFixed(2) + ' Cr';
-  }
-  return lacs.toFixed(2) + ' lacs';
-}
-
 function formatCr(amount) {
   const cr = amount / 10000000;
   if (cr >= 1) {
@@ -263,363 +255,198 @@ function formatCr(amount) {
   return (amount / 100000).toFixed(0) + ' Lacs';
 }
 
-function getHouseLevel(value) {
-  const MIN_VALUE = 100000;
-  const MAX_VALUE = 100000000;
-  const range = MAX_VALUE - MIN_VALUE;
-  const step = range / 6;
+function formatCrSigned(amount) {
+  const cr = Math.abs(amount) / 10000000;
+  const sign = amount >= 0 ? '+' : '-';
+  if (cr >= 1) {
+    return sign + cr.toFixed(1) + ' Cr';
+  }
+  const lacs = Math.abs(amount) / 100000;
+  return sign + lacs.toFixed(0) + ' L';
+}
 
-  if (value < MIN_VALUE + step) return 1;
-  if (value < MIN_VALUE + step * 2) return 2;
-  if (value < MIN_VALUE + step * 3) return 3;
-  if (value < MIN_VALUE + step * 4) return 4;
-  if (value < MIN_VALUE + step * 5) return 5;
-  return 6;
+function formatLacs(amount) {
+  const lacs = amount / 100000;
+  if (lacs >= 100) {
+    return (lacs / 100).toFixed(1) + ' Cr';
+  }
+  return Math.round(lacs) + ' L';
 }
 
 function updateUI() {
   const results = calculateModel(modelInputs);
 
-  document.getElementById('funding-amount').textContent = formatLacs(results.fundingGap);
-  document.getElementById('city-name').textContent = selectedCity;
-  document.getElementById('house-value').textContent = formatCr(modelInputs.propertyPrice);
-  document.getElementById('options-title').textContent = `Options to fund ${formatCurrency(results.fundingGap)}`;
+  // Update hero section
+  document.getElementById('hero-amount').textContent = formatCr(results.fundingGap);
 
-  const houseLevel = getHouseLevel(modelInputs.propertyPrice);
-  document.getElementById('house-image').src = `/houses/level${houseLevel}.png`;
+  // Update breakdown pills
+  document.getElementById('breakdown-downpayment').textContent = formatLacs(results.downPayment);
+  document.getElementById('breakdown-interior').textContent = formatLacs(results.interiors);
+  document.getElementById('breakdown-stamp').textContent = formatLacs(results.transactionDuty);
 
-  const ratePercent = (modelInputs.selectedHomeLoanRatePct * 100).toFixed(1);
-  const ltvPercent = (modelInputs.homeLoanLtvPct * 100).toFixed(0);
-  document.getElementById('loan-settings-value').textContent = `${ratePercent}%, ${modelInputs.homeLoanTenureYears} year, ${ltvPercent}%`;
-  document.getElementById('construction-value').textContent = modelInputs.propertyStatus === 'Ready' ? 'No' : 'Yes';
+  // Get strategies
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+  const cashStrategy = results.strategies.find(s => s.strategyId === 'use-cash');
+  const landStrategy = results.strategies.find(s => s.strategyId === 'sell-land');
+  const equityStrategy = results.strategies.find(s => s.strategyId === 'sell-indian-equity');
+  const rsuStrategy = results.strategies.find(s => s.strategyId === 'sell-rsus');
 
-  const bestOption = results.strategies.find(s => s.rank === 1);
-  const otherOptions = results.strategies.filter(s => s.rank !== 1);
+  // Calculate relative impacts (Zinc is best)
+  const zincImpact = zincStrategy.impact;
+  const zincBenefit = cashStrategy.impact - zincImpact;
+  const cashCost = cashStrategy.impact - zincImpact;
+  const landCost = landStrategy.impact - zincImpact;
+  const equityCost = equityStrategy.impact - zincImpact;
+  const rsuCost = rsuStrategy.impact - zincImpact;
 
-  const analysisYears = modelInputs.zincLoanTenureYears;
+  // Update amounts
+  document.getElementById('zinc-amount').textContent = formatCrSigned(zincBenefit);
+  document.getElementById('cash-amount').textContent = formatCrSigned(-cashCost);
+  document.getElementById('land-amount').textContent = formatCrSigned(-landCost);
+  document.getElementById('equity-amount').textContent = formatCrSigned(-equityCost);
+  document.getElementById('rsu-amount').textContent = formatCrSigned(-rsuCost);
 
-  function getImpactLabel(strategyId, impact) {
-    if (strategyId === 'zinc-loan') {
-      return impact < 0 ? `You'll be richer after ${analysisYears} years` : `Net cost after ${analysisYears} years`;
-    }
-    const fundingGap = results.fundingGap;
-    const additionalEarnings = impact - fundingGap;
-    const formattedGap = `<span class="label-amount">${formatCurrency(fundingGap)}</span>`;
-    const formattedEarnings = `<span class="label-amount">${formatCurrency(additionalEarnings)}</span>`;
+  // Calculate bar heights (max 150px)
+  const maxBarHeight = 150;
+  const allCosts = [zincBenefit, cashCost, landCost, equityCost, rsuCost];
+  const maxCost = Math.max(...allCosts.map(Math.abs));
 
-    if (strategyId === 'use-cash') {
-      return `${formattedGap} cash could grow by ${formattedEarnings} in ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-land') {
-      return `${formattedGap} land could appreciate by ${formattedEarnings} in ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-indian-equity') {
-      return `${formattedGap} equity could grow by ${formattedEarnings} in ${analysisYears} years`;
-    }
-    if (strategyId === 'sell-rsus') {
-      return `${formattedGap} RSUs could grow by ${formattedEarnings} in ${analysisYears} years`;
-    }
-    return `Opportunity cost over ${analysisYears} years`;
-  }
+  const zincBarHeight = Math.max((zincBenefit / maxCost) * maxBarHeight, 30);
+  const cashBarHeight = Math.max((cashCost / maxCost) * maxBarHeight, 30);
+  const landBarHeight = Math.max((landCost / maxCost) * maxBarHeight, 30);
+  const equityBarHeight = Math.max((equityCost / maxCost) * maxBarHeight, 30);
+  const rsuBarHeight = Math.max((rsuCost / maxCost) * maxBarHeight, 30);
 
-  function getStrategyDisplayName(strategyId) {
-    if (strategyId === 'use-cash') return 'Use cash';
-    if (strategyId === 'sell-land') return 'Sell land';
-    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
-    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
-    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
-    return strategyId;
-  }
-
-  function getComparisonPhrase(strategyId) {
-    if (strategyId === 'use-cash') return 'Use cash';
-    if (strategyId === 'sell-land') return 'Sell land';
-    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
-    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
-    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
-    return 'this option';
-  }
-
-  function getStrategyIcon(strategyId) {
-    const icons = {
-      'zinc-loan': '/icons/zinc-loan.jpg',
-      'use-cash': '/icons/cash.jpg',
-      'sell-land': '/icons/land.jpg',
-      'sell-indian-equity': '/icons/loan.jpg',
-      'sell-rsus': '/icons/RSU.jpg'
-    };
-    return icons[strategyId] || '/icons/cash.jpg';
-  }
-
-  const comparisonCards = otherOptions.map(opt => {
-    const savings = opt.impact - bestOption.impact;
-    return `<div class="carousel-card">You'll be <strong>${formatCurrency(savings)}</strong> richer than if you were to ${getComparisonPhrase(opt.strategyId)}</div>`;
-  }).join('');
-
-  document.getElementById('best-option').innerHTML = `
-    <div class="best-option-header">
-      <div class="option-left">
-        <img class="option-icon" src="${getStrategyIcon(bestOption.strategyId)}" alt="">
-        <div class="option-name">${getStrategyDisplayName(bestOption.strategyId)}</div>
-      </div>
-      <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
-    </div>
-    <div class="carousel-container">
-      <div class="carousel-track" id="carousel-track">
-        ${comparisonCards}
-      </div>
-    </div>
-  `;
-  document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
-
-  initCarousel();
-
-  const otherOptionsHtml = otherOptions.map(opt => `
-    <div class="option-card" data-strategy-id="${opt.strategyId}">
-      <div class="option-left">
-        <div class="option-left-info">
-          <img class="option-icon" src="${getStrategyIcon(opt.strategyId)}" alt="">
-          <div class="option-name">${getStrategyDisplayName(opt.strategyId)}</div>
-        </div>
-        <div class="option-amount-mobile">${formatCurrency(opt.impact)}</div>
-      </div>
-      <div class="option-right">
-        <div class="option-impact">
-          <div class="option-amount">${formatCurrency(opt.impact)}</div>
-          <div class="option-label">${getImpactLabel(opt.strategyId, opt.impact)}</div>
-        </div>
-        <img class="option-info-icon" src="/icons/info-icon.png" alt="Info" width="20" height="20">
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('other-options').innerHTML = otherOptionsHtml;
-
-  document.querySelectorAll('.option-card').forEach(card => {
-    card.addEventListener('click', () => showOptionDetails(card.dataset.strategyId, results));
-  });
+  document.getElementById('zinc-bar').style.height = zincBarHeight + 'px';
+  document.getElementById('cash-bar').style.height = cashBarHeight + 'px';
+  document.getElementById('land-bar').style.height = landBarHeight + 'px';
+  document.getElementById('equity-bar').style.height = equityBarHeight + 'px';
+  document.getElementById('rsu-bar').style.height = rsuBarHeight + 'px';
 }
 
-function getStrategyDescription(strategyId, results) {
-  const descriptions = {
-    'zinc-loan': `Instead of selling your investments, you can take a loan against your RSUs from Zinc. This lets you keep your stocks growing while using them as collateral.`,
-    'use-cash': `Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.`,
-    'sell-land': `Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.`,
-    'sell-indian-equity': `Selling stocks means paying capital gains tax and missing future growth. There's a ₹1.25 lakh exemption on LTCG.`,
-    'sell-rsus': `Selling foreign RSUs triggers capital gains tax with no exemption, plus you miss stock growth and rupee depreciation benefits.`
-  };
-  return descriptions[strategyId] || 'Here\'s a breakdown of this funding option.';
-}
-
-function getStrategyCalculation(strategyId, results, inputs) {
-  const fundingGap = results.fundingGap;
-
-  if (strategyId === 'use-cash') {
-    const rate = (inputs.assets.cash.cagrPct * 100).toFixed(0);
-    const years = inputs.zincLoanTenureYears;
-    return `
-      <div class="detail-rows">
-        <div class="detail-row">
-          <span class="detail-label">Cash needed today</span>
-          <span class="detail-value">${formatCurrency(fundingGap)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">If invested at ${rate}% for ${years} years
-            <span class="info-icon-wrapper">
-              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4"/>
-                <path d="M12 8h.01"/>
-              </svg>
-              <span class="info-tooltip">This is the opportunity cost - what your money could have grown to.</span>
-            </span>
-          </span>
-          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'use-cash').impact)}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  if (strategyId === 'sell-land') {
-    const taxRate = (inputs.assets.land.ltcgTaxRatePct * 100).toFixed(1);
-    const growthRate = (inputs.assets.land.cagrPct * 100).toFixed(0);
-    const years = inputs.zincLoanTenureYears;
-    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.land.embeddedGainPct, inputs.assets.land.ltcgTaxRatePct, inputs.assets.land.exemptionAmount);
-    const taxPaid = grossSale - fundingGap;
-    return `
-      <div class="detail-rows">
-        <div class="detail-row">
-          <span class="detail-label">Land you need to sell</span>
-          <span class="detail-value">${formatCurrency(grossSale)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">If land grew at ${growthRate}% for ${years} years
-            <span class="info-icon-wrapper">
-              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4"/>
-                <path d="M12 8h.01"/>
-              </svg>
-              <span class="info-tooltip">This is the opportunity cost - what your land could have been worth.</span>
-            </span>
-          </span>
-          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-land').impact)}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  if (strategyId === 'sell-indian-equity') {
-    const taxRate = (inputs.assets.indianEquity.ltcgTaxRatePct * 100).toFixed(1);
-    const growthRate = (inputs.assets.indianEquity.cagrPct * 100).toFixed(0);
-    const years = inputs.zincLoanTenureYears;
-    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.indianEquity.embeddedGainPct, inputs.assets.indianEquity.ltcgTaxRatePct, inputs.assets.indianEquity.exemptionAmount);
-    const taxPaid = grossSale - fundingGap;
-    return `
-      <div class="detail-rows">
-        <div class="detail-row">
-          <span class="detail-label">Stocks you need to sell</span>
-          <span class="detail-value">${formatCurrency(grossSale)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">If stocks grew at ${growthRate}% for ${years} years
-            <span class="info-icon-wrapper">
-              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4"/>
-                <path d="M12 8h.01"/>
-              </svg>
-              <span class="info-tooltip">This is the opportunity cost - what your stocks could have been worth.</span>
-            </span>
-          </span>
-          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-indian-equity').impact)}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  if (strategyId === 'sell-rsus') {
-    const taxRate = (inputs.assets.foreignRsu.ltcgTaxRatePct * 100).toFixed(1);
-    const growthRate = (inputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0);
-    const years = inputs.zincLoanTenureYears;
-    const grossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.foreignRsu.embeddedGainPct, inputs.assets.foreignRsu.ltcgTaxRatePct, inputs.assets.foreignRsu.exemptionAmount);
-    const taxPaid = grossSale - fundingGap;
-    return `
-      <div class="detail-rows">
-        <div class="detail-row">
-          <span class="detail-label">RSUs you need to sell</span>
-          <span class="detail-value">${formatCurrency(grossSale)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">If RSUs grew at ${growthRate}% for ${years} years
-            <span class="info-icon-wrapper">
-              <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4"/>
-                <path d="M12 8h.01"/>
-              </svg>
-              <span class="info-tooltip">This is the opportunity cost - what your RSUs could have been worth.</span>
-            </span>
-          </span>
-          <span class="detail-value detail-value-red">${formatCurrency(results.strategies.find(s => s.strategyId === 'sell-rsus').impact)}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  if (strategyId === 'zinc-loan') {
-    const zincRate = Math.min(inputs.selectedHomeLoanRatePct + 0.02, 0.125);
-    const zincRatePct = (zincRate * 100).toFixed(1);
-    const years = inputs.zincLoanTenureYears;
-    const strategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
-    return `
-      <div class="detail-rows">
-        <div class="detail-row">
-          <span class="detail-label">Loan against RSUs</span>
-          <span class="detail-value">${formatCurrency(fundingGap)}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Zinc interest rate</span>
-          <span class="detail-value">${zincRatePct}%</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Your RSUs keep growing</span>
-          <span class="detail-value">Yes</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Net benefit after ${years} years</span>
-          <span class="detail-value">${formatCurrency(Math.abs(strategy.impact))}</span>
-        </div>
-      </div>
-    `;
-  }
-
-  return '';
-}
-
-function showOptionDetails(strategyId, results) {
+// Show option details modal
+function showOptionDetails(strategyId) {
+  const results = calculateModel(modelInputs);
   const strategy = results.strategies.find(s => s.strategyId === strategyId);
   if (!strategy) return;
 
-  const description = getStrategyDescription(strategyId, results);
-
   const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+  const opportunityCostVsZinc = strategy.impact - zincStrategy.impact;
 
-  // Build comparison section
-  function getModalComparisonPhrase(strategyId) {
-    if (strategyId === 'use-cash') return 'Use cash';
-    if (strategyId === 'sell-land') return 'Sell land';
-    if (strategyId === 'sell-indian-equity') return 'Sell Indian equity';
-    if (strategyId === 'sell-rsus') return 'Sell foreign RSUs';
-    if (strategyId === 'zinc-loan') return 'Take Zinc loan against RSUs';
-    return 'this option';
-  }
+  let title = '';
+  let description = '';
+  let valueToday = 0;
+  let valueFuture = 0;
+  let growth = 0;
+  let growthRate = 0;
+  let problemTitle = '';
+  let problemText = '';
+  let isPositive = false;
 
-  const strategyExplanation = getStrategyCalculation(strategyId, results, modelInputs);
-
-  let comparisonHtml;
   if (strategyId === 'zinc-loan') {
-    const otherStrategies = results.strategies.filter(s => s.strategyId !== strategyId);
-    const comparisonCardsHtml = otherStrategies.map(opt => {
-      const diff = opt.impact - strategy.impact;
-      if (diff > 0) {
-        return `<div class="modal-carousel-card">You'll be <strong>${formatCurrency(diff)}</strong> richer than if you were to ${getModalComparisonPhrase(opt.strategyId)}</div>`;
-      } else {
-        return `<div class="modal-carousel-card">You'll be <strong>${formatCurrency(Math.abs(diff))}</strong> poorer than if you were to ${getModalComparisonPhrase(opt.strategyId)}</div>`;
-      }
-    }).join('');
-    comparisonHtml = `
-      <div class="modal-carousel-container">
-        <div class="modal-carousel-track">${comparisonCardsHtml}</div>
-      </div>
-    `;
-  } else {
-    const sortedStrategies = [...results.strategies].sort((a, b) => a.impact - b.impact);
-    const bestStrategy = sortedStrategies[0];
-    const comparisonDiff = Math.abs(strategy.impact - bestStrategy.impact);
-    const bestName = bestStrategy.strategyId === 'zinc-loan' ? 'taking a Zinc loan against RSUs' : bestStrategy.strategyName;
-    const opportunityCost = strategy.impact;
-    const impactText = `The opportunity cost for using this method is about <strong>${formatCurrency(opportunityCost)}</strong>. This effectively means you'll be <strong>${formatCurrency(comparisonDiff)}</strong> poorer than ${bestName}`;
-    comparisonHtml = `<span class="highlight-value">${impactText}</span>`;
+    title = "What if you use Zinc HomeGap loan?";
+    description = "Zinc's HomeGap Loan lets you access funding against your vested RSUs without selling them upfront. You keep your assets invested while paying only interest.";
+    const rsuGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+    const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+    valueToday = rsuGrossSale;
+    valueFuture = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+    growth = valueFuture - valueToday;
+    growthRate = (effectiveRsuCagr * 100).toFixed(0);
+    problemTitle = "The benefit of using Zinc";
+    problemText = `By taking a Zinc loan, you keep your RSUs worth <span class="highlight">${formatCurrency(valueToday)}</span> invested. They can grow to <span class="highlight-green">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong> while you pay only interest on the loan.`;
+    isPositive = true;
+  } else if (strategyId === 'use-cash') {
+    title = "What if you use cash to cover the funding gap?";
+    description = "Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.";
+    valueToday = fundingGap;
+    valueFuture = calculateFutureValue(fundingGap, modelInputs.assets.cash.cagrPct, years);
+    growth = valueFuture - valueToday;
+    growthRate = (modelInputs.assets.cash.cagrPct * 100).toFixed(0);
+    problemTitle = "The problem with using cash";
+    problemText = `By using cash worth <span class="highlight">${formatCurrency(valueToday)}</span>, you will effectively lose the opportunity to make <span class="highlight-red">${formatCurrency(valueFuture)}</span> in future, if you were to invest that cash in a safe fund.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-land') {
+    title = "What if you sell land to cover the funding gap?";
+    description = "Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.";
+    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+    valueFuture = calculateFutureValue(valueToday, modelInputs.assets.land.cagrPct, years);
+    growth = valueFuture - valueToday;
+    growthRate = (modelInputs.assets.land.cagrPct * 100).toFixed(0);
+    problemTitle = "The problem with selling land";
+    problemText = `By selling land worth <span class="highlight">${formatCurrency(valueToday)}</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-indian-equity') {
+    title = "What if you sell equities to cover the funding gap?";
+    description = "Selling stocks means paying capital gains tax and missing future growth. There's a ₹1.25 lakh exemption on LTCG.";
+    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    valueFuture = calculateFutureValue(valueToday, modelInputs.assets.indianEquity.cagrPct, years);
+    growth = valueFuture - valueToday;
+    growthRate = (modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0);
+    problemTitle = "The problem with selling equities";
+    problemText = `By selling equities worth <span class="highlight">${formatCurrency(valueToday)}</span>, you pay LTCG tax and miss potential growth to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
+  } else if (strategyId === 'sell-rsus') {
+    title = "What if you sell RSUs to cover the funding gap?";
+    description = "Selling foreign RSUs triggers capital gains tax with no exemption, plus you miss stock growth and rupee depreciation benefits.";
+    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+    const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+    valueFuture = calculateFutureValue(valueToday, effectiveRsuCagr, years);
+    growth = valueFuture - valueToday;
+    growthRate = ((modelInputs.assets.foreignRsu.usdCagrPct + modelInputs.assets.foreignRsu.inrDepreciationPct) * 100).toFixed(0);
+    problemTitle = "The problem with selling RSUs";
+    problemText = `By selling RSUs worth <span class="highlight">${formatCurrency(valueToday)}</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
   }
 
-  const highlightClass = strategyId === 'zinc-loan' ? 'detail-highlight' : 'detail-highlight negative';
-  let content = `
+  const content = `
     <div class="detail-modal-container">
       <div class="detail-header">
-        <div class="detail-title-section">
-          <h2 class="detail-modal-title">${strategy.strategyName}</h2>
-          <p class="detail-description">${description}</p>
+        <h2 class="detail-modal-title">${title}</h2>
+        <p class="detail-description">${description}</p>
+      </div>
+
+      <div class="modal-chart-section">
+        <div class="modal-value-comparison">
+          <div class="modal-value-box">
+            <span class="modal-value-amount">${formatCurrency(valueToday)}</span>
+            <span class="modal-value-label">Value today</span>
+          </div>
+          <div class="modal-growth-badge">
+            <span class="modal-growth-amount">+${formatCurrency(growth)}</span>
+            <span class="modal-growth-label">growth opportunity</span>
+          </div>
+          <div class="modal-value-box modal-value-right">
+            <span class="modal-value-amount ${isPositive ? 'text-green' : 'text-gradient'}">${formatCurrency(valueFuture)}</span>
+            <span class="modal-value-label">Value after ${years} years</span>
+          </div>
         </div>
-        <div class="${highlightClass}">
-          <span class="highlight-label">After ${years} years</span>
-          ${comparisonHtml}
+        <div class="modal-growth-chart">
+          <canvas id="modal-chart-canvas"></canvas>
+          <div class="modal-chart-labels">
+            <span>Today</span>
+            <span>After ${years} years</span>
+          </div>
         </div>
       </div>
+
+      <div class="modal-problem-box ${isPositive ? 'positive' : 'negative'}">
+        <span class="modal-problem-tag ${isPositive ? 'positive' : 'negative'}">${problemTitle}</span>
+        <p class="modal-problem-text">${problemText}</p>
+      </div>
+
       <div class="detail-sections">
         <div class="detail-group">
           <h3 class="group-heading">How we calculated this</h3>
-          ${strategyExplanation}
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Cash needed today</span>
+              <span class="detail-value">${formatCurrency(valueToday)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">If invested at ${growthRate}% for ${years} years</span>
+              <span class="detail-value ${isPositive ? 'detail-value-green' : 'detail-value-red'}">${formatCurrency(valueFuture)}</span>
+            </div>
+          </div>
         </div>
+
         <div class="detail-group">
           <h3 class="group-heading">Your home loan</h3>
           <div class="detail-rows">
@@ -633,6 +460,7 @@ function showOptionDetails(strategyId, results) {
             </div>
           </div>
         </div>
+
         <div class="detail-group">
           <h3 class="group-heading">Cash you need upfront</h3>
           <div class="detail-rows">
@@ -648,9 +476,9 @@ function showOptionDetails(strategyId, results) {
               <span class="detail-label">Interior budget</span>
               <span class="detail-value">${formatCurrency(results.interiors)}</span>
             </div>
-            <div class="detail-row total-row">
-              <span class="detail-label">Total</span>
-              <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Total</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(fundingGap)}</strong></span>
             </div>
           </div>
         </div>
@@ -661,9 +489,10 @@ function showOptionDetails(strategyId, results) {
   document.getElementById('detail-modal-content').innerHTML = content;
   document.getElementById('detail-modal').classList.add('visible');
 
-  if (strategyId === 'zinc-loan') {
-    setTimeout(() => initModalCarousel(), 100);
-  }
+  // Draw chart in modal after a small delay
+  setTimeout(() => {
+    drawModalGrowthCurve('modal-chart-canvas');
+  }, 100);
 }
 
 const loanModal = document.getElementById('loan-modal');
@@ -703,41 +532,58 @@ constructionSelect.addEventListener('change', () => {
   } else {
     constructionExtraFields.classList.remove('visible');
   }
+
+  // Draw gradient fill under curve
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, height - paddingBottom);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, height - paddingBottom);
+  ctx.closePath();
+
+  const fillGradient = ctx.createLinearGradient(0, height, 0, 0);
+  fillGradient.addColorStop(0, 'rgba(100, 140, 80, 0.0)');
+  fillGradient.addColorStop(0.5, 'rgba(100, 140, 80, 0.1)');
+  fillGradient.addColorStop(1, 'rgba(150, 180, 100, 0.2)');
+  ctx.fillStyle = fillGradient;
+  ctx.fill();
+
+  // Draw curve line
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+
+  const lineGradient = ctx.createLinearGradient(0, height, width, 0);
+  lineGradient.addColorStop(0, '#6a8a50');
+  lineGradient.addColorStop(0.5, '#9ab060');
+  lineGradient.addColorStop(1, '#c4c870');
+  ctx.strokeStyle = lineGradient;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Draw end dot
+  const endPoint = points[points.length - 1];
+  ctx.beginPath();
+  ctx.arc(endPoint.x, endPoint.y, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#b4c864';
+  ctx.fill();
+}
+
+// Event listeners for columns
+document.querySelectorAll('.chart-column').forEach(col => {
+  col.addEventListener('click', () => {
+    const optionId = col.dataset.option;
+    showOptionDetails(optionId);
+  });
+  col.style.cursor = 'pointer';
 });
 
-document.getElementById('construction-btn').addEventListener('click', () => {
-  document.getElementById('modal-construction').value = modelInputs.propertyStatus;
-  document.getElementById('modal-construction-duration').value = modelInputs.constructionDurationYears;
-
-  document.getElementById('drawdown-0').value = modelInputs.drawdownSchedule[0].percentage;
-  document.getElementById('drawdown-1').value = modelInputs.drawdownSchedule[1].percentage;
-  document.getElementById('drawdown-2').value = modelInputs.drawdownSchedule[2].percentage;
-  document.getElementById('drawdown-3').value = modelInputs.drawdownSchedule[3].percentage;
-
-  if (modelInputs.propertyStatus === 'Under Construction') {
-    constructionExtraFields.classList.add('visible');
-  } else {
-    constructionExtraFields.classList.remove('visible');
-  }
-
-  constructionModal.classList.add('visible');
+document.getElementById('detail-modal-close').addEventListener('click', () => {
+  document.getElementById('detail-modal').classList.remove('visible');
 });
 
-document.getElementById('construction-modal-cancel').addEventListener('click', () => {
-  constructionModal.classList.remove('visible');
-});
-
-document.getElementById('construction-modal-save').addEventListener('click', () => {
-  modelInputs.propertyStatus = document.getElementById('modal-construction').value;
-
-  if (modelInputs.propertyStatus === 'Under Construction') {
-    modelInputs.constructionDurationYears = parseInt(document.getElementById('modal-construction-duration').value);
-    modelInputs.drawdownSchedule = [
-      { id: 'drawdown-1', year: 0, percentage: parseFloat(document.getElementById('drawdown-0').value) },
-      { id: 'drawdown-2', year: 1, percentage: parseFloat(document.getElementById('drawdown-1').value) },
-      { id: 'drawdown-3', year: 2, percentage: parseFloat(document.getElementById('drawdown-2').value) },
-      { id: 'drawdown-4', year: 3, percentage: parseFloat(document.getElementById('drawdown-3').value) },
-    ];
+document.getElementById('detail-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'detail-modal') {
+    document.getElementById('detail-modal').classList.remove('visible');
   }
 
   trackValueSubmit('construction_settings_submit', JSON.stringify({
@@ -748,17 +594,11 @@ document.getElementById('construction-modal-save').addEventListener('click', () 
   updateUI();
 });
 
-document.getElementById('detail-modal-close').addEventListener('click', () => {
-  stopModalCarousel();
-  detailModal.classList.remove('visible');
-});
-
-[loanModal, constructionModal, detailModal].forEach(modal => {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      if (modal === detailModal) stopModalCarousel();
-      modal.classList.remove('visible');
-    }
+// Learn more buttons
+document.querySelectorAll('.learn-more-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const optionId = btn.dataset.option;
+    showOptionDetails(optionId);
   });
 });
 
@@ -849,22 +689,23 @@ function parseIndianNumber(str) {
   return parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
 }
 
-document.getElementById('house-badge-btn').addEventListener('click', () => {
-  modalHouseValue.value = formatIndianNumber(modelInputs.propertyPrice);
-  houseValueModal.classList.add('visible');
-  modalHouseValue.focus();
-  modalHouseValue.select();
+// Use Intersection Observer to trigger animation when scrolled into view
+const chartSection = document.querySelector('.chart-section');
+const scrollContainer = document.querySelector('.scroll-container');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(animateBars, 300);
+      observer.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.3,
+  root: scrollContainer
 });
 
-modalHouseValue.addEventListener('input', (e) => {
-  const rawValue = e.target.value.replace(/[^0-9]/g, '');
-  const numValue = parseInt(rawValue, 10) || 0;
-  modalHouseValue.value = formatIndianNumber(numValue);
-});
-
-document.getElementById('house-value-modal-cancel').addEventListener('click', () => {
-  houseValueModal.classList.remove('visible');
-});
+observer.observe(chartSection);
 
 document.getElementById('house-value-modal-save').addEventListener('click', () => {
   const newHouseValue = parseIndianNumber(modalHouseValue.value);
@@ -873,111 +714,176 @@ document.getElementById('house-value-modal-save').addEventListener('click', () =
     localStorage.setItem('houseValue', newHouseValue);
     trackValueSubmit('house_value_edit_submit', newHouseValue);
   }
-  houseValueModal.classList.remove('visible');
-  updateUI();
-});
+}, 2000);
 
-houseValueModal.addEventListener('click', (e) => {
-  if (e.target === houseValueModal) houseValueModal.classList.remove('visible');
-});
-
-// Funding gap breakdown modal
-const fundingBreakdownModal = document.getElementById('funding-breakdown-modal');
-
-document.getElementById('funding-info-btn').addEventListener('click', () => {
+// Update option section values
+function updateOptionSections() {
   const results = calculateModel(modelInputs);
-  const downPaymentPct = ((1 - modelInputs.homeLoanLtvPct) * 100).toFixed(0);
-  const interiorsPct = (modelInputs.interiorsPct * 100).toFixed(0);
-  const transactionDutyPct = (modelInputs.transactionDutyPct * 100).toFixed(1);
+  const years = modelInputs.zincLoanTenureYears;
 
-  document.getElementById('funding-breakdown-content').innerHTML = `
-    <div class="detail-table">
-      <div class="detail-row">
-        <span class="detail-label">Property Value</span>
-        <span class="detail-value">${formatCurrency(results.propertyPrice)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Home Loan (${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}% LTV)</span>
-        <span class="detail-value">-${formatCurrency(results.homeLoanAmount)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Down Payment (${downPaymentPct}%)</span>
-        <span class="detail-value">${formatCurrency(results.downPayment)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Stamp Duty & Registration (${transactionDutyPct}%)</span>
-        <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Interior Budget (${interiorsPct}%)</span>
-        <span class="detail-value">${formatCurrency(results.interiors)}</span>
-      </div>
-      ${results.gst > 0 ? `<div class="detail-row">
-        <span class="detail-label">GST (5%)</span>
-        <span class="detail-value">${formatCurrency(results.gst)}</span>
-      </div>` : ''}
-      <div class="detail-row total-row">
-        <span class="detail-label">Total Funding Gap</span>
-        <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
-      </div>
-    </div>
-  `;
-  fundingBreakdownModal.classList.add('visible');
-});
+  // Cash section
+  const cashNeeded = results.fundingGap;
+  const cashFV = calculateFutureValue(cashNeeded, modelInputs.assets.cash.cagrPct, years);
+  const cashGrowth = cashFV - cashNeeded;
+  document.getElementById('cash-value-today').textContent = formatCurrency(cashNeeded);
+  document.getElementById('cash-value-future').textContent = formatCurrency(cashFV);
+  document.getElementById('cash-growth').textContent = '+' + formatCr(cashGrowth);
 
-document.getElementById('funding-breakdown-close').addEventListener('click', () => {
-  fundingBreakdownModal.classList.remove('visible');
-});
+  // Land section
+  const landGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+  const landFV = calculateFutureValue(landGrossSale, modelInputs.assets.land.cagrPct, years);
+  const landGrowth = landFV - landGrossSale;
+  document.getElementById('land-value-today').textContent = formatCurrency(landGrossSale);
+  document.getElementById('land-value-future').textContent = formatCurrency(landFV);
+  document.getElementById('land-growth').textContent = '+' + formatCr(landGrowth);
 
-fundingBreakdownModal.addEventListener('click', (e) => {
-  if (e.target === fundingBreakdownModal) fundingBreakdownModal.classList.remove('visible');
-});
+  // Equity section
+  const equityGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+  const equityFV = calculateFutureValue(equityGrossSale, modelInputs.assets.indianEquity.cagrPct, years);
+  const equityGrowth = equityFV - equityGrossSale;
+  document.getElementById('equity-value-today').textContent = formatCurrency(equityGrossSale);
+  document.getElementById('equity-value-future').textContent = formatCurrency(equityFV);
+  document.getElementById('equity-growth').textContent = '+' + formatCr(equityGrowth);
 
-let carouselInterval = null;
-let modalCarouselInterval = null;
+  // RSU section
+  const rsuGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+  const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+  const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+  const rsuGrowth = rsuFV - rsuGrossSale;
+  document.getElementById('rsu-value-today').textContent = formatCurrency(rsuGrossSale);
+  document.getElementById('rsu-value-future').textContent = formatCurrency(rsuFV);
+  document.getElementById('rsu-growth').textContent = '+' + formatCr(rsuGrowth);
 
-function initCarousel() {
-  const container = document.querySelector('.carousel-container');
-  if (!container) return;
-
-  const track = document.getElementById('carousel-track');
-  if (!track) return;
-
-  if (carouselInterval) clearInterval(carouselInterval);
-
-  carouselInterval = setInterval(() => {
-    const maxScroll = track.scrollWidth - container.clientWidth;
-    if (container.scrollLeft >= maxScroll - 10) {
-      container.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: 282, behavior: 'smooth' });
-    }
-  }, 3000);
+  // Zinc section (same as RSU values but kept)
+  document.getElementById('zinc-value-today').textContent = formatCurrency(rsuGrossSale);
+  document.getElementById('zinc-value-future').textContent = formatCurrency(rsuFV);
+  document.getElementById('zinc-growth').textContent = '+' + formatCr(rsuGrowth);
 }
 
-function initModalCarousel() {
-  const container = document.querySelector('.modal-carousel-container');
-  if (!container) return;
+// Draw growth curve on canvas
+function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
 
-  const track = container.querySelector('.modal-carousel-track');
-  if (!track) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
 
-  if (modalCarouselInterval) clearInterval(modalCarouselInterval);
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
 
-  modalCarouselInterval = setInterval(() => {
-    const maxScroll = track.scrollWidth - container.clientWidth;
-    if (container.scrollLeft >= maxScroll - 10) {
-      container.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      container.scrollBy({ left: 252, behavior: 'smooth' });
-    }
-  }, 3000);
+  const width = rect.width;
+  const height = rect.height;
+  const paddingLeft = 0;
+  const paddingRight = 40;
+  const paddingBottom = 10;
+  const paddingTop = 30;
+
+  ctx.clearRect(0, 0, width, height);
+
+  // Generate curve points
+  const points = [];
+  const numPoints = 100;
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    const x = paddingLeft + t * (width - paddingLeft - paddingRight);
+    const y = height - paddingBottom - (Math.pow(t, 2) * (height - paddingBottom - paddingTop));
+    points.push({ x, y });
+  }
+
+  // Draw gradient fill under curve
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, height - paddingBottom);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, height - paddingBottom);
+  ctx.closePath();
+
+  const fillGradient = ctx.createLinearGradient(0, height, 0, 0);
+  fillGradient.addColorStop(0, 'rgba(100, 140, 80, 0.0)');
+  fillGradient.addColorStop(0.5, 'rgba(100, 140, 80, 0.15)');
+  fillGradient.addColorStop(1, 'rgba(150, 180, 100, 0.3)');
+  ctx.fillStyle = fillGradient;
+  ctx.fill();
+
+  // Draw curve line with gradient
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+
+  const lineGradient = ctx.createLinearGradient(0, height, width, 0);
+  lineGradient.addColorStop(0, '#6a8a50');
+  lineGradient.addColorStop(0.5, '#9ab060');
+  lineGradient.addColorStop(1, '#c4c870');
+  ctx.strokeStyle = lineGradient;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Draw glowing end dot
+  const endPoint = points[points.length - 1];
+
+  // Glow effect
+  ctx.beginPath();
+  ctx.arc(endPoint.x, endPoint.y, 16, 0, Math.PI * 2);
+  const glowGradient = ctx.createRadialGradient(endPoint.x, endPoint.y, 0, endPoint.x, endPoint.y, 16);
+  glowGradient.addColorStop(0, 'rgba(180, 200, 100, 0.6)');
+  glowGradient.addColorStop(1, 'rgba(180, 200, 100, 0)');
+  ctx.fillStyle = glowGradient;
+  ctx.fill();
+
+  // Solid dot
+  ctx.beginPath();
+  ctx.arc(endPoint.x, endPoint.y, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#b4c864';
+  ctx.fill();
 }
 
-function stopModalCarousel() {
-  if (modalCarouselInterval) {
-    clearInterval(modalCarouselInterval);
-    modalCarouselInterval = null;
+// Sticky nav scroll handling
+const stickyNav = document.getElementById('sticky-nav');
+const optionSections = document.querySelectorAll('.option-section');
+const navPills = document.querySelectorAll('.nav-pill');
+
+// Animate nav pills when first option section comes into view
+let navPillsAnimated = false;
+function animateNavPills() {
+  if (navPillsAnimated) return;
+  navPillsAnimated = true;
+  navPills.forEach(pill => {
+    pill.classList.add('animate-in');
+  });
+}
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateNavPills();
+    }
+  });
+}, {
+  threshold: 0.1,
+  root: scrollContainer
+});
+
+const firstOptionSection = document.getElementById('section-zinc-loan');
+if (firstOptionSection) {
+  navObserver.observe(firstOptionSection);
+}
+
+// Update active pill based on scroll position
+function updateActivePill() {
+  let currentSection = null;
+
+  optionSections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top <= 150 && rect.bottom > 150) {
+      currentSection = section.dataset.option;
+    }
+  });
+
+  if (currentSection) {
+    navPills.forEach(pill => {
+      pill.classList.toggle('active', pill.dataset.option === currentSection);
+    });
   }
 }
 
@@ -1019,18 +925,24 @@ setTimeout(() => {
   houseInfo.classList.add('visible');
 }, 1200);
 
-// After 5 seconds, shrink left column and reveal right column
-setTimeout(() => {
-  leftColumn.classList.remove('fullwidth');
+// Scroll listener
+scrollContainer.addEventListener('scroll', () => {
+  updateActivePill();
 
-  // After left column starts shrinking, expand right column and show settings
-  setTimeout(() => {
-    rightColumn.classList.add('visible');
-    settingsSection.classList.add('visible');
+  // Draw charts when sections come into view
+  optionSections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      const canvasId = 'chart-' + section.dataset.option;
+      const canvas = document.getElementById(canvasId);
+      if (canvas && !canvas.dataset.drawn) {
+        drawGrowthCurve(canvasId, 0, 100);
+        canvas.dataset.drawn = 'true';
+      }
+    }
+  });
+});
 
-    // After right column has fully expanded, fade in content
-    setTimeout(() => {
-      rightColumn.classList.add('content-visible');
-    }, 1000);
-  }, 400);
-}, 5000);
+// Initialize
+updateUI();
+updateOptionSections();

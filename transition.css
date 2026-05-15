@@ -1,0 +1,325 @@
+@font-face {
+  font-family: 'Butler Pro';
+  src: url('/fonts/ButlerPro-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Butler Pro';
+  src: url('/fonts/ButlerPro-Roman.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Satoshi', sans-serif;
+  min-height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+
+.page-container {
+  min-height: 100vh;
+  background-image: url('/bg-planner.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+/* Cubes column */
+.cubes-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.blocks-svg {
+  width: 400px;
+  height: auto;
+}
+
+/* Individual blocks - visible by default, hidden when JS loads */
+.block {
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.block.hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.block.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Labels columns */
+.labels-column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.label-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Heights from SVG at 400/828 scale (0.483)
+   SVG viewBox: 0 0 828 1056 → scaled height: 510px
+   Block center Y positions (scaled):
+   - Top maroon center: Y=188 → 91px
+   - Middle maroon center: Y=268 → 129px
+   - Lower maroon center: Y=373 → 180px
+   - Green block center: Y=677 → 327px
+*/
+.label-container.stamp-container { height: 91px; }
+.label-container.interior-container { height: 38px; }
+.label-container.downpayment-container { height: 51px; }
+.label-container.loan-container { height: 330px; }
+
+.right-labels .label-container {
+  padding-left: 20px;
+  justify-content: flex-start;
+}
+
+/* Labels */
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  padding: 10px 16px;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.label-amount {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.label-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Result section (bracket + text) */
+.result-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0;
+  margin-left: 20px;
+}
+
+.bracket-svg {
+  width: 25px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+/* Text section */
+.text-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-label {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 4px;
+}
+
+.text-amount {
+  font-family: 'Butler Pro', serif;
+  font-size: 56px;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.amount-value {
+  color: #fff;
+}
+
+.amount-suffix {
+  font-size: 36px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 8px;
+}
+
+.text-subtitle {
+  font-family: 'Butler Pro', serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Buttons */
+.button-row {
+  position: fixed;
+  bottom: 40px;
+  display: flex;
+  gap: 16px;
+}
+
+.skip-btn {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  padding: 14px 28px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.skip-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.proceed-btn {
+  background: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 14px 28px;
+  color: #000;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.proceed-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.proceed-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ============ ANIMATIONS ============ */
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animation classes */
+.blocks-svg {
+  opacity: 0;
+}
+
+.blocks-svg.animate-in {
+  animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+.label.animate-in {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.result-section.animate-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Page exit */
+body.page-exit {
+  animation: fadeOut 0.4s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
