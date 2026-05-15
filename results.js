@@ -1,9 +1,11 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
+import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
 
 // Get stored values
 const propertyPrice = parseInt(localStorage.getItem('houseValue')) || 10000000;
 const selectedCity = localStorage.getItem('selectedCity') || 'Bangalore';
 const transactionDutyPct = getTransactionDutyRate(selectedCity);
+trackPageView('results');
 
 // Default model inputs
 let modelInputs = {
@@ -493,36 +495,42 @@ function showOptionDetails(strategyId) {
   }, 100);
 }
 
-// Draw growth curve in modal
-function drawModalGrowthCurve(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+const loanModal = document.getElementById('loan-modal');
+const constructionModal = document.getElementById('construction-modal');
+const detailModal = document.getElementById('detail-modal');
 
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const rect = canvas.getBoundingClientRect();
+document.getElementById('loan-settings-btn').addEventListener('click', () => {
+  document.getElementById('modal-loan-rate').value = modelInputs.selectedHomeLoanRatePct;
+  document.getElementById('modal-loan-tenure').value = modelInputs.homeLoanTenureYears;
+  document.getElementById('modal-loan-ltv').value = modelInputs.homeLoanLtvPct;
+  loanModal.classList.add('visible');
+});
 
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
-  ctx.scale(dpr, dpr);
+document.getElementById('loan-modal-cancel').addEventListener('click', () => {
+  loanModal.classList.remove('visible');
+});
 
-  const width = rect.width;
-  const height = rect.height;
-  const paddingLeft = 0;
-  const paddingRight = 20;
-  const paddingBottom = 5;
-  const paddingTop = 15;
+document.getElementById('loan-modal-save').addEventListener('click', () => {
+  modelInputs.selectedHomeLoanRatePct = parseFloat(document.getElementById('modal-loan-rate').value);
+  modelInputs.homeLoanTenureYears = parseInt(document.getElementById('modal-loan-tenure').value);
+  modelInputs.homeLoanLtvPct = parseFloat(document.getElementById('modal-loan-ltv').value);
+  trackValueSubmit('loan_settings_submit', JSON.stringify({
+    rate: modelInputs.selectedHomeLoanRatePct,
+    tenure_years: modelInputs.homeLoanTenureYears,
+    ltv_pct: modelInputs.homeLoanLtvPct,
+  }));
+  loanModal.classList.remove('visible');
+  updateUI();
+});
 
-  ctx.clearRect(0, 0, width, height);
+const constructionExtraFields = document.getElementById('construction-extra-fields');
+const constructionSelect = document.getElementById('modal-construction');
 
-  // Generate curve points
-  const points = [];
-  const numPoints = 100;
-  for (let i = 0; i <= numPoints; i++) {
-    const t = i / numPoints;
-    const x = paddingLeft + t * (width - paddingLeft - paddingRight);
-    const y = height - paddingBottom - (Math.pow(t, 2) * (height - paddingBottom - paddingTop));
-    points.push({ x, y });
+constructionSelect.addEventListener('change', () => {
+  if (constructionSelect.value === 'Under Construction') {
+    constructionExtraFields.classList.add('visible');
+  } else {
+    constructionExtraFields.classList.remove('visible');
   }
 
   // Draw gradient fill under curve
@@ -577,6 +585,13 @@ document.getElementById('detail-modal').addEventListener('click', (e) => {
   if (e.target.id === 'detail-modal') {
     document.getElementById('detail-modal').classList.remove('visible');
   }
+
+  trackValueSubmit('construction_settings_submit', JSON.stringify({
+    property_status: modelInputs.propertyStatus,
+    construction_duration_years: modelInputs.constructionDurationYears,
+  }));
+  constructionModal.classList.remove('visible');
+  updateUI();
 });
 
 // Learn more buttons
@@ -587,14 +602,91 @@ document.querySelectorAll('.learn-more-btn').forEach(btn => {
   });
 });
 
-// Animate bars when chart section is in view
-function animateBars() {
-  document.querySelectorAll('.chart-section .bar').forEach(bar => {
-    bar.classList.add('animate');
-  });
-  document.querySelectorAll('.chart-section .bar-label').forEach(label => {
-    label.classList.add('animate');
-  });
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.body.classList.add('page-exit');
+  setTimeout(() => window.location.href = 'location.html', 400);
+});
+
+// Assumptions modal
+const assumptionsModal = document.getElementById('assumptions-modal');
+
+document.getElementById('modify-assumptions-btn').addEventListener('click', () => {
+  // Populate current values
+  document.getElementById('assumption-zinc-tenure').value = modelInputs.zincLoanTenureYears;
+  document.getElementById('assumption-zinc-reinvestment').value = modelInputs.zincPaymentReinvestmentCagrPct;
+  document.getElementById('assumption-interiors').value = modelInputs.interiorsPct;
+  document.getElementById('assumption-cash-cagr').value = modelInputs.assets.cash.cagrPct;
+  document.getElementById('assumption-land-gain').value = modelInputs.assets.land.embeddedGainPct;
+  document.getElementById('assumption-land-tax').value = modelInputs.assets.land.ltcgTaxRatePct;
+  document.getElementById('assumption-land-cagr').value = modelInputs.assets.land.cagrPct;
+  document.getElementById('assumption-equity-gain').value = modelInputs.assets.indianEquity.embeddedGainPct;
+  document.getElementById('assumption-equity-tax').value = modelInputs.assets.indianEquity.ltcgTaxRatePct;
+  document.getElementById('assumption-equity-exemption').value = modelInputs.assets.indianEquity.exemptionAmount;
+  document.getElementById('assumption-equity-cagr').value = modelInputs.assets.indianEquity.cagrPct;
+  document.getElementById('assumption-rsu-gain').value = modelInputs.assets.foreignRsu.embeddedGainPct;
+  document.getElementById('assumption-rsu-tax').value = modelInputs.assets.foreignRsu.ltcgTaxRatePct;
+  document.getElementById('assumption-rsu-cagr').value = modelInputs.assets.foreignRsu.usdCagrPct;
+  document.getElementById('assumption-rsu-inr-dep').value = modelInputs.assets.foreignRsu.inrDepreciationPct;
+
+  assumptionsModal.classList.add('visible');
+});
+
+document.getElementById('assumptions-modal-cancel').addEventListener('click', () => {
+  assumptionsModal.classList.remove('visible');
+});
+
+document.getElementById('assumptions-modal-save').addEventListener('click', () => {
+  modelInputs.zincLoanTenureYears = parseInt(document.getElementById('assumption-zinc-tenure').value);
+  modelInputs.zincPaymentReinvestmentCagrPct = parseFloat(document.getElementById('assumption-zinc-reinvestment').value);
+  modelInputs.interiorsPct = parseFloat(document.getElementById('assumption-interiors').value);
+  modelInputs.assets.cash.cagrPct = parseFloat(document.getElementById('assumption-cash-cagr').value);
+  modelInputs.assets.land.embeddedGainPct = parseFloat(document.getElementById('assumption-land-gain').value);
+  modelInputs.assets.land.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-land-tax').value);
+  modelInputs.assets.land.cagrPct = parseFloat(document.getElementById('assumption-land-cagr').value);
+  modelInputs.assets.indianEquity.embeddedGainPct = parseFloat(document.getElementById('assumption-equity-gain').value);
+  modelInputs.assets.indianEquity.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-equity-tax').value);
+  modelInputs.assets.indianEquity.exemptionAmount = parseFloat(document.getElementById('assumption-equity-exemption').value);
+  modelInputs.assets.indianEquity.cagrPct = parseFloat(document.getElementById('assumption-equity-cagr').value);
+  modelInputs.assets.foreignRsu.embeddedGainPct = parseFloat(document.getElementById('assumption-rsu-gain').value);
+  modelInputs.assets.foreignRsu.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-rsu-tax').value);
+  modelInputs.assets.foreignRsu.usdCagrPct = parseFloat(document.getElementById('assumption-rsu-cagr').value);
+  modelInputs.assets.foreignRsu.inrDepreciationPct = parseFloat(document.getElementById('assumption-rsu-inr-dep').value);
+
+  trackValueSubmit('assumptions_submit', JSON.stringify({
+    zinc_loan_tenure_years: modelInputs.zincLoanTenureYears,
+    interiors_pct: modelInputs.interiorsPct,
+    cash_cagr_pct: modelInputs.assets.cash.cagrPct,
+  }));
+  assumptionsModal.classList.remove('visible');
+  updateUI();
+});
+
+assumptionsModal.addEventListener('click', (e) => {
+  if (e.target === assumptionsModal) assumptionsModal.classList.remove('visible');
+});
+
+// House value edit functionality
+const houseValueModal = document.getElementById('house-value-modal');
+const modalHouseValue = document.getElementById('modal-house-value');
+
+function formatIndianNumber(num) {
+  const str = Math.round(num).toString();
+  let result = '';
+  let count = 0;
+  for (let i = str.length - 1; i >= 0; i--) {
+    count++;
+    result = str[i] + result;
+    if (count === 3 && i > 0) {
+      result = ',' + result;
+    } else if (count > 3 && (count - 3) % 2 === 0 && i > 0) {
+      result = ',' + result;
+    }
+  }
+  return result;
+}
+
+function parseIndianNumber(str) {
+  return parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
 }
 
 // Use Intersection Observer to trigger animation when scrolled into view
@@ -615,10 +707,12 @@ const observer = new IntersectionObserver((entries) => {
 
 observer.observe(chartSection);
 
-// Fallback: trigger animation after 2 seconds if observer doesn't fire
-setTimeout(() => {
-  if (!document.querySelector('.chart-section .bar.animate')) {
-    animateBars();
+document.getElementById('house-value-modal-save').addEventListener('click', () => {
+  const newHouseValue = parseIndianNumber(modalHouseValue.value);
+  if (newHouseValue > 0) {
+    modelInputs.propertyPrice = newHouseValue;
+    localStorage.setItem('houseValue', newHouseValue);
+    trackValueSubmit('house_value_edit_submit', newHouseValue);
   }
 }, 2000);
 
@@ -793,16 +887,43 @@ function updateActivePill() {
   }
 }
 
-// Click handler for nav pills
-navPills.forEach(pill => {
-  pill.addEventListener('click', () => {
-    const optionId = pill.dataset.option;
-    const targetSection = document.getElementById('section-' + optionId);
-    if (targetSection) {
-      targetSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
+updateUI();
+
+// Page load animation - left column starts full width, then shrinks
+const leftColumn = document.querySelector('.left-column');
+const rightColumn = document.querySelector('.right-column');
+const settingsSection = document.querySelector('.settings-section');
+const fundingLabel = document.querySelector('.funding-label');
+const fundingAmountRow = document.querySelector('.funding-amount-row');
+const fundingSubtitle = document.querySelector('.funding-subtitle');
+const houseInfo = document.querySelector('.house-info');
+
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('button');
+  if (!button) return;
+  const buttonName = button.id || button.textContent?.trim() || 'unknown_button';
+  trackButtonClick(buttonName);
 });
+
+// Start with left column full width
+leftColumn.classList.add('fullwidth');
+
+// Staggered animation for left column content on page load
+setTimeout(() => {
+  fundingLabel.classList.add('visible');
+}, 300);
+
+setTimeout(() => {
+  fundingAmountRow.classList.add('visible');
+}, 600);
+
+setTimeout(() => {
+  fundingSubtitle.classList.add('visible');
+}, 900);
+
+setTimeout(() => {
+  houseInfo.classList.add('visible');
+}, 1200);
 
 // Scroll listener
 scrollContainer.addEventListener('scroll', () => {

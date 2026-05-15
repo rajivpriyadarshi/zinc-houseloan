@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "firebase:emulators": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start",
+    "firebase:emulators:functions": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start --only functions",
+    "firebase:emulators:functions:local": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start --only functions,firestore,auth --project zinc-money",
+    "firebase:emulators:reset": "sh -c \"curl -s -X DELETE 'http://127.0.0.1:9099/emulator/v1/projects/zinc-money/accounts' && curl -s -X DELETE 'http://127.0.0.1:8080/emulator/v1/projects/zinc-money/databases/(default)/documents' && echo 'Emulator Auth + Firestore data cleared.'\"",
+    "firebase:deploy:functions": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase deploy --only functions"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +19,12 @@
   "dependencies": {
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
+    "@google/generative-ai": "^0.24.1",
+    "firebase": "^12.13.0",
     "three": "^0.184.0",
     "vite": "^8.0.11"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.18.0"
   }
 }

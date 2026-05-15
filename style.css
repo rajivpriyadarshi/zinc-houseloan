@@ -270,9 +270,9 @@ body.page-exit {
 .login-modal {
   background: #fff;
   border-radius: 24px;
-  padding: 40px;
+  padding: 34px;
   width: 90%;
-  max-width: 400px;
+  max-width: 430px;
   animation: modalPop 0.3s ease-out;
 }
 
@@ -300,7 +300,59 @@ body.page-exit {
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
   color: rgba(0, 0, 0, 0.5);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+}
+
+.login-step {
+  display: none;
+}
+
+.login-step.active {
+  display: block;
+}
+
+.login-divider {
+  text-align: center;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 12px 0;
+}
+
+.login-email-chip {
+  background: #f3f3f3;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  padding-right: 54px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: #222;
+  margin: 0;
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.login-email-row {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.login-email-edit {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: #fff;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
 }
 
 .login-field {
@@ -334,6 +386,16 @@ body.page-exit {
   color: #aaa;
 }
 
+.login-status {
+  min-height: 20px;
+  margin: 12px 0 4px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
 .login-btn {
   width: 100%;
   padding: 18px;
@@ -351,6 +413,24 @@ body.page-exit {
 
 .login-btn:hover {
   transform: scale(1.02);
+}
+
+.login-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-google-btn {
+  margin-top: 2px;
+}
+
+.login-secondary-btn {
+  background: #111;
+}
+
+.login-back-btn {
+  margin-top: 4px;
 }
 
 .login-skip {
@@ -403,4 +483,3 @@ body.page-exit {
     margin-top: 24px;
   }
 }
-
