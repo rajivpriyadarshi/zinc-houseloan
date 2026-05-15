@@ -10,254 +10,330 @@
   <link rel="stylesheet" href="results.css">
 </head>
 <body>
-  <div class="page-container">
-    <!-- Left Column -->
-    <div class="left-column">
-      <div class="top-nav">
-        <button class="back-btn" id="back-btn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <button class="modify-assumptions-btn" id="modify-assumptions-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-          <span>Modify assumptions</span>
-        </button>
+  <div class="scroll-container">
+    <!-- Section 1: Hero - "You still need X Cr to get in your house" -->
+    <section class="snap-section hero-section">
+      <div class="hero-content">
+        <p class="hero-label">You still need additional</p>
+        <h1 class="hero-amount">
+          <span class="hero-amount-value" id="hero-amount">1.23 Cr</span>
+          <span class="hero-amount-suffix">to get in</span>
+        </h1>
+        <p class="hero-subtitle">your house</p>
       </div>
-
-      <div class="funding-info">
-        <p class="funding-label">You still need</p>
-        <div class="funding-amount-row">
-          <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
-          <button class="funding-info-btn" id="funding-info-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 16v-4"/>
-              <path d="M12 8h.01"/>
-            </svg>
-          </button>
-        </div>
-        <p class="funding-subtitle">even after taking a home loan to get in your house</p>
+      <div class="scroll-indicator">
+        <p class="scroll-text">Scroll to evaluate<br>funding options</p>
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
       </div>
+    </section>
 
-      <div class="house-info">
-        <div class="house-float-wrapper">
-          <div class="house-badge" id="house-badge-btn">
-            <span class="house-city" id="city-name">Mumbai</span> house
-            <div class="house-value-row">
-              <span class="house-value" id="house-value">5 Cr</span>
-              <svg class="house-edit-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
+    <!-- Section 2: Funding Options Chart -->
+    <section class="snap-section chart-section">
+      <h2 class="chart-title">Let's evaluate your funding options<br><span class="chart-subtitle">and their impact 10 years down the line</span></h2>
+
+      <div class="chart-wrapper">
+        <div class="chart-columns">
+          <!-- Column 1: Zinc Loan -->
+          <div class="chart-column" data-option="zinc-loan">
+            <div class="column-header">Use Zinc Loan</div>
+            <div class="column-upper">
+              <div class="bar-label positive">
+                <span class="bar-amount" id="zinc-amount">+2 Cr</span>
+                <span class="bar-sublabel">cash positive</span>
+              </div>
+              <div class="bar bar-positive" id="zinc-bar"></div>
+            </div>
+            <div class="column-lower"></div>
+          </div>
+
+          <!-- Column 2: Use Cash -->
+          <div class="chart-column" data-option="use-cash">
+            <div class="column-header">Use Cash</div>
+            <div class="column-upper"></div>
+            <div class="column-lower">
+              <div class="bar bar-negative" id="cash-bar"></div>
+              <div class="bar-label negative">
+                <span class="bar-amount" id="cash-amount">-2 Cr</span>
+                <span class="bar-sublabel">cash negative</span>
+              </div>
             </div>
           </div>
-          <img id="house-image" class="house-image" src="/houses/level4.png" alt="House">
-        </div>
-      </div>
 
-      <div class="settings-section">
-        <button class="settings-btn" id="loan-settings-btn">
-          <span class="settings-label">Home loan rate</span>
-          <div class="settings-right">
-            <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+          <!-- Column 3: Sell Land -->
+          <div class="chart-column" data-option="sell-land">
+            <div class="column-header">Sell Land</div>
+            <div class="column-upper"></div>
+            <div class="column-lower">
+              <div class="bar bar-negative" id="land-bar"></div>
+              <div class="bar-label negative">
+                <span class="bar-amount" id="land-amount">-2 Cr</span>
+                <span class="bar-sublabel">cash negative</span>
+              </div>
+            </div>
           </div>
-        </button>
 
-        <button class="settings-btn" id="construction-btn">
-          <span class="settings-label">Under-construction property?</span>
-          <div class="settings-right">
-            <span class="settings-value" id="construction-value">No</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+          <!-- Column 4: Sell Equities -->
+          <div class="chart-column" data-option="sell-indian-equity">
+            <div class="column-header">Sell Equities</div>
+            <div class="column-upper"></div>
+            <div class="column-lower">
+              <div class="bar bar-negative" id="equity-bar"></div>
+              <div class="bar-label negative">
+                <span class="bar-amount" id="equity-amount">-2 Cr</span>
+                <span class="bar-sublabel">cash negative</span>
+              </div>
+            </div>
           </div>
-        </button>
-      </div>
-    </div>
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <div class="options-title" id="options-title">Here are your funding options</div>
-
-      <div class="options-section">
-        <div id="all-options">
-          <!-- Filled by JS -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Loan Settings Modal -->
-  <div class="modal-overlay" id="loan-modal">
-    <div class="modal">
-      <h3 class="modal-title">Home Loan Settings</h3>
-
-      <div class="modal-field">
-        <label>Interest Rate</label>
-        <select id="modal-loan-rate">
-          <option value="0.075">7.5%</option>
-          <option value="0.08">8%</option>
-          <option value="0.085" selected>8.5%</option>
-          <option value="0.09">9%</option>
-          <option value="0.095">9.5%</option>
-          <option value="0.1">10%</option>
-          <option value="0.105">10.5%</option>
-          <option value="0.11">11%</option>
-          <option value="0.115">11.5%</option>
-          <option value="0.12">12%</option>
-          <option value="0.125">12.5%</option>
-        </select>
-      </div>
-
-      <div class="modal-field">
-        <label>Tenure (Years)</label>
-        <select id="modal-loan-tenure">
-          <option value="5">5 years</option>
-          <option value="10">10 years</option>
-          <option value="15">15 years</option>
-          <option value="20" selected>20 years</option>
-          <option value="25">25 years</option>
-          <option value="30">30 years</option>
-        </select>
-      </div>
-
-      <div class="modal-field">
-        <label>LTV (Loan to Value)</label>
-        <select id="modal-loan-ltv">
-          <option value="0.5">50%</option>
-          <option value="0.6">60%</option>
-          <option value="0.7">70%</option>
-          <option value="0.8" selected>80%</option>
-          <option value="0.9">90%</option>
-          <option value="0.95">95%</option>
-        </select>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-cancel" id="loan-modal-cancel">Cancel</button>
-        <button class="modal-save" id="loan-modal-save">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Construction Modal -->
-  <div class="modal-overlay" id="construction-modal">
-    <div class="modal">
-      <h3 class="modal-title">Property Status</h3>
-
-      <div class="modal-field">
-        <label>Is this an under-construction property?</label>
-        <select id="modal-construction">
-          <option value="Ready" selected>No - Ready to move</option>
-          <option value="Under Construction">Yes - Under construction</option>
-        </select>
-      </div>
-
-      <div id="construction-extra-fields" class="construction-extra-fields">
-        <div class="modal-field">
-          <label>Construction Duration (Years)</label>
-          <select id="modal-construction-duration">
-            <option value="1">1 year</option>
-            <option value="2">2 years</option>
-            <option value="3" selected>3 years</option>
-            <option value="4">4 years</option>
-            <option value="5">5 years</option>
-          </select>
-        </div>
-
-        <div class="modal-info">
-          <span class="info-label">GST Rate</span>
-          <span class="info-value">5%</span>
-        </div>
-
-        <div class="modal-field">
-          <label>Drawdown Schedule</label>
-          <div class="drawdown-grid">
-            <div class="drawdown-row">
-              <span>Year 0</span>
-              <select id="drawdown-0">
-                <option value="0.1">10%</option>
-                <option value="0.2">20%</option>
-                <option value="0.3" selected>30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 1</span>
-              <select id="drawdown-1">
-                <option value="0.1">10%</option>
-                <option value="0.2">20%</option>
-                <option value="0.3" selected>30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 2</span>
-              <select id="drawdown-2">
-                <option value="0.1">10%</option>
-                <option value="0.2" selected>20%</option>
-                <option value="0.3">30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 3</span>
-              <select id="drawdown-3">
-                <option value="0.1">10%</option>
-                <option value="0.2" selected>20%</option>
-                <option value="0.3">30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
+          <!-- Column 5: Sell RSUs -->
+          <div class="chart-column" data-option="sell-rsus">
+            <div class="column-header">Sell RSUs</div>
+            <div class="column-upper"></div>
+            <div class="column-lower">
+              <div class="bar bar-negative" id="rsu-bar"></div>
+              <div class="bar-label negative">
+                <span class="bar-amount" id="rsu-amount">-2 Cr</span>
+                <span class="bar-sublabel">cash negative</span>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Baseline -->
+        <div class="chart-baseline"></div>
       </div>
 
-      <div class="modal-actions">
-        <button class="modal-cancel" id="construction-modal-cancel">Cancel</button>
-        <button class="modal-save" id="construction-modal-save">Save</button>
+      <div class="scroll-indicator">
+        <p class="scroll-text">Scroll for more</p>
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Funding Gap Breakdown Modal -->
-  <div class="modal-overlay" id="funding-breakdown-modal">
-    <div class="modal">
-      <h3 class="modal-title">Funding Gap Breakdown</h3>
-      <div id="funding-breakdown-content"></div>
-      <div class="modal-actions">
-        <button class="modal-save" id="funding-breakdown-close">Close</button>
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky-nav" id="sticky-nav">
+      <div class="nav-pills">
+        <button class="nav-pill" data-option="zinc-loan">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Zinc HomeGap loan</span>
+        </button>
+        <button class="nav-pill" data-option="use-cash">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Use cash</span>
+        </button>
+        <button class="nav-pill" data-option="sell-land">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Sell your land</span>
+        </button>
+        <button class="nav-pill" data-option="sell-indian-equity">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Sell equities</span>
+        </button>
+        <button class="nav-pill" data-option="sell-rsus">
+          <span class="pill-dot"></span>
+          <span class="pill-label">Sell RSUs</span>
+        </button>
       </div>
-    </div>
-  </div>
+    </nav>
 
-  <!-- House Value Modal -->
-  <div class="modal-overlay" id="house-value-modal">
-    <div class="modal">
-      <h3 class="modal-title">Edit House Value</h3>
-
-      <div class="modal-field">
-        <label>House Value (₹)</label>
-        <input type="text" id="modal-house-value" class="modal-input">
+    <!-- Option Detail Sections -->
+    <section class="snap-section option-section" data-option="zinc-loan" id="section-zinc-loan">
+      <div class="option-content">
+        <div class="option-header">
+          <h2 class="option-title">Using Zinc HomeGap loan keeps<br>your assets growing</h2>
+          <p class="option-subtitle">In 10 years, this is how it would pan out</p>
+        </div>
+        <div class="value-comparison">
+          <div class="value-box value-today">
+            <span class="value-amount" id="zinc-value-today">₹47.60 Lacs</span>
+            <span class="value-label">RSU value today</span>
+          </div>
+          <div class="growth-badge">
+            <span class="growth-amount" id="zinc-growth">+37.6 lacs</span>
+            <span class="growth-label">growth retained</span>
+          </div>
+          <div class="value-box value-future">
+            <span class="value-amount gradient-text" id="zinc-value-future">₹85.24 Lacs</span>
+            <span class="value-label">Value after 10 years</span>
+          </div>
+        </div>
+        <div class="growth-chart">
+          <canvas id="chart-zinc-loan"></canvas>
+          <div class="chart-labels">
+            <span>Today</span>
+            <span>After 10 years</span>
+          </div>
+        </div>
+        <div class="benefit-box benefit-positive">
+          <span class="benefit-tag positive">Benefit of this method</span>
+          <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+        </div>
       </div>
-
-      <div class="modal-actions">
-        <button class="modal-cancel" id="house-value-modal-cancel">Cancel</button>
-        <button class="modal-save" id="house-value-modal-save">Save</button>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
       </div>
-    </div>
+    </section>
+
+    <section class="snap-section option-section" data-option="use-cash" id="section-use-cash">
+      <div class="option-content">
+        <div class="option-header">
+          <h2 class="option-title">Using your savings comes with a<br>higher opportunity cost</h2>
+          <p class="option-subtitle">In 10 years, this is how it would pan out</p>
+        </div>
+        <div class="value-comparison">
+          <div class="value-box value-today">
+            <span class="value-amount" id="cash-value-today">₹47.60 Lacs</span>
+            <span class="value-label">Value today</span>
+          </div>
+          <div class="growth-badge">
+            <span class="growth-amount" id="cash-growth">+37.6 lacs</span>
+            <span class="growth-label">growth opportunity</span>
+          </div>
+          <div class="value-box value-future">
+            <span class="value-amount gradient-text" id="cash-value-future">₹85.24 Lacs</span>
+            <span class="value-label">Value after 10 years</span>
+          </div>
+        </div>
+        <div class="growth-chart">
+          <canvas id="chart-use-cash"></canvas>
+          <div class="chart-labels">
+            <span>Today</span>
+            <span>After 10 years</span>
+          </div>
+        </div>
+        <div class="benefit-box benefit-negative">
+          <span class="benefit-tag negative">Problem with this method</span>
+          <p class="benefit-text">By using your savings worth <span class="highlight">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red">₹85.24 Lacs</span> over <strong>10 years</strong> if you use that cash in a safe fund to get 6%.</p>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="snap-section option-section" data-option="sell-land" id="section-sell-land">
+      <div class="option-content">
+        <div class="option-header">
+          <h2 class="option-title">Selling land means losing<br>appreciation + paying tax</h2>
+          <p class="option-subtitle">In 10 years, this is how it would pan out</p>
+        </div>
+        <div class="value-comparison">
+          <div class="value-box value-today">
+            <span class="value-amount" id="land-value-today">₹54.28 Lacs</span>
+            <span class="value-label">Land to sell today</span>
+          </div>
+          <div class="growth-badge">
+            <span class="growth-amount" id="land-growth">+63.0 lacs</span>
+            <span class="growth-label">growth opportunity</span>
+          </div>
+          <div class="value-box value-future">
+            <span class="value-amount gradient-text" id="land-value-future">₹1.17 Cr</span>
+            <span class="value-label">Value after 10 years</span>
+          </div>
+        </div>
+        <div class="growth-chart">
+          <canvas id="chart-sell-land"></canvas>
+          <div class="chart-labels">
+            <span>Today</span>
+            <span>After 10 years</span>
+          </div>
+        </div>
+        <div class="benefit-box benefit-negative">
+          <span class="benefit-tag negative">Problem with this method</span>
+          <p class="benefit-text">By selling land worth <span class="highlight">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">₹1.17 Cr</span> over <strong>10 years</strong> at 8% appreciation.</p>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="snap-section option-section" data-option="sell-indian-equity" id="section-sell-indian-equity">
+      <div class="option-content">
+        <div class="option-header">
+          <h2 class="option-title">Selling equities triggers tax and<br>loses compounding gains</h2>
+          <p class="option-subtitle">In 10 years, this is how it would pan out</p>
+        </div>
+        <div class="value-comparison">
+          <div class="value-box value-today">
+            <span class="value-amount" id="equity-value-today">₹50.71 Lacs</span>
+            <span class="value-label">Equities to sell today</span>
+          </div>
+          <div class="growth-badge">
+            <span class="growth-amount" id="equity-growth">+1.07 Cr</span>
+            <span class="growth-label">growth opportunity</span>
+          </div>
+          <div class="value-box value-future">
+            <span class="value-amount gradient-text" id="equity-value-future">₹1.57 Cr</span>
+            <span class="value-label">Value after 10 years</span>
+          </div>
+        </div>
+        <div class="growth-chart">
+          <canvas id="chart-sell-indian-equity"></canvas>
+          <div class="chart-labels">
+            <span>Today</span>
+            <span>After 10 years</span>
+          </div>
+        </div>
+        <div class="benefit-box benefit-negative">
+          <span class="benefit-tag negative">Problem with this method</span>
+          <p class="benefit-text">By selling equities worth <span class="highlight">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red">₹1.57 Cr</span> over <strong>10 years</strong> at 12% returns.</p>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="snap-section option-section" data-option="sell-rsus" id="section-sell-rsus">
+      <div class="option-content">
+        <div class="option-header">
+          <h2 class="option-title">Selling RSUs means tax hit plus<br>missing stock + forex gains</h2>
+          <p class="option-subtitle">In 10 years, this is how it would pan out</p>
+        </div>
+        <div class="value-comparison">
+          <div class="value-box value-today">
+            <span class="value-amount" id="rsu-value-today">₹51.60 Lacs</span>
+            <span class="value-label">RSUs to sell today</span>
+          </div>
+          <div class="growth-badge">
+            <span class="growth-amount" id="rsu-growth">+1.17 Cr</span>
+            <span class="growth-label">growth opportunity</span>
+          </div>
+          <div class="value-box value-future">
+            <span class="value-amount gradient-text" id="rsu-value-future">₹1.69 Cr</span>
+            <span class="value-label">Value after 10 years</span>
+          </div>
+        </div>
+        <div class="growth-chart">
+          <canvas id="chart-sell-rsus"></canvas>
+          <div class="chart-labels">
+            <span>Today</span>
+            <span>After 10 years</span>
+          </div>
+        </div>
+        <div class="benefit-box benefit-negative">
+          <span class="benefit-tag negative">Problem with this method</span>
+          <p class="benefit-text">By selling RSUs worth <span class="highlight">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">₹1.69 Cr</span> over <strong>10 years</strong> (12% stock + 2.5% INR depreciation).</p>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
   </div>
 
   <!-- Option Detail Modal -->
@@ -270,190 +346,6 @@
     </div>
   </div>
 
-  <!-- Modify Assumptions Modal -->
-  <div class="modal-overlay" id="assumptions-modal">
-    <div class="modal modal-large modal-scrollable">
-      <h3 class="modal-title">Modify Assumptions</h3>
-
-      <div class="assumptions-content">
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Zinc Loan</h4>
-        <div class="modal-field">
-          <label>Analysis Horizon (Years)</label>
-          <select id="assumption-zinc-tenure">
-            <option value="5">5 years</option>
-            <option value="7">7 years</option>
-            <option value="10">10 years</option>
-            <option value="15">15 years</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>Payment Reinvestment CAGR</label>
-          <select id="assumption-zinc-reinvestment">
-            <option value="0.04">4%</option>
-            <option value="0.05">5%</option>
-            <option value="0.06">6%</option>
-            <option value="0.07">7%</option>
-            <option value="0.08">8%</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Property</h4>
-        <div class="modal-field">
-          <label>Interior Budget (%)</label>
-          <select id="assumption-interiors">
-            <option value="0.1">10%</option>
-            <option value="0.15">15%</option>
-            <option value="0.2">20%</option>
-            <option value="0.25">25%</option>
-            <option value="0.3">30%</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Cash</h4>
-        <div class="modal-field">
-          <label>Expected CAGR</label>
-          <select id="assumption-cash-cagr">
-            <option value="0.04">4%</option>
-            <option value="0.05">5%</option>
-            <option value="0.06">6%</option>
-            <option value="0.07">7%</option>
-            <option value="0.08">8%</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Land</h4>
-        <div class="modal-field">
-          <label>Embedded Gain (%)</label>
-          <select id="assumption-land-gain">
-            <option value="0.3">30%</option>
-            <option value="0.4">40%</option>
-            <option value="0.5">50%</option>
-            <option value="0.6">60%</option>
-            <option value="0.7">70%</option>
-            <option value="0.8">80%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>LTCG Tax Rate</label>
-          <select id="assumption-land-tax">
-            <option value="0.1">10%</option>
-            <option value="0.125">12.5%</option>
-            <option value="0.15">15%</option>
-            <option value="0.2">20%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>Expected CAGR</label>
-          <select id="assumption-land-cagr">
-            <option value="0.05">5%</option>
-            <option value="0.06">6%</option>
-            <option value="0.07">7%</option>
-            <option value="0.08">8%</option>
-            <option value="0.1">10%</option>
-            <option value="0.12">12%</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Indian Equity</h4>
-        <div class="modal-field">
-          <label>Embedded Gain (%)</label>
-          <select id="assumption-equity-gain">
-            <option value="0.3">30%</option>
-            <option value="0.4">40%</option>
-            <option value="0.5">50%</option>
-            <option value="0.6">60%</option>
-            <option value="0.7">70%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>LTCG Tax Rate</label>
-          <select id="assumption-equity-tax">
-            <option value="0.1">10%</option>
-            <option value="0.125">12.5%</option>
-            <option value="0.15">15%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>LTCG Exemption (₹)</label>
-          <select id="assumption-equity-exemption">
-            <option value="0">₹0</option>
-            <option value="100000">₹1 Lac</option>
-            <option value="125000">₹1.25 Lac</option>
-            <option value="150000">₹1.5 Lac</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>Expected CAGR</label>
-          <select id="assumption-equity-cagr">
-            <option value="0.08">8%</option>
-            <option value="0.1">10%</option>
-            <option value="0.12">12%</option>
-            <option value="0.14">14%</option>
-            <option value="0.15">15%</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="assumptions-section">
-        <h4 class="assumptions-section-title">Foreign RSUs</h4>
-        <div class="modal-field">
-          <label>Embedded Gain (%)</label>
-          <select id="assumption-rsu-gain">
-            <option value="0.2">20%</option>
-            <option value="0.3">30%</option>
-            <option value="0.4">40%</option>
-            <option value="0.5">50%</option>
-            <option value="0.6">60%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>LTCG Tax Rate</label>
-          <select id="assumption-rsu-tax">
-            <option value="0.1">10%</option>
-            <option value="0.125">12.5%</option>
-            <option value="0.15">15%</option>
-            <option value="0.2">20%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>Expected USD CAGR</label>
-          <select id="assumption-rsu-cagr">
-            <option value="0.08">8%</option>
-            <option value="0.1">10%</option>
-            <option value="0.12">12%</option>
-            <option value="0.14">14%</option>
-            <option value="0.15">15%</option>
-          </select>
-        </div>
-        <div class="modal-field">
-          <label>INR Depreciation</label>
-          <select id="assumption-rsu-inr-dep">
-            <option value="0.015">1.5%</option>
-            <option value="0.02">2%</option>
-            <option value="0.025">2.5%</option>
-            <option value="0.03">3%</option>
-            <option value="0.035">3.5%</option>
-          </select>
-        </div>
-      </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-cancel" id="assumptions-modal-cancel">Cancel</button>
-        <button class="modal-save" id="assumptions-modal-save">Save</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     if (!sessionStorage.getItem('zinc-flow-started')) {
       window.location.href = '/';
@@ -462,3 +354,88 @@
   <script type="module" src="results.js"></script>
 </body>
 </html>
+
+<!--
+==================== OLD HTML (COMMENTED OUT) ====================
+<div class="page-container">
+  <div class="left-column">
+    <div class="top-nav">
+      <button class="back-btn" id="back-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button class="modify-assumptions-btn" id="modify-assumptions-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Modify assumptions</span>
+      </button>
+    </div>
+
+    <div class="funding-info">
+      <p class="funding-label">You still need</p>
+      <div class="funding-amount-row">
+        <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
+        <button class="funding-info-btn" id="funding-info-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+        </button>
+      </div>
+      <p class="funding-subtitle">even after taking a home loan to get in your house</p>
+    </div>
+
+    <div class="house-info">
+      <div class="house-float-wrapper">
+        <div class="house-badge" id="house-badge-btn">
+          <span class="house-city" id="city-name">Mumbai</span> house
+          <div class="house-value-row">
+            <span class="house-value" id="house-value">5 Cr</span>
+            <svg class="house-edit-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </div>
+        </div>
+        <img id="house-image" class="house-image" src="/houses/level4.png" alt="House">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <button class="settings-btn" id="loan-settings-btn">
+        <span class="settings-label">Home loan rate</span>
+        <div class="settings-right">
+          <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      </button>
+
+      <button class="settings-btn" id="construction-btn">
+        <span class="settings-label">Under-construction property?</span>
+        <div class="settings-right">
+          <span class="settings-value" id="construction-value">No</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div class="right-column">
+    <div class="options-title" id="options-title">Here are your funding options</div>
+
+    <div class="options-section">
+      <div id="all-options">
+      </div>
+    </div>
+  </div>
+</div>
+==================== END OLD HTML ====================
+-->

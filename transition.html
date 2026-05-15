@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funding Breakdown - Zinc</title>
+  <link rel="stylesheet" href="transition.css">
+</head>
+<body>
+  <div class="page-container">
+    <div class="content-wrapper">
+      <!-- Two-column layout: Labels left, Cubes center, Result right -->
+
+      <!-- Cubes column - inline SVG for animation -->
+      <div class="cubes-column">
+        <svg class="blocks-svg" viewBox="280 90 255 910" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Green Block (Loan) -->
+          <g id="green-block" class="block" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round">
+            <path d="M288 436L408 508L527 436L408 365L288 436Z" fill="#153225"/>
+            <path d="M288 436V920L408 989V508L288 436Z" fill="#153225"/>
+            <path d="M527 436V920L408 989V508L527 436Z" fill="#143020"/>
+          </g>
+
+          <!-- Lower Maroon Block (Down Payment) -->
+          <g id="downpayment-block" class="block" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round">
+            <path d="M288 328L408 400L525 329L408 258L288 328Z" fill="#461616"/>
+            <path d="M288 328V418L408 489V400L288 328Z" fill="#461616"/>
+            <path d="M525 329V418L408 489V400L525 329Z" fill="#461616"/>
+          </g>
+
+          <!-- Middle Maroon Block (Interior) -->
+          <g id="interior-block" class="block" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round">
+            <path d="M288 223L408 295L525 224L408 153L288 223Z" fill="#461616"/>
+            <path d="M288 223V313L408 384V295L288 223Z" fill="#461616"/>
+            <path d="M525 224V313L408 384V295L525 224Z" fill="#461616"/>
+          </g>
+
+          <!-- Top Maroon Block (Stamp Duty) -->
+          <g id="stamp-block" class="block" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round">
+            <path d="M288 164L403 98L525 165L408 234L288 164Z" fill="#2A080B"/>
+            <path d="M288 164V209L408 279V234L288 164Z" fill="#461616"/>
+            <path d="M525 165V209L408 279V234L525 165Z" fill="#461616"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Right labels column (all labels) -->
+      <div class="labels-column right-labels">
+        <div class="label-container stamp-container">
+          <div class="label" id="stamp-label">
+            <span class="label-amount" id="stamp-amount">8 L</span>
+            <span class="label-text">Stamp duty</span>
+          </div>
+        </div>
+        <div class="label-container interior-container">
+          <div class="label" id="interior-label">
+            <span class="label-amount" id="interior-amount">20 L</span>
+            <span class="label-text">Interior cost</span>
+          </div>
+        </div>
+        <div class="label-container downpayment-container">
+          <div class="label" id="downpayment-label">
+            <span class="label-amount" id="downpayment-amount">20 L</span>
+            <span class="label-text">Down-payment</span>
+          </div>
+        </div>
+        <div class="label-container loan-container">
+          <div class="label" id="loan-label">
+            <span class="label-amount" id="loan-amount">80 L</span>
+            <span class="label-text">Loan amount</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bracket + Text section -->
+      <div class="result-section" id="result-section">
+        <svg class="bracket-svg" viewBox="0 0 30 240" fill="none">
+          <path d="M4 0 L4 115 L26 120 L4 125 L4 240" stroke="#F2F2F2" stroke-width="2" fill="none"/>
+        </svg>
+        <div class="text-section">
+          <p class="text-label">You still need</p>
+          <h1 class="text-amount">
+            <span class="amount-value" id="amount-value">1.23 Cr</span>
+            <span class="amount-suffix">to get in</span>
+          </h1>
+          <p class="text-subtitle">your house</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-row">
+      <button class="skip-btn" id="skip-btn">Skip</button>
+      <button class="proceed-btn" id="proceed-btn">Continue</button>
+    </div>
+  </div>
+
+  <script>
+    if (!sessionStorage.getItem('zinc-flow-started')) {
+      window.location.href = '/';
+    }
+  </script>
+  <script type="module" src="transition.js"></script>
+</body>
+</html>
