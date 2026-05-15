@@ -234,9 +234,22 @@ exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
 });
 
 exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY]), async (request) => {
-  const session = requireFirebaseSession(request);
+  const auth = request.auth;
+  if (!auth?.uid) {
+    throw new HttpsError('unauthenticated', 'Login required before customer registration.');
+  }
+
+  const session = {
+    applicationId: auth.uid,
+    email: String(auth.token?.email || ''),
+  };
+
   const email = optionalTrim(request.data?.email || session.email).toLowerCase();
   const name = optionalTrim(request.data?.name);
+
+  if (!email) {
+    throw new HttpsError('invalid-argument', 'email is required for customer registration.');
+  }
 
   const payload = {
     name,

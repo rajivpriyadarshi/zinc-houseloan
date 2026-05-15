@@ -12,7 +12,7 @@
     <div class="vertical-lines"></div>
     <h1 class="title">Plan your home<br>purchase</h1>
     <p class="subtitle">Understand the real cost of buying a home and prepare your finances with confidence.</p>
-    <button class="get-started-btn" id="get-started-btn">Get started</button>
+    <button class="get-started-btn" id="get-started-btn" data-open-login="true">Get started</button>
   </div>
 
   <!-- Login Modal -->
@@ -52,6 +52,16 @@
     </div>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const trigger = document.querySelector('[data-open-login="true"]');
+      const modal = document.getElementById('login-modal');
+      if (!trigger || !modal) return;
+      trigger.addEventListener('click', function () {
+        modal.classList.add('visible');
+      });
+    });
+  </script>
   <script type="module" src="index.js"></script>
 </body>
 </html>

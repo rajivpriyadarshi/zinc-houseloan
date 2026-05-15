@@ -20,12 +20,24 @@ const provider = new GoogleAuthProvider();
 
 const functions = getFunctions(app, 'asia-south1');
 const emulatorFlag = String(import.meta.env.VITE_USE_FIREBASE_EMULATORS || '').toLowerCase();
-const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const useFunctionsEmulator = emulatorFlag === 'true' || (emulatorFlag !== 'false' && isLocalHost);
+const authEmulatorFlag = String(import.meta.env.VITE_USE_AUTH_EMULATOR || '').toLowerCase();
+const useFunctionsEmulator = emulatorFlag === 'true';
+const useAuthEmulator = authEmulatorFlag === 'true';
 
 if (useFunctionsEmulator) {
-  connectFunctionsEmulator(functions, window.location.hostname, 5001);
-  connectAuthEmulator(auth, `http://${window.location.hostname}:9099`, { disableWarnings: true });
+  try {
+    connectFunctionsEmulator(functions, window.location.hostname, 5001);
+  } catch (error) {
+    console.warn('Emulator connect failed, continuing with default Firebase endpoints.', error);
+  }
+}
+
+if (useAuthEmulator) {
+  try {
+    connectAuthEmulator(auth, `http://${window.location.hostname}:9099`, { disableWarnings: true });
+  } catch (error) {
+    console.warn('Auth emulator connect failed, continuing with Firebase Auth server.', error);
+  }
 }
 
 const sendEmailOtp = httpsCallable(functions, 'sendEmailOtp');
@@ -34,12 +46,14 @@ const registerCustomer = httpsCallable(functions, 'registerCustomer');
 
 trackPageView('home');
 
-getStartedBtn.addEventListener('click', () => {
-  trackButtonClick('get_started');
-  loginModal.classList.add('visible');
-  showStep('email');
-  setLoginStatus('');
-});
+if (getStartedBtn && loginModal) {
+  getStartedBtn.addEventListener('click', () => {
+    trackButtonClick('get_started');
+    loginModal.classList.add('visible');
+    showStep('email');
+    setLoginStatus('');
+  });
+}
 
 function setLoginStatus(message, isError = false) {
   loginStatus.textContent = message;

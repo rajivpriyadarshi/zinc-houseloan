@@ -566,7 +566,7 @@ constructionSelect.addEventListener('change', () => {
   ctx.arc(endPoint.x, endPoint.y, 5, 0, Math.PI * 2);
   ctx.fillStyle = '#b4c864';
   ctx.fill();
-}
+});
 
 // Event listeners for columns
 document.querySelectorAll('.chart-column').forEach(col => {
