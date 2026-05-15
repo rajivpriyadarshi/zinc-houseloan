@@ -1,68 +1,80 @@
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
-import { auth } from './firebaseAuth.js';
-import {
-  getRedirectResult,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect
-} from 'firebase/auth';
+import { app, auth } from './firebaseAuth.js';
+import { connectAuthEmulator, GoogleAuthProvider, signInWithCustomToken, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 
 const loginModal = document.getElementById('login-modal');
 const getStartedBtn = document.getElementById('get-started-btn');
 const googleSignInBtn = document.getElementById('google-signin-btn');
+const sendOtpBtn = document.getElementById('send-otp-btn');
+const verifyOtpBtn = document.getElementById('verify-otp-btn');
+const editEmailBtn = document.getElementById('edit-email-btn');
 const loginSkipBtn = document.getElementById('login-skip');
+const loginEmail = document.getElementById('login-email');
+const loginOtp = document.getElementById('login-otp');
+const loginStepEmail = document.getElementById('login-step-email');
+const loginStepOtp = document.getElementById('login-step-otp');
+const loginEmailChip = document.getElementById('login-email-chip');
 const loginStatus = document.getElementById('login-status');
 const provider = new GoogleAuthProvider();
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://labs-sbox.zinc.money').replace(/\/$/, '');
-const CUSTOMER_REGISTER_URL = `${API_BASE_URL}/api/customers/register/`;
-const APPLICATION_API_KEY = import.meta.env.VITE_APPLICATION_API_KEY || import.meta.env.VITE_API_KEY || '';
+
+const functions = getFunctions(app, 'asia-south1');
+const emulatorFlag = String(import.meta.env.VITE_USE_FIREBASE_EMULATORS || '').toLowerCase();
+const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const useFunctionsEmulator = emulatorFlag === 'true' || (emulatorFlag !== 'false' && isLocalHost);
+
+if (useFunctionsEmulator) {
+  connectFunctionsEmulator(functions, window.location.hostname, 5001);
+  connectAuthEmulator(auth, `http://${window.location.hostname}:9099`, { disableWarnings: true });
+}
+
+const sendEmailOtp = httpsCallable(functions, 'sendEmailOtp');
+const verifyEmailOtp = httpsCallable(functions, 'verifyEmailOtp');
+const registerCustomer = httpsCallable(functions, 'registerCustomer');
 
 trackPageView('home');
 
 getStartedBtn.addEventListener('click', () => {
   trackButtonClick('get_started');
   loginModal.classList.add('visible');
+  showStep('email');
+  setLoginStatus('');
 });
 
-async function registerCustomerForLogin() {
-  const user = auth.currentUser;
-  if (!user) return;
-  if (!APPLICATION_API_KEY) {
-    console.warn('Customer register skipped: missing VITE_APPLICATION_API_KEY/VITE_API_KEY');
-    return;
+function setLoginStatus(message, isError = false) {
+  loginStatus.textContent = message;
+  loginStatus.style.color = isError ? '#b00020' : 'rgba(0, 0, 0, 0.6)';
+}
+
+function showStep(step) {
+  loginStepEmail.classList.toggle('active', step === 'email');
+  loginStepOtp.classList.toggle('active', step === 'otp');
+  trackButtonClick(step === 'otp' ? 'auth_step_otp' : 'auth_step_email');
+}
+
+function callableErrorMessage(error, fallback) {
+  const details = error?.details;
+  const response = details?.response;
+  if (typeof response === 'string' && response.trim()) {
+    return response;
   }
-
-  const payload = {
-    phone: user.phoneNumber || '+91',
-    name: user.displayName || 'Customer Name',
-    email: user.email || undefined,
-    signup_method: user.phoneNumber ? 'PHONE' : 'EMAIL',
-  };
-
-  const response = await fetch(CUSTOMER_REGISTER_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-Key': APPLICATION_API_KEY,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    throw new Error(`Register failed (${response.status}): ${errorText}`);
+  if (response && typeof response === 'object') {
+    return response.message || response.error || JSON.stringify(response);
   }
+  if (error?.message) return error.message;
+  return fallback;
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+function toDisplayName(email) {
+  const localPart = String(email || '').split('@')[0] || 'Customer';
+  return localPart.replace(/[._-]+/g, ' ').trim() || 'Customer Name';
 }
 
 async function proceedToPlanner(source) {
-  if (auth.currentUser) {
-    try {
-      await registerCustomerForLogin();
-    } catch (error) {
-      console.error('Customer register API failed:', error);
-    }
-  }
-
   trackButtonClick(source);
   trackValueSubmit('user_profile_submit', JSON.stringify({
     email_provided: Boolean(auth.currentUser?.email),
@@ -75,57 +87,146 @@ async function proceedToPlanner(source) {
   setTimeout(() => window.location.href = 'planner.html', 400);
 }
 
-function setLoginStatus(message, isError = false) {
-  if (!loginStatus) return;
-  loginStatus.textContent = message;
-  loginStatus.style.color = isError ? '#b00020' : 'rgba(0, 0, 0, 0.6)';
-}
-
-function friendlyAuthError(error) {
-  const code = error?.code || '';
-  if (code === 'auth/popup-closed-by-user') return 'Google sign-in was cancelled.';
-  if (code === 'auth/popup-blocked') return 'Popup blocked. Continuing with secure redirect...';
-  if (code === 'auth/unauthorized-domain') return 'This domain is not authorized in Firebase Authentication.';
-  return error?.message || 'Unable to sign in. Please try again.';
+async function tryRegisterCustomer(email, name) {
+  try {
+    await registerCustomer({ email, name });
+    trackButtonClick('register_customer_success');
+    return true;
+  } catch (error) {
+    trackButtonClick('register_customer_failed', {
+      error_message: callableErrorMessage(error, 'unknown'),
+    });
+    console.warn('registerCustomer failed (non-blocking):', error);
+    return false;
+  }
 }
 
 async function handleGoogleSignIn() {
+  trackButtonClick('google_signin_click');
   googleSignInBtn.disabled = true;
   setLoginStatus('Signing in with Google...');
-
   try {
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    const email = result?.user?.email || '';
+    await tryRegisterCustomer(email, result?.user?.displayName || toDisplayName(email));
     await proceedToPlanner('google_signin_success_popup');
   } catch (error) {
     const code = error?.code || '';
     if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
-      setLoginStatus('Popup unavailable. Redirecting to Google sign-in...');
+      trackButtonClick('google_signin_redirect_fallback');
       await signInWithRedirect(auth, provider);
       return;
     }
-    setLoginStatus(friendlyAuthError(error), true);
+    trackButtonClick('google_signin_failed', {
+      error_message: callableErrorMessage(error, 'unknown'),
+    });
+    setLoginStatus(callableErrorMessage(error, 'Google sign-in failed. Try again.'), true);
   } finally {
     googleSignInBtn.disabled = false;
   }
 }
 
 googleSignInBtn.addEventListener('click', handleGoogleSignIn);
-loginSkipBtn.addEventListener('click', () => proceedToPlanner('skip_for_now'));
+
+sendOtpBtn.addEventListener('click', async () => {
+  trackButtonClick('email_otp_send_click');
+  const email = String(loginEmail.value || '').trim().toLowerCase();
+  if (!isValidEmail(email)) {
+    trackButtonClick('email_otp_send_invalid_email');
+    setLoginStatus('Enter a valid email address.', true);
+    return;
+  }
+
+  sendOtpBtn.disabled = true;
+  setLoginStatus('Sending OTP...');
+  try {
+    await sendEmailOtp({ email });
+    trackButtonClick('email_otp_sent');
+    setLoginStatus('OTP sent. Check your email and enter the code.');
+    loginEmailChip.textContent = email;
+    loginOtp.value = '';
+    showStep('otp');
+  } catch (error) {
+    trackButtonClick('email_otp_send_failed', {
+      error_message: callableErrorMessage(error, 'unknown'),
+    });
+    setLoginStatus(callableErrorMessage(error, 'Could not send OTP. Try again.'), true);
+  } finally {
+    sendOtpBtn.disabled = false;
+  }
+});
+
+verifyOtpBtn.addEventListener('click', async () => {
+  trackButtonClick('email_otp_verify_click');
+  const email = String(loginEmail.value || '').trim().toLowerCase();
+  const otp = String(loginOtp.value || '').trim();
+
+  if (!isValidEmail(email)) {
+    trackButtonClick('email_otp_verify_invalid_email');
+    setLoginStatus('Enter a valid email address.', true);
+    return;
+  }
+  if (!/^\d{6}$/.test(otp)) {
+    trackButtonClick('email_otp_verify_invalid_code');
+    setLoginStatus('Enter a valid 6-digit OTP.', true);
+    return;
+  }
+
+  verifyOtpBtn.disabled = true;
+  setLoginStatus('Verifying OTP...');
+  try {
+    const verifyResult = await verifyEmailOtp({ email, otp });
+    const customToken = verifyResult?.data?.firebaseCustomToken;
+    if (!customToken) {
+      throw new Error('Missing Firebase custom token from OTP verification.');
+    }
+
+    await signInWithCustomToken(auth, customToken);
+    await tryRegisterCustomer(email, toDisplayName(email));
+
+    trackButtonClick('email_otp_verified');
+    setLoginStatus('Login successful. Redirecting...');
+    await proceedToPlanner('email_otp_login_success');
+  } catch (error) {
+    trackButtonClick('email_otp_verify_failed', {
+      error_message: callableErrorMessage(error, 'unknown'),
+    });
+    setLoginStatus(callableErrorMessage(error, 'OTP verification failed. Try again.'), true);
+  } finally {
+    verifyOtpBtn.disabled = false;
+  }
+});
+
+loginSkipBtn.addEventListener('click', () => {
+  trackButtonClick('auth_skip_click');
+  proceedToPlanner('skip_for_now');
+});
+editEmailBtn.addEventListener('click', () => {
+  trackButtonClick('email_otp_edit_email');
+  showStep('email');
+  setLoginStatus('');
+  loginEmail.focus();
+});
 
 loginModal.addEventListener('click', (e) => {
   if (e.target === loginModal) {
+    trackButtonClick('auth_modal_dismiss_overlay');
     loginModal.classList.remove('visible');
+    showStep('email');
   }
 });
 
 getRedirectResult(auth)
-  .then((result) => {
-    if (result?.user) {
-      return proceedToPlanner('google_signin_success_redirect');
-    }
-    return null;
+  .then(async (result) => {
+    if (!result?.user) return;
+    trackButtonClick('google_signin_success_redirect');
+    const email = result.user.email || '';
+    await tryRegisterCustomer(email, result.user.displayName || toDisplayName(email));
+    await proceedToPlanner('google_signin_success_redirect');
   })
   .catch((error) => {
-    loginModal.classList.add('visible');
-    setLoginStatus(friendlyAuthError(error), true);
+    trackButtonClick('google_signin_redirect_failed', {
+      error_message: callableErrorMessage(error, 'unknown'),
+    });
+    setLoginStatus(callableErrorMessage(error, 'Google sign-in failed. Try again.'), true);
   });
