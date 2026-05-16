@@ -21,8 +21,8 @@ const provider = new GoogleAuthProvider();
 const functions = getFunctions(app, 'asia-south1');
 const emulatorFlag = String(import.meta.env.VITE_USE_FIREBASE_EMULATORS || '').toLowerCase();
 const authEmulatorFlag = String(import.meta.env.VITE_USE_AUTH_EMULATOR || '').toLowerCase();
-const useFunctionsEmulator = emulatorFlag === 'true';
 const useAuthEmulator = authEmulatorFlag === 'true';
+const useFunctionsEmulator = emulatorFlag === 'true' && useAuthEmulator;
 
 if (useFunctionsEmulator) {
   try {
@@ -30,6 +30,10 @@ if (useFunctionsEmulator) {
   } catch (error) {
     console.warn('Emulator connect failed, continuing with default Firebase endpoints.', error);
   }
+}
+
+if (emulatorFlag === 'true' && !useAuthEmulator) {
+  console.warn('Functions emulator requested, but Auth emulator is disabled. Using production Functions to avoid INVALID_CUSTOM_TOKEN.');
 }
 
 if (useAuthEmulator) {
