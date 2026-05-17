@@ -522,6 +522,92 @@ body {
   transform: scale(1.02);
 }
 
+.modal-cancel {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 30px;
+  background: #fff;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Edit Modal */
+.modal-overlay-top {
+  z-index: 1100;
+}
+
+.modal-edit {
+  max-width: 320px;
+}
+
+.edit-modal-title {
+  font-family: 'Butler Pro', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.edit-modal-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.edit-modal-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.edit-modal-input:focus {
+  border-color: #000;
+}
+
+.edit-modal-unit {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.5);
+  min-width: 40px;
+}
+
+/* Edit Button */
+.edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: all 0.2s;
+  vertical-align: middle;
+}
+
+.edit-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: #000;
+}
+
 /* Detail Modal Content */
 .detail-modal-container {
   display: flex;
@@ -575,6 +661,34 @@ body {
   letter-spacing: -0.4px;
   color: #000;
   margin: 0;
+}
+
+.group-description {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 8px 0 0 0;
+  line-height: 1.5;
+}
+
+.highlight-group {
+  background: linear-gradient(135deg, rgba(113, 133, 74, 0.1) 0%, rgba(113, 133, 74, 0.05) 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 8px;
+}
+
+.highlight-group .group-heading {
+  color: #71854A;
+}
+
+.highlight-group.negative {
+  background: linear-gradient(135deg, rgba(235, 76, 96, 0.1) 0%, rgba(235, 76, 96, 0.05) 100%);
+}
+
+.highlight-group.negative .group-heading {
+  color: #EB4C60;
 }
 
 .detail-rows {

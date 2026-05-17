@@ -509,7 +509,7 @@ function formatCurrency(amount) {
   } else if (absAmount >= 100000) {
     return '₹' + (amount / 100000).toFixed(2) + ' Lacs';
   } else {
-    return '₹' + amount.toLocaleString('en-IN');
+    return '₹' + Math.round(amount).toLocaleString('en-IN');
   }
 }
 
@@ -518,7 +518,7 @@ function formatCr(amount) {
   if (cr >= 1) {
     return cr.toFixed(2) + ' Cr';
   }
-  return (amount / 100000).toFixed(0) + ' Lacs';
+  return (amount / 100000).toFixed(2) + ' Lacs';
 }
 
 function formatCrSigned(amount) {
@@ -610,6 +610,9 @@ function showOptionDetails(strategyId) {
   let problemTitle = '';
   let problemText = '';
   let isPositive = false;
+  let embeddedGainPct = 0;
+  let taxRate = 0;
+  let exemption = 0;
 
   if (strategyId === 'zinc-loan') {
     title = "What if you use Zinc HomeGap loan?";
@@ -635,7 +638,10 @@ function showOptionDetails(strategyId) {
   } else if (strategyId === 'sell-land') {
     title = "What if you sell land to cover the funding gap?";
     description = "Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.";
-    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+    embeddedGainPct = modelInputs.assets.land.embeddedGainPct;
+    taxRate = modelInputs.assets.land.ltcgTaxRatePct;
+    exemption = modelInputs.assets.land.exemptionAmount;
+    valueToday = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
     valueFuture = calculateFutureValue(valueToday, modelInputs.assets.land.cagrPct, years);
     growth = valueFuture - valueToday;
     growthRate = (modelInputs.assets.land.cagrPct * 100).toFixed(0);
@@ -644,7 +650,10 @@ function showOptionDetails(strategyId) {
   } else if (strategyId === 'sell-indian-equity') {
     title = "What if you sell equities to cover the funding gap?";
     description = "Selling stocks means paying capital gains tax and missing future growth. There's a ₹1.25 lakh exemption on LTCG.";
-    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    embeddedGainPct = modelInputs.assets.indianEquity.embeddedGainPct;
+    taxRate = modelInputs.assets.indianEquity.ltcgTaxRatePct;
+    exemption = modelInputs.assets.indianEquity.exemptionAmount;
+    valueToday = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
     valueFuture = calculateFutureValue(valueToday, modelInputs.assets.indianEquity.cagrPct, years);
     growth = valueFuture - valueToday;
     growthRate = (modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0);
@@ -653,7 +662,10 @@ function showOptionDetails(strategyId) {
   } else if (strategyId === 'sell-rsus') {
     title = "What if you sell RSUs to cover the funding gap?";
     description = "Selling foreign RSUs triggers capital gains tax with no exemption, plus you miss stock growth and rupee depreciation benefits.";
-    valueToday = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+    embeddedGainPct = modelInputs.assets.foreignRsu.embeddedGainPct;
+    taxRate = modelInputs.assets.foreignRsu.ltcgTaxRatePct;
+    exemption = modelInputs.assets.foreignRsu.exemptionAmount;
+    valueToday = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
     const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
     valueFuture = calculateFutureValue(valueToday, effectiveRsuCagr, years);
     growth = valueFuture - valueToday;
@@ -661,6 +673,12 @@ function showOptionDetails(strategyId) {
     problemTitle = "The problem with selling RSUs";
     problemText = `By selling RSUs worth <span class="highlight">${formatCurrency(valueToday)}</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
   }
+
+  // Calculate tax breakdown for sell strategies
+  const embeddedGain = valueToday * embeddedGainPct;
+  const taxableGain = Math.max(0, embeddedGain - exemption);
+  const taxAmount = taxableGain * taxRate;
+  const netProceeds = valueToday - taxAmount;
 
   // Contextual labels for "How we calculated this" section
   let assetLabelToday = 'Cash needed today';
@@ -689,6 +707,23 @@ function showOptionDetails(strategyId) {
     cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
   }
 
+  // Get CAGR for current strategy
+  let currentCagr = 0;
+  let cagrKey = '';
+  if (strategyId === 'zinc-loan' || strategyId === 'sell-rsus') {
+    currentCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+    cagrKey = 'foreignRsu';
+  } else if (strategyId === 'use-cash') {
+    currentCagr = modelInputs.assets.cash.cagrPct;
+    cagrKey = 'cash';
+  } else if (strategyId === 'sell-land') {
+    currentCagr = modelInputs.assets.land.cagrPct;
+    cagrKey = 'land';
+  } else if (strategyId === 'sell-indian-equity') {
+    currentCagr = modelInputs.assets.indianEquity.cagrPct;
+    cagrKey = 'indianEquity';
+  }
+
   const content = `
     <div class="detail-modal-container">
       <div class="detail-header">
@@ -696,53 +731,22 @@ function showOptionDetails(strategyId) {
         <p class="detail-description">${description}</p>
       </div>
 
-      <div class="modal-chart-section">
-        <div class="modal-value-comparison">
-          <div class="modal-value-box">
-            <span class="modal-value-amount">${formatCurrency(valueToday)}</span>
-            <span class="modal-value-label">Value today</span>
-          </div>
-          <div class="modal-growth-badge">
-            <span class="modal-growth-amount">+${formatCurrency(growth)}</span>
-            <span class="modal-growth-label">growth opportunity</span>
-          </div>
-          <div class="modal-value-box modal-value-right">
-            <span class="modal-value-amount ${isPositive ? 'text-green' : 'text-gradient'}">${formatCurrency(valueFuture)}</span>
-            <span class="modal-value-label">Value after ${years} years</span>
-          </div>
-        </div>
-        <div class="modal-growth-chart">
-          <canvas id="modal-chart-canvas"></canvas>
-          <div class="modal-chart-labels">
-            <span>Today</span>
-            <span>After ${years} years</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-problem-box ${isPositive ? 'positive' : 'negative'}">
-        <span class="modal-problem-tag ${isPositive ? 'positive' : 'negative'}">${problemTitle}</span>
-        <p class="modal-problem-text">${problemText}</p>
-      </div>
-
       <div class="detail-sections">
-        <div class="detail-group">
-          <h3 class="group-heading">How we calculated this</h3>
-          <div class="detail-rows">
-            <div class="detail-row">
-              <span class="detail-label">${assetLabelToday}</span>
-              <span class="detail-value">${formatCurrency(valueToday)}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">${investedLabel} <span class="info-icon" title="${cagrTooltip}">i</span></span>
-              <span class="detail-value ${isPositive ? 'detail-value-green' : 'detail-value-red'}">${formatCurrency(valueFuture)}</span>
-            </div>
-          </div>
-        </div>
-
         <div class="detail-group">
           <h3 class="group-heading">Your home loan</h3>
           <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Interest rate <button class="edit-btn" data-field="homeLoanRate" data-value="${(modelInputs.selectedHomeLoanRatePct * 100).toFixed(1)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.selectedHomeLoanRatePct * 100).toFixed(1)}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Tenure <button class="edit-btn" data-field="homeLoanTenure" data-value="${modelInputs.homeLoanTenureYears}">✎</button></span>
+              <span class="detail-value">${modelInputs.homeLoanTenureYears} years</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">LTV <button class="edit-btn" data-field="homeLoanLtv" data-value="${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}%</span>
+            </div>
             <div class="detail-row">
               <span class="detail-label">Loan amount</span>
               <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
@@ -755,7 +759,160 @@ function showOptionDetails(strategyId) {
         </div>
 
         <div class="detail-group">
-          <h3 class="group-heading">Cash you need upfront</h3>
+          <h3 class="group-heading">Your funding gap</h3>
+          <p class="group-description">Cash you need upfront to complete the purchase.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Down payment (${(100 - modelInputs.homeLoanLtvPct * 100).toFixed(0)}%)</span>
+              <span class="detail-value">${formatCurrency(results.downPayment)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Stamp duty & registration</span>
+              <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Interior budget <button class="edit-btn" data-field="interiorsPct" data-value="${(modelInputs.interiorsPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${formatCurrency(results.interiors)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Total funding gap</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(fundingGap)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        ${strategyId !== 'zinc-loan' && strategyId !== 'use-cash' ? `
+        <div class="detail-group">
+          <h3 class="group-heading">Assets to sell</h3>
+          <p class="group-description">Due to ${(embeddedGainPct * 100).toFixed(0)}% embedded gains and ${(taxRate * 100).toFixed(1)}% LTCG tax, you need to sell more than the funding gap.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Funding gap</span>
+              <span class="detail-value">${formatCurrency(fundingGap)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">LTCG tax${exemption > 0 ? ` (after ₹${(exemption/100000).toFixed(2)}L exemption)` : ''}</span>
+              <span class="detail-value detail-value-red">+ ${formatCurrency(taxAmount)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Gross asset to sell</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(valueToday)}</strong></span>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+
+        <div class="detail-group">
+          <h3 class="group-heading">Opportunity cost if unsold</h3>
+          <p class="group-description">What this ${strategyId === 'use-cash' ? 'cash' : 'asset'} could grow to if you kept it invested.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">${assetLabelToday}</span>
+              <span class="detail-value">${formatCurrency(valueToday)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${investedLabel} <span class="info-icon" title="${cagrTooltip}">i</span></span>
+              <span class="detail-value ${isPositive ? 'detail-value-green' : 'detail-value-red'}">${formatCurrency(valueFuture)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Growth you'd miss</strong></span>
+              <span class="detail-value ${isPositive ? 'detail-value-green' : 'detail-value-red'}"><strong>${formatCurrency(growth)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3 class="group-heading">Other assumptions</h3>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Analysis horizon <button class="edit-btn" data-field="analysisHorizon" data-value="${years}">✎</button></span>
+              <span class="detail-value">${years} years</span>
+            </div>
+            ${strategyId === 'use-cash' ? `
+            <div class="detail-row">
+              <span class="detail-label">Cash investment CAGR <button class="edit-btn" data-field="cashCagr" data-value="${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%</span>
+            </div>
+            ` : ''}
+            ${strategyId === 'sell-land' ? `
+            <div class="detail-row">
+              <span class="detail-label">Land appreciation CAGR <button class="edit-btn" data-field="landCagr" data-value="${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="landEmbeddedGain" data-value="${(modelInputs.assets.land.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.land.embeddedGainPct * 100).toFixed(0)}%</span>
+            </div>
+            ` : ''}
+            ${strategyId === 'sell-indian-equity' ? `
+            <div class="detail-row">
+              <span class="detail-label">Equity CAGR <button class="edit-btn" data-field="equityCagr" data-value="${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="equityEmbeddedGain" data-value="${(modelInputs.assets.indianEquity.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.indianEquity.embeddedGainPct * 100).toFixed(0)}%</span>
+            </div>
+            ` : ''}
+            ${strategyId === 'sell-rsus' || strategyId === 'zinc-loan' ? `
+            <div class="detail-row">
+              <span class="detail-label">RSU stock CAGR (USD) <button class="edit-btn" data-field="rsuCagr" data-value="${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">INR depreciation <button class="edit-btn" data-field="inrDepreciation" data-value="${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}%</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="rsuEmbeddedGain" data-value="${(modelInputs.assets.foreignRsu.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-value">${(modelInputs.assets.foreignRsu.embeddedGainPct * 100).toFixed(0)}%</span>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-modal-content').innerHTML = content;
+  document.getElementById('detail-modal').classList.add('visible');
+}
+
+const detailModal = document.getElementById('detail-modal');
+
+// Show calculation explanation popup for chart section
+function showChartCalculation(strategyId) {
+  const results = calculateModel(modelInputs);
+  const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+
+  const rsuGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+  const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+  const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
+  const zincInterest = fundingGap * zincRate * years;
+  const zincPaymentsFV = calculateFutureValue(zincInterest, modelInputs.zincPaymentReinvestmentCagrPct, years / 2);
+  const retainedRsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+  const zincBurden = zincPaymentsFV + fundingGap;
+  const zincNetBenefit = retainedRsuFV - zincBurden;
+
+  const cashStrategy = results.strategies.find(s => s.strategyId === 'use-cash');
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+  const benefitVsCash = cashStrategy.impact - zincStrategy.impact;
+
+  let content = '';
+
+  if (strategyId === 'zinc-loan') {
+    content = `
+    <div class="detail-modal-container">
+      <div class="detail-header">
+        <h2 class="detail-modal-title">How Zinc HomeGap Loan Works</h2>
+        <p class="detail-description">Zinc's HomeGap Loan lets you borrow against your vested RSUs without selling them. You pay only interest while your RSUs continue to grow.</p>
+      </div>
+
+      <div class="detail-sections">
+        <div class="detail-group">
+          <h3 class="group-heading">Step 1: Your funding gap</h3>
+          <p class="group-description">This is the upfront cash you need to buy your home (down payment + stamp duty + interiors).</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Down payment (20%)</span>
@@ -770,25 +927,269 @@ function showOptionDetails(strategyId) {
               <span class="detail-value">${formatCurrency(results.interiors)}</span>
             </div>
             <div class="detail-row detail-row-total">
-              <span class="detail-label"><strong>Total</strong></span>
+              <span class="detail-label"><strong>Funding gap (Zinc loan amount)</strong></span>
               <span class="detail-value"><strong>${formatCurrency(fundingGap)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3 class="group-heading">Step 2: What you pay over ${years} years</h3>
+          <p class="group-description">With Zinc, you only pay interest (no EMI). This interest, if invested, would grow to a future value.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Zinc interest rate <span class="info-icon" title="Home loan rate + 2%">i</span></span>
+              <span class="detail-value">${(zincRate * 100).toFixed(1)}% p.a.</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Total interest over ${years} years</span>
+              <span class="detail-value">${formatCurrency(zincInterest)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Future value of payments <span class="info-icon" title="If you invested the interest payments at ${(modelInputs.zincPaymentReinvestmentCagrPct * 100).toFixed(0)}% for ${years/2} years (average)">i</span></span>
+              <span class="detail-value">${formatCurrency(zincPaymentsFV)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Loan repayment at end</span>
+              <span class="detail-value">${formatCurrency(fundingGap)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Total cost (burden)</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(zincBurden)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3 class="group-heading">Step 3: What you gain</h3>
+          <p class="group-description">Your RSUs remain invested and grow over ${years} years with stock appreciation + INR depreciation.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">RSUs pledged today</span>
+              <span class="detail-value">${formatCurrency(rsuGrossSale)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Expected CAGR <span class="info-icon" title="${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock growth + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation">i</span></span>
+              <span class="detail-value">${(effectiveRsuCagr * 100).toFixed(1)}%</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>RSU value after ${years} years</strong></span>
+              <span class="detail-value detail-value-green"><strong>${formatCurrency(retainedRsuFV)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group">
+          <h3 class="group-heading">Net benefit calculation</h3>
+          <p class="group-description">Your RSU growth minus the total cost of the Zinc loan.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">RSU value after ${years} years</span>
+              <span class="detail-value detail-value-green">${formatCurrency(retainedRsuFV)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Less: Total cost (burden)</span>
+              <span class="detail-value">- ${formatCurrency(zincBurden)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Net position</strong></span>
+              <span class="detail-value ${zincNetBenefit >= 0 ? 'detail-value-green' : 'detail-value-red'}"><strong>${formatCurrency(zincNetBenefit)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group highlight-group">
+          <h3 class="group-heading">Why "+${formatCr(benefitVsCash)}" on the chart?</h3>
+          <p class="group-description">The chart shows how much better Zinc is compared to using cash. If you used cash instead, you'd lose that money's growth potential.</p>
+          <div class="detail-rows">
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Benefit vs using cash</strong></span>
+              <span class="detail-value detail-value-green"><strong>+${formatCr(benefitVsCash)}</strong></span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  `;
+    `;
+  } else {
+    // For other strategies, show opportunity cost calculation
+    let strategyName = '';
+    let assetValue = 0;
+    let futureValue = 0;
+    let growthRate = 0;
+    let taxInfo = '';
+    let embeddedGainPct = 0;
+    let taxRate = 0;
+    let exemption = 0;
+    const strategy = results.strategies.find(s => s.strategyId === strategyId);
+    const opportunityCost = strategy.impact - zincStrategy.impact;
+
+    if (strategyId === 'use-cash') {
+      strategyName = 'Using Cash';
+      assetValue = fundingGap;
+      growthRate = modelInputs.assets.cash.cagrPct;
+      futureValue = calculateFutureValue(assetValue, growthRate, years);
+      taxInfo = 'No tax implications, but you lose potential investment returns.';
+      embeddedGainPct = 0;
+      taxRate = 0;
+      exemption = 0;
+    } else if (strategyId === 'sell-land') {
+      strategyName = 'Selling Land';
+      embeddedGainPct = modelInputs.assets.land.embeddedGainPct;
+      taxRate = modelInputs.assets.land.ltcgTaxRatePct;
+      exemption = modelInputs.assets.land.exemptionAmount;
+      assetValue = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
+      growthRate = modelInputs.assets.land.cagrPct;
+      futureValue = calculateFutureValue(assetValue, growthRate, years);
+      taxInfo = '12.5% LTCG tax on gains above ₹1.25L exemption.';
+    } else if (strategyId === 'sell-indian-equity') {
+      strategyName = 'Selling Equities';
+      embeddedGainPct = modelInputs.assets.indianEquity.embeddedGainPct;
+      taxRate = modelInputs.assets.indianEquity.ltcgTaxRatePct;
+      exemption = modelInputs.assets.indianEquity.exemptionAmount;
+      assetValue = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
+      growthRate = modelInputs.assets.indianEquity.cagrPct;
+      futureValue = calculateFutureValue(assetValue, growthRate, years);
+      taxInfo = '12.5% LTCG tax on gains above ₹1.25L exemption.';
+    } else if (strategyId === 'sell-rsus') {
+      strategyName = 'Selling RSUs';
+      embeddedGainPct = modelInputs.assets.foreignRsu.embeddedGainPct;
+      taxRate = modelInputs.assets.foreignRsu.ltcgTaxRatePct;
+      exemption = modelInputs.assets.foreignRsu.exemptionAmount;
+      assetValue = calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption);
+      growthRate = effectiveRsuCagr;
+      futureValue = calculateFutureValue(assetValue, growthRate, years);
+      taxInfo = '12.5% LTCG tax with NO exemption for foreign assets.';
+    }
+
+    const growth = futureValue - assetValue;
+    const embeddedGain = assetValue * embeddedGainPct;
+    const taxableGain = Math.max(0, embeddedGain - exemption);
+    const taxAmount = taxableGain * taxRate;
+    const netProceeds = assetValue - taxAmount;
+
+    // Build tax breakdown rows
+    let taxBreakdownRows = '';
+    if (strategyId !== 'use-cash') {
+      taxBreakdownRows = `
+            <div class="detail-row">
+              <span class="detail-label">Embedded gain (${(embeddedGainPct * 100).toFixed(0)}% of sale)</span>
+              <span class="detail-value">${formatCurrency(embeddedGain)}</span>
+            </div>
+            ${exemption > 0 ? `<div class="detail-row">
+              <span class="detail-label">Less: LTCG exemption</span>
+              <span class="detail-value">- ${formatCurrency(exemption)}</span>
+            </div>` : ''}
+            <div class="detail-row">
+              <span class="detail-label">Taxable gain</span>
+              <span class="detail-value">${formatCurrency(taxableGain)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">LTCG tax @ ${(taxRate * 100).toFixed(1)}%</span>
+              <span class="detail-value detail-value-red">- ${formatCurrency(taxAmount)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Net proceeds after tax</span>
+              <span class="detail-value">${formatCurrency(netProceeds)}</span>
+            </div>
+      `;
+    }
+
+    // Build the first section based on whether it's cash or selling assets
+    let firstSection = '';
+    if (strategyId === 'use-cash') {
+      firstSection = `
+        <div class="detail-group">
+          <h3 class="group-heading">Cash you'd use</h3>
+          <p class="group-description">You use your savings directly to cover the funding gap.</p>
+          <div class="detail-rows">
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Savings to use</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(fundingGap)}</strong></span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      firstSection = `
+        <div class="detail-group">
+          <h3 class="group-heading">What you'd need to sell</h3>
+          <p class="group-description">To get ${formatCurrency(fundingGap)} after taxes, you need to sell more.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Funding gap</span>
+              <span class="detail-value">${formatCurrency(fundingGap)}</span>
+            </div>
+            ${taxBreakdownRows}
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Gross asset value to sell</strong></span>
+              <span class="detail-value"><strong>${formatCurrency(assetValue)}</strong></span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    content = `
+    <div class="detail-modal-container">
+      <div class="detail-header">
+        <h2 class="detail-modal-title">Why ${strategyName} Costs You More</h2>
+        <p class="detail-description">${taxInfo}</p>
+      </div>
+
+      <div class="detail-sections">
+        ${firstSection}
+
+        <div class="detail-group">
+          <h3 class="group-heading">Opportunity cost over ${years} years</h3>
+          <p class="group-description">If you kept this ${strategyId === 'use-cash' ? 'cash' : 'asset'} invested instead of ${strategyId === 'use-cash' ? 'using' : 'selling'} it.</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Asset value today</span>
+              <span class="detail-value">${formatCurrency(assetValue)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Expected growth rate</span>
+              <span class="detail-value">${(growthRate * 100).toFixed(1)}% p.a.</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Value after ${years} years</span>
+              <span class="detail-value">${formatCurrency(futureValue)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Growth you'd miss</strong></span>
+              <span class="detail-value detail-value-red"><strong>${formatCurrency(growth)}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-group highlight-group negative">
+          <h3 class="group-heading">Why "-${formatCr(opportunityCost)}" on the chart?</h3>
+          <p class="group-description">This is how much worse off you'd be compared to using Zinc HomeGap loan.</p>
+          <div class="detail-rows">
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Opportunity cost vs Zinc</strong></span>
+              <span class="detail-value detail-value-red"><strong>-${formatCr(opportunityCost)}</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `;
+  }
 
   document.getElementById('detail-modal-content').innerHTML = content;
   document.getElementById('detail-modal').classList.add('visible');
-
-  // Draw chart in modal after a small delay
-  setTimeout(() => {
-    drawModalGrowthCurve('modal-chart-canvas');
-  }, 100);
 }
 
-const detailModal = document.getElementById('detail-modal');
+// Add click handlers to chart columns
+document.querySelectorAll('.chart-column').forEach(column => {
+  column.style.cursor = 'pointer';
+  column.addEventListener('click', () => {
+    const option = column.getAttribute('data-option');
+    showChartCalculation(option);
+  });
+});
 
 // Animate bars function
 function animateBars() {
@@ -867,14 +1268,7 @@ function drawModalGrowthCurve(canvasId) {
   ctx.fill();
 }
 
-// Event listeners for columns
-document.querySelectorAll('.chart-column').forEach(col => {
-  col.addEventListener('click', () => {
-    const optionId = col.dataset.option;
-    showOptionDetails(optionId);
-  });
-  col.style.cursor = 'pointer';
-});
+// Event listeners for columns - handled by showChartCalculation above
 
 document.getElementById('detail-modal-close').addEventListener('click', () => {
   document.getElementById('detail-modal').classList.remove('visible');
@@ -894,6 +1288,151 @@ document.querySelectorAll('.learn-more-btn').forEach(btn => {
   });
 });
 
+// Edit modal functionality
+const editModal = document.getElementById('edit-modal');
+const editModalInput = document.getElementById('edit-modal-input');
+const editModalTitle = document.getElementById('edit-modal-title');
+const editModalUnit = document.getElementById('edit-modal-unit');
+let currentEditField = null;
+let currentStrategyId = null;
+
+const fieldConfig = {
+  homeLoanRate: { title: 'Home Loan Interest Rate', unit: '%', min: 5, max: 15, step: 0.1 },
+  homeLoanTenure: { title: 'Home Loan Tenure', unit: 'years', min: 5, max: 30, step: 1 },
+  homeLoanLtv: { title: 'Loan-to-Value (LTV)', unit: '%', min: 50, max: 90, step: 5 },
+  interiorsPct: { title: 'Interior Budget', unit: '% of property', min: 0, max: 50, step: 5 },
+  analysisHorizon: { title: 'Analysis Horizon', unit: 'years', min: 5, max: 20, step: 1 },
+  cashCagr: { title: 'Cash Investment CAGR', unit: '%', min: 3, max: 12, step: 1 },
+  landCagr: { title: 'Land Appreciation CAGR', unit: '%', min: 3, max: 15, step: 1 },
+  landEmbeddedGain: { title: 'Land Embedded Gain', unit: '%', min: 0, max: 90, step: 5 },
+  equityCagr: { title: 'Equity CAGR', unit: '%', min: 5, max: 20, step: 1 },
+  equityEmbeddedGain: { title: 'Equity Embedded Gain', unit: '%', min: 0, max: 90, step: 5 },
+  rsuCagr: { title: 'RSU Stock CAGR (USD)', unit: '%', min: 5, max: 25, step: 1 },
+  inrDepreciation: { title: 'INR Depreciation', unit: '%', min: 0, max: 5, step: 0.5 },
+  rsuEmbeddedGain: { title: 'RSU Embedded Gain', unit: '%', min: 0, max: 90, step: 5 },
+};
+
+function openEditModal(field, value, strategyId) {
+  const config = fieldConfig[field];
+  if (!config) return;
+
+  currentEditField = field;
+  currentStrategyId = strategyId;
+  editModalTitle.textContent = config.title;
+  editModalUnit.textContent = config.unit;
+  editModalInput.value = value;
+  editModalInput.min = config.min;
+  editModalInput.max = config.max;
+  editModalInput.step = config.step;
+  editModal.classList.add('visible');
+  editModalInput.focus();
+  editModalInput.select();
+}
+
+function closeEditModal() {
+  editModal.classList.remove('visible');
+  currentEditField = null;
+}
+
+function saveEditValue() {
+  if (!currentEditField) return;
+
+  const value = parseFloat(editModalInput.value);
+  if (isNaN(value)) {
+    closeEditModal();
+    return;
+  }
+
+  switch (currentEditField) {
+    case 'homeLoanRate':
+      modelInputs.selectedHomeLoanRatePct = value / 100;
+      break;
+    case 'homeLoanTenure':
+      modelInputs.homeLoanTenureYears = value;
+      break;
+    case 'homeLoanLtv':
+      modelInputs.homeLoanLtvPct = value / 100;
+      break;
+    case 'interiorsPct':
+      modelInputs.interiorsPct = value / 100;
+      break;
+    case 'analysisHorizon':
+      modelInputs.zincLoanTenureYears = value;
+      break;
+    case 'cashCagr':
+      modelInputs.assets.cash.cagrPct = value / 100;
+      break;
+    case 'landCagr':
+      modelInputs.assets.land.cagrPct = value / 100;
+      break;
+    case 'landEmbeddedGain':
+      modelInputs.assets.land.embeddedGainPct = value / 100;
+      break;
+    case 'equityCagr':
+      modelInputs.assets.indianEquity.cagrPct = value / 100;
+      break;
+    case 'equityEmbeddedGain':
+      modelInputs.assets.indianEquity.embeddedGainPct = value / 100;
+      break;
+    case 'rsuCagr':
+      modelInputs.assets.foreignRsu.usdCagrPct = value / 100;
+      break;
+    case 'inrDepreciation':
+      modelInputs.assets.foreignRsu.inrDepreciationPct = value / 100;
+      break;
+    case 'rsuEmbeddedGain':
+      modelInputs.assets.foreignRsu.embeddedGainPct = value / 100;
+      break;
+  }
+
+  closeEditModal();
+  updateUI();
+  updateOptionSections();
+
+  // Refresh the current popup
+  if (currentStrategyId) {
+    showOptionDetails(currentStrategyId);
+  }
+}
+
+document.getElementById('edit-modal-save').addEventListener('click', saveEditValue);
+document.getElementById('edit-modal-cancel').addEventListener('click', closeEditModal);
+
+editModal.addEventListener('click', (e) => {
+  if (e.target === editModal) {
+    closeEditModal();
+  }
+});
+
+editModalInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    saveEditValue();
+  } else if (e.key === 'Escape') {
+    closeEditModal();
+  }
+});
+
+// Delegate edit button clicks from detail modal
+document.getElementById('detail-modal-content').addEventListener('click', (e) => {
+  const editBtn = e.target.closest('.edit-btn');
+  if (editBtn) {
+    const field = editBtn.dataset.field;
+    const value = editBtn.dataset.value;
+    const strategyId = document.querySelector('.detail-modal-container')?.closest('#detail-modal-content')?.dataset.strategyId ||
+                       document.querySelector('.learn-more-btn.active')?.dataset.option;
+
+    // Get strategyId from the current popup context
+    const detailModalContent = document.getElementById('detail-modal-content');
+    const title = detailModalContent.querySelector('.detail-modal-title')?.textContent || '';
+    let activeStrategyId = 'zinc-loan';
+    if (title.includes('cash')) activeStrategyId = 'use-cash';
+    else if (title.includes('land')) activeStrategyId = 'sell-land';
+    else if (title.includes('equities')) activeStrategyId = 'sell-indian-equity';
+    else if (title.includes('RSUs') && !title.includes('Zinc')) activeStrategyId = 'sell-rsus';
+
+    openEditModal(field, value, activeStrategyId);
+  }
+});
 
 // Use Intersection Observer to trigger animation when scrolled into view
 const chartSection = document.querySelector('.chart-section');
@@ -1184,6 +1723,18 @@ function updateActivePill() {
     });
   }
 }
+
+// Nav pill click handlers to scroll to sections
+navPills.forEach(pill => {
+  pill.style.cursor = 'pointer';
+  pill.addEventListener('click', () => {
+    const targetOption = pill.dataset.option;
+    const targetSection = document.querySelector(`.option-section[data-option="${targetOption}"]`);
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
 
 updateUI();
 

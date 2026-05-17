@@ -26,9 +26,8 @@
         <p class="hero-label">You still need additional</p>
         <h1 class="hero-amount">
           <span class="hero-amount-value" id="hero-amount">1.23 Cr</span>
-          <span class="hero-amount-suffix">to get in</span>
+          <span class="hero-amount-suffix">to get in your house</span>
         </h1>
-        <p class="hero-subtitle">your house</p>
 
         <div class="funding-breakdown">
           <div class="breakdown-pill">
@@ -176,7 +175,7 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="zinc-value-today">₹47.60 Lacs</span>
-              <span class="value-label">RSU value today</span>
+              <span class="value-label">RSUs you'd otherwise sell</span>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="zinc-growth">+37.6 lacs</span>
@@ -244,7 +243,7 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By using your savings worth <span class="highlight">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red">₹85.24 Lacs</span> over <strong>10 years</strong> if you use that cash in a safe fund to get 6%.</p>
           <button class="learn-more-btn" data-option="use-cash">Learn more</button>
         </div>
@@ -266,7 +265,7 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="land-value-today">₹54.28 Lacs</span>
-              <span class="value-label">Land to sell today</span>
+              <span class="value-label">Land to sell (incl. tax)</span>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="land-growth">+63.0 lacs</span>
@@ -289,7 +288,7 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling land worth <span class="highlight">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">₹1.17 Cr</span> over <strong>10 years</strong> at 8% appreciation.</p>
           <button class="learn-more-btn" data-option="sell-land">Learn more</button>
         </div>
@@ -311,7 +310,7 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="equity-value-today">₹50.71 Lacs</span>
-              <span class="value-label">Equities to sell today</span>
+              <span class="value-label">Equities to sell (incl. tax)</span>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="equity-growth">+1.07 Cr</span>
@@ -334,7 +333,7 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling equities worth <span class="highlight">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red">₹1.57 Cr</span> over <strong>10 years</strong> at 12% returns.</p>
           <button class="learn-more-btn" data-option="sell-indian-equity">Learn more</button>
         </div>
@@ -356,7 +355,7 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="rsu-value-today">₹51.60 Lacs</span>
-              <span class="value-label">RSUs to sell today</span>
+              <span class="value-label">RSUs to sell (incl. tax)</span>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="rsu-growth">+1.17 Cr</span>
@@ -379,7 +378,7 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling RSUs worth <span class="highlight">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">₹1.69 Cr</span> over <strong>10 years</strong> (12% stock + 2.5% INR depreciation).</p>
           <button class="learn-more-btn" data-option="sell-rsus">Learn more</button>
         </div>
@@ -393,6 +392,21 @@
       <div id="detail-modal-content"></div>
       <div class="modal-actions">
         <button class="modal-save" id="detail-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Value Modal -->
+  <div class="modal-overlay modal-overlay-top" id="edit-modal">
+    <div class="modal modal-edit">
+      <h3 class="edit-modal-title" id="edit-modal-title">Edit Value</h3>
+      <div class="edit-modal-field">
+        <input type="number" id="edit-modal-input" class="edit-modal-input" step="any">
+        <span class="edit-modal-unit" id="edit-modal-unit">%</span>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" id="edit-modal-cancel">Cancel</button>
+        <button class="modal-save" id="edit-modal-save">Save</button>
       </div>
     </div>
   </div>
