@@ -662,6 +662,33 @@ function showOptionDetails(strategyId) {
     problemText = `By selling RSUs worth <span class="highlight">${formatCurrency(valueToday)}</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.<br><br>This means you'll be <span class="highlight-red">${formatCurrency(opportunityCostVsZinc)}</span> poorer than taking a Zinc HomeGap loan.`;
   }
 
+  // Contextual labels for "How we calculated this" section
+  let assetLabelToday = 'Cash needed today';
+  let investedLabel = `If invested at ${growthRate}% for ${years} years`;
+  let cagrTooltip = '';
+
+  if (strategyId === 'zinc-loan') {
+    assetLabelToday = 'RSUs to pledge today';
+    investedLabel = `If you let those RSUs remain invested for ${years} years`;
+    cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
+  } else if (strategyId === 'use-cash') {
+    assetLabelToday = 'Savings to use today';
+    investedLabel = `If you let that cash remain invested for ${years} years`;
+    cagrTooltip = `${growthRate}% CAGR in a safe debt fund`;
+  } else if (strategyId === 'sell-land') {
+    assetLabelToday = 'Land to sell today';
+    investedLabel = `If you let that land appreciate for ${years} years`;
+    cagrTooltip = `${growthRate}% annual land appreciation`;
+  } else if (strategyId === 'sell-indian-equity') {
+    assetLabelToday = 'Equities to sell today';
+    investedLabel = `If you let those equities grow for ${years} years`;
+    cagrTooltip = `${growthRate}% CAGR in Indian equities`;
+  } else if (strategyId === 'sell-rsus') {
+    assetLabelToday = 'RSUs to sell today';
+    investedLabel = `If you let those RSUs remain invested for ${years} years`;
+    cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
+  }
+
   const content = `
     <div class="detail-modal-container">
       <div class="detail-header">
@@ -703,11 +730,11 @@ function showOptionDetails(strategyId) {
           <h3 class="group-heading">How we calculated this</h3>
           <div class="detail-rows">
             <div class="detail-row">
-              <span class="detail-label">Cash needed today</span>
+              <span class="detail-label">${assetLabelToday}</span>
               <span class="detail-value">${formatCurrency(valueToday)}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">If invested at ${growthRate}% for ${years} years</span>
+              <span class="detail-label">${investedLabel} <span class="info-icon" title="${cagrTooltip}">i</span></span>
               <span class="detail-value ${isPositive ? 'detail-value-green' : 'detail-value-red'}">${formatCurrency(valueFuture)}</span>
             </div>
           </div>
@@ -936,10 +963,53 @@ function updateOptionSections() {
   document.getElementById('zinc-growth').textContent = '+' + formatCr(rsuGrowth);
 }
 
-// Draw animated growth curve on canvas
+// Draw animated growth curve on canvas with year/value updates
 function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
+
+  // Map canvas ID to element prefix
+  const canvasToPrefix = {
+    'chart-zinc-loan': 'zinc',
+    'chart-use-cash': 'cash',
+    'chart-sell-land': 'land',
+    'chart-sell-indian-equity': 'equity',
+    'chart-sell-rsus': 'rsu'
+  };
+  const optionType = canvasToPrefix[canvasId] || canvasId.replace('chart-', '').split('-')[0];
+
+  // Get year count and value elements
+  const yearCountEl = document.getElementById(optionType + '-year-count');
+  const chartYearEl = document.getElementById(optionType + '-chart-year');
+  const valueFutureEl = document.getElementById(optionType + '-value-future');
+  const growthEl = document.getElementById(optionType + '-growth');
+
+  // Get start and end values for interpolation
+  const results = calculateModel(modelInputs);
+  const years = modelInputs.zincLoanTenureYears;
+  let todayValue = 0;
+  let finalValue = 0;
+  let cagr = 0;
+
+  if (optionType === 'zinc' || optionType === 'rsu') {
+    const rsuGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+    const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+    todayValue = rsuGrossSale;
+    cagr = effectiveRsuCagr;
+    finalValue = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+  } else if (optionType === 'cash') {
+    todayValue = results.fundingGap;
+    cagr = modelInputs.assets.cash.cagrPct;
+    finalValue = calculateFutureValue(todayValue, cagr, years);
+  } else if (optionType === 'land') {
+    todayValue = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+    cagr = modelInputs.assets.land.cagrPct;
+    finalValue = calculateFutureValue(todayValue, cagr, years);
+  } else if (optionType === 'equity') {
+    todayValue = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    cagr = modelInputs.assets.indianEquity.cagrPct;
+    finalValue = calculateFutureValue(todayValue, cagr, years);
+  }
 
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -966,16 +1036,37 @@ function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
     allPoints.push({ x, y });
   }
 
-  // Animation
-  const animationDuration = 1500; // 1.5 seconds
+  // Animation - slower duration (3 seconds)
+  const animationDuration = 3000;
   const startTime = performance.now();
+  let lastYear = 0;
 
   function animate(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / animationDuration, 1);
-    const easedProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const easedProgress = 1 - Math.pow(1 - progress, 2); // ease-out quadratic (slower)
 
     const pointsToShow = Math.floor(easedProgress * numPoints);
+
+    // Calculate current year (0 to 10)
+    const currentYear = Math.floor(easedProgress * years);
+
+    // Update year labels when year changes
+    if (currentYear !== lastYear || progress >= 1) {
+      const displayYear = progress >= 1 ? years : currentYear;
+      if (yearCountEl) yearCountEl.textContent = displayYear;
+      if (chartYearEl) chartYearEl.textContent = displayYear;
+
+      // Update future value based on current year
+      const currentValue = calculateFutureValue(todayValue, cagr, displayYear);
+      if (valueFutureEl) valueFutureEl.textContent = formatCurrency(currentValue);
+
+      // Update growth badge amount
+      const currentGrowth = currentValue - todayValue;
+      if (growthEl) growthEl.textContent = '+' + formatCr(currentGrowth);
+
+      lastYear = currentYear;
+    }
 
     ctx.clearRect(0, 0, width, height);
 
@@ -1035,6 +1126,12 @@ function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
       requestAnimationFrame(animate);
     }
   }
+
+  // Start with year 0
+  if (yearCountEl) yearCountEl.textContent = '0';
+  if (chartYearEl) chartYearEl.textContent = '0';
+  if (valueFutureEl) valueFutureEl.textContent = formatCurrency(todayValue);
+  if (growthEl) growthEl.textContent = '+₹0';
 
   requestAnimationFrame(animate);
 }
@@ -1097,29 +1194,69 @@ document.addEventListener('click', (event) => {
   trackButtonClick(buttonName);
 });
 
+// Typing animation for section titles
+function typeText(element, text, speed = 30) {
+  return new Promise((resolve) => {
+    let index = 0;
+    element.textContent = '';
+
+    function type() {
+      if (index < text.length) {
+        element.textContent += text.charAt(index);
+        index++;
+        setTimeout(type, speed);
+      } else {
+        resolve();
+      }
+    }
+
+    type();
+  });
+}
+
+// Animate a section with typing effect
+async function animateSection(section) {
+  if (section.dataset.animating === 'true' || section.classList.contains('animate')) return;
+  section.dataset.animating = 'true';
+
+  const titleTextEl = section.querySelector('.option-title-text');
+  const fullText = titleTextEl?.dataset.fullText || '';
+
+  // Delay before typing starts
+  await new Promise(r => setTimeout(r, 300));
+
+  // Type the title (slower speed - 40ms per character)
+  if (titleTextEl && fullText) {
+    await typeText(titleTextEl, fullText, 40);
+  }
+
+  // Small pause after typing completes
+  await new Promise(r => setTimeout(r, 300));
+
+  // Add animate class to slide title up and reveal other elements
+  section.classList.add('animate');
+
+  // Draw chart after elements start appearing
+  const canvasId = 'chart-' + section.dataset.option;
+  const canvas = document.getElementById(canvasId);
+  if (canvas && !canvas.dataset.drawn) {
+    setTimeout(() => {
+      drawGrowthCurve(canvasId, 0, 100);
+      canvas.dataset.drawn = 'true';
+    }, 800);
+  }
+}
+
 // Scroll listener
 scrollContainer.addEventListener('scroll', () => {
   updateActivePill();
 
-  // Animate sections and draw charts when they come into view
+  // Animate sections when they come into view
   optionSections.forEach(section => {
     const rect = section.getBoundingClientRect();
     // Check if section is mostly visible (top is within viewport)
-    if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) {
-      // Add animate class for staggered element animations
-      if (!section.classList.contains('animate')) {
-        section.classList.add('animate');
-
-        // Draw chart after a delay to sync with other animations
-        const canvasId = 'chart-' + section.dataset.option;
-        const canvas = document.getElementById(canvasId);
-        if (canvas && !canvas.dataset.drawn) {
-          setTimeout(() => {
-            drawGrowthCurve(canvasId, 0, 100);
-            canvas.dataset.drawn = 'true';
-          }, 500); // Start chart animation after value comparison appears
-        }
-      }
+    if (rect.top < window.innerHeight * 0.6 && rect.bottom > 0) {
+      animateSection(section);
     }
   });
 });

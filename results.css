@@ -597,6 +597,50 @@ body {
   color: rgba(0, 0, 0, 0.6);
 }
 
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 10px;
+  font-weight: 600;
+  font-style: italic;
+  cursor: help;
+  margin-left: 6px;
+  position: relative;
+}
+
+.info-icon:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+.info-icon:hover::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #333;
+}
+
 .detail-value {
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
@@ -866,7 +910,7 @@ body {
 }
 
 .option-content {
-  max-width: 900px;
+  max-width: 980px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -996,11 +1040,86 @@ body {
   letter-spacing: -0.28px;
 }
 
+.value-comparison-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.growth-callout {
+  position: relative;
+  background: linear-gradient(180deg, rgba(100, 60, 60, 0.9) 0%, rgba(70, 45, 45, 0.9) 100%);
+  border: 1px solid rgba(100, 60, 60, 0.6);
+  border-radius: 52px;
+  padding: 12px 20px;
+  max-width: 220px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.option-section.animate .growth-callout {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 3.5s;
+  animation: floatCallout 2s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+@keyframes floatCallout {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.growth-callout::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid rgba(100, 60, 60, 0.6);
+}
+
+.growth-callout::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid rgba(100, 60, 60, 0.9);
+}
+
+.growth-callout p {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: -0.14px;
+  margin: 0;
+}
+
 /* Growth Chart */
 .growth-chart {
   width: 100%;
   height: 180px;
   position: relative;
+  margin-top: -20px;
 }
 
 .growth-chart canvas {
@@ -1020,7 +1139,42 @@ body {
 }
 
 /* Option Section Animations */
-.option-section .option-header,
+
+/* Initial state - title centered vertically */
+.option-section .option-content {
+  position: relative;
+}
+
+.option-section .option-header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.option-section .option-title {
+  overflow: hidden;
+}
+
+.option-section .option-title-text {
+  display: inline;
+  border-right: 2px solid rgba(255, 255, 255, 0.7);
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: rgba(255, 255, 255, 0.7); }
+}
+
+.option-section .option-subtitle {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
 .option-section .value-comparison,
 .option-section .growth-chart,
 .option-section .benefit-box {
@@ -1029,28 +1183,50 @@ body {
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
+.option-section > .scroll-indicator {
+  opacity: 0;
+  transition: opacity 0.6s ease-out;
+}
+
+/* After typing animation completes - title slides up */
 .option-section.animate .option-header {
+  position: relative;
+  top: 0;
+  left: 0;
+  transform: translate(0, 0);
+}
+
+.option-section.animate .option-title-text {
+  border-right: none;
+  animation: none;
+}
+
+.option-section.animate .option-subtitle {
   opacity: 1;
-  transform: translateY(0);
-  transition-delay: 0.1s;
+  transition-delay: 0.2s;
 }
 
 .option-section.animate .value-comparison {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.3s;
+  transition-delay: 0.4s;
 }
 
 .option-section.animate .growth-chart {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.5s;
+  transition-delay: 0.6s;
 }
 
 .option-section.animate .benefit-box {
   opacity: 1;
   transform: translateY(0);
-  transition-delay: 0.9s;
+  transition-delay: 1.2s;
+}
+
+.option-section.animate > .scroll-indicator {
+  opacity: 1;
+  transition-delay: 1.4s;
 }
 
 /* Benefit Box */
