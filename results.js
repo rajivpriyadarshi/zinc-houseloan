@@ -736,15 +736,15 @@ function showOptionDetails(strategyId) {
           <h3 class="group-heading">Your home loan</h3>
           <div class="detail-rows">
             <div class="detail-row">
-              <span class="detail-label">Interest rate <button class="edit-btn" data-field="homeLoanRate" data-value="${(modelInputs.selectedHomeLoanRatePct * 100).toFixed(1)}">✎</button></span>
+              <span class="detail-label">Interest rate <button class="edit-btn" data-field="homeLoanRate" data-value="${(modelInputs.selectedHomeLoanRatePct * 100).toFixed(1)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.selectedHomeLoanRatePct * 100).toFixed(1)}%</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Tenure <button class="edit-btn" data-field="homeLoanTenure" data-value="${modelInputs.homeLoanTenureYears}">✎</button></span>
+              <span class="detail-label">Tenure <button class="edit-btn" data-field="homeLoanTenure" data-value="${modelInputs.homeLoanTenureYears}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${modelInputs.homeLoanTenureYears} years</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">LTV <button class="edit-btn" data-field="homeLoanLtv" data-value="${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">LTV <button class="edit-btn" data-field="homeLoanLtv" data-value="${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.homeLoanLtvPct * 100).toFixed(0)}%</span>
             </div>
             <div class="detail-row">
@@ -771,7 +771,7 @@ function showOptionDetails(strategyId) {
               <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Interior budget <button class="edit-btn" data-field="interiorsPct" data-value="${(modelInputs.interiorsPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Interior budget <button class="edit-btn" data-field="interiorsPct" data-value="${(modelInputs.interiorsPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${formatCurrency(results.interiors)}</span>
             </div>
             <div class="detail-row detail-row-total">
@@ -803,7 +803,7 @@ function showOptionDetails(strategyId) {
         ` : ''}
 
         <div class="detail-group">
-          <h3 class="group-heading">Opportunity cost if unsold</h3>
+          <h3 class="group-heading">Financial impact</h3>
           <p class="group-description">What this ${strategyId === 'use-cash' ? 'cash' : 'asset'} could grow to if you kept it invested.</p>
           <div class="detail-rows">
             <div class="detail-row">
@@ -825,46 +825,46 @@ function showOptionDetails(strategyId) {
           <h3 class="group-heading">Other assumptions</h3>
           <div class="detail-rows">
             <div class="detail-row">
-              <span class="detail-label">Analysis horizon <button class="edit-btn" data-field="analysisHorizon" data-value="${years}">✎</button></span>
+              <span class="detail-label">Analysis horizon <button class="edit-btn" data-field="analysisHorizon" data-value="${years}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${years} years</span>
             </div>
             ${strategyId === 'use-cash' ? `
             <div class="detail-row">
-              <span class="detail-label">Cash investment CAGR <button class="edit-btn" data-field="cashCagr" data-value="${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Cash investment CAGR <button class="edit-btn" data-field="cashCagr" data-value="${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%</span>
             </div>
             ` : ''}
             ${strategyId === 'sell-land' ? `
             <div class="detail-row">
-              <span class="detail-label">Land appreciation CAGR <button class="edit-btn" data-field="landCagr" data-value="${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Land appreciation CAGR <button class="edit-btn" data-field="landCagr" data-value="${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="landEmbeddedGain" data-value="${(modelInputs.assets.land.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="landEmbeddedGain" data-value="${(modelInputs.assets.land.embeddedGainPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.land.embeddedGainPct * 100).toFixed(0)}%</span>
             </div>
             ` : ''}
             ${strategyId === 'sell-indian-equity' ? `
             <div class="detail-row">
-              <span class="detail-label">Equity CAGR <button class="edit-btn" data-field="equityCagr" data-value="${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Equity CAGR <button class="edit-btn" data-field="equityCagr" data-value="${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="equityEmbeddedGain" data-value="${(modelInputs.assets.indianEquity.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="equityEmbeddedGain" data-value="${(modelInputs.assets.indianEquity.embeddedGainPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.indianEquity.embeddedGainPct * 100).toFixed(0)}%</span>
             </div>
             ` : ''}
             ${strategyId === 'sell-rsus' || strategyId === 'zinc-loan' ? `
             <div class="detail-row">
-              <span class="detail-label">RSU stock CAGR (USD) <button class="edit-btn" data-field="rsuCagr" data-value="${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">RSU stock CAGR (USD) <button class="edit-btn" data-field="rsuCagr" data-value="${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}%</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">INR depreciation <button class="edit-btn" data-field="inrDepreciation" data-value="${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}">✎</button></span>
+              <span class="detail-label">INR depreciation <button class="edit-btn" data-field="inrDepreciation" data-value="${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}%</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="rsuEmbeddedGain" data-value="${(modelInputs.assets.foreignRsu.embeddedGainPct * 100).toFixed(0)}">✎</button></span>
+              <span class="detail-label">Embedded gain % <button class="edit-btn" data-field="rsuEmbeddedGain" data-value="${(modelInputs.assets.foreignRsu.embeddedGainPct * 100).toFixed(0)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></span>
               <span class="detail-value">${(modelInputs.assets.foreignRsu.embeddedGainPct * 100).toFixed(0)}%</span>
             </div>
             ` : ''}

@@ -590,22 +590,26 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.08);
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 12px;
+  background: transparent;
+  color: #4a9d5b;
   cursor: pointer;
-  margin-left: 6px;
+  margin-left: 0;
   transition: all 0.2s;
   vertical-align: middle;
+  padding: 0;
+}
+
+.edit-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .edit-btn:hover {
-  background: rgba(0, 0, 0, 0.15);
-  color: #000;
+  color: #3a8d4b;
 }
 
 /* Detail Modal Content */
