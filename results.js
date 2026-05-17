@@ -1,5 +1,271 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
+import { auth } from './firebaseAuth.js';
+import { app } from './firebaseAuth.js';
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithCustomToken } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
+// Header scroll behavior
+const siteHeader = document.getElementById('site-header');
+const logoutBtn = document.getElementById('logout-btn');
+const scrollContainer = document.querySelector('.scroll-container');
+let lastScrollY = 0;
+
+function handleHeaderScroll() {
+  const currentScrollY = scrollContainer.scrollTop;
+  const chartSectionBottom = document.querySelector('.chart-section')?.offsetTop + document.querySelector('.chart-section')?.offsetHeight || 0;
+
+  // Only show header when at or above the chart section
+  if (currentScrollY > chartSectionBottom - window.innerHeight * 0.5) {
+    // Below chart section - always hide header
+    siteHeader.classList.add('hidden');
+  } else if (currentScrollY > lastScrollY && currentScrollY > 70) {
+    // Scrolling down above chart section - hide header
+    siteHeader.classList.add('hidden');
+  } else {
+    // Scrolling up and at/above chart section - show header
+    siteHeader.classList.remove('hidden');
+  }
+
+  lastScrollY = currentScrollY;
+}
+
+scrollContainer.addEventListener('scroll', handleHeaderScroll, { passive: true });
+
+// Auth state tracking
+let isLoggedIn = false;
+const userEmailEl = document.getElementById('user-email');
+
+// Logout functionality
+logoutBtn.addEventListener('click', async () => {
+  trackButtonClick('logout_click');
+  try {
+    await auth.signOut();
+    sessionStorage.removeItem('zinc-flow-started');
+    window.location.href = '/';
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+});
+
+// Login modal functionality
+const loginModal = document.getElementById('login-modal');
+const googleSignInBtn = document.getElementById('google-signin-btn');
+const sendOtpBtn = document.getElementById('send-otp-btn');
+const verifyOtpBtn = document.getElementById('verify-otp-btn');
+const editEmailBtn = document.getElementById('edit-email-btn');
+const loginEmail = document.getElementById('login-email');
+const loginOtp = document.getElementById('login-otp');
+const loginStepEmail = document.getElementById('login-step-email');
+const loginStepOtp = document.getElementById('login-step-otp');
+const loginEmailChip = document.getElementById('login-email-chip');
+const loginStatus = document.getElementById('login-status');
+const provider = new GoogleAuthProvider();
+
+const functions = getFunctions(app, 'asia-south1');
+const sendEmailOtp = httpsCallable(functions, 'sendEmailOtp');
+const verifyEmailOtp = httpsCallable(functions, 'verifyEmailOtp');
+const registerCustomer = httpsCallable(functions, 'registerCustomer');
+
+function setLoginStatus(message, isError = false) {
+  loginStatus.textContent = message;
+  loginStatus.style.color = isError ? '#b00020' : 'rgba(0, 0, 0, 0.6)';
+}
+
+function showStep(step) {
+  loginStepEmail.classList.toggle('active', step === 'email');
+  loginStepOtp.classList.toggle('active', step === 'otp');
+}
+
+function callableErrorMessage(error, fallback) {
+  const details = error?.details;
+  const response = details?.response;
+  if (typeof response === 'string' && response.trim()) return response;
+  if (response && typeof response === 'object') return response.message || response.error || JSON.stringify(response);
+  if (error?.message) return error.message;
+  return fallback;
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+function toDisplayName(email) {
+  const localPart = String(email || '').split('@')[0] || 'Customer';
+  return localPart.replace(/[._-]+/g, ' ').trim() || 'Customer Name';
+}
+
+async function tryRegisterCustomer(email, name) {
+  try {
+    await registerCustomer({ email, name });
+    return true;
+  } catch (error) {
+    console.warn('registerCustomer failed (non-blocking):', error);
+    return false;
+  }
+}
+
+function closeLoginModal() {
+  loginModal.classList.remove('visible');
+  showStep('email');
+  setLoginStatus('');
+}
+
+// Google sign in
+googleSignInBtn.addEventListener('click', async () => {
+  trackButtonClick('google_signin_click');
+  googleSignInBtn.disabled = true;
+  setLoginStatus('Signing in with Google...');
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const email = result?.user?.email || '';
+    await tryRegisterCustomer(email, result?.user?.displayName || toDisplayName(email));
+    trackButtonClick('google_signin_success');
+    closeLoginModal();
+  } catch (error) {
+    const code = error?.code || '';
+    if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    setLoginStatus(callableErrorMessage(error, 'Google sign-in failed. Try again.'), true);
+  } finally {
+    googleSignInBtn.disabled = false;
+  }
+});
+
+// Send OTP
+sendOtpBtn.addEventListener('click', async () => {
+  const email = String(loginEmail.value || '').trim().toLowerCase();
+  if (!isValidEmail(email)) {
+    setLoginStatus('Enter a valid email address.', true);
+    return;
+  }
+  sendOtpBtn.disabled = true;
+  setLoginStatus('Sending OTP...');
+  try {
+    await sendEmailOtp({ email });
+    setLoginStatus('OTP sent. Check your email and enter the code.');
+    loginEmailChip.textContent = email;
+    loginOtp.value = '';
+    showStep('otp');
+  } catch (error) {
+    setLoginStatus(callableErrorMessage(error, 'Could not send OTP. Try again.'), true);
+  } finally {
+    sendOtpBtn.disabled = false;
+  }
+});
+
+// Verify OTP
+verifyOtpBtn.addEventListener('click', async () => {
+  const email = String(loginEmail.value || '').trim().toLowerCase();
+  const otp = String(loginOtp.value || '').trim();
+  if (!isValidEmail(email)) {
+    setLoginStatus('Enter a valid email address.', true);
+    return;
+  }
+  if (!/^\d{6}$/.test(otp)) {
+    setLoginStatus('Enter a valid 6-digit OTP.', true);
+    return;
+  }
+  verifyOtpBtn.disabled = true;
+  setLoginStatus('Verifying OTP...');
+  try {
+    const verifyResult = await verifyEmailOtp({ email, otp });
+    const customToken = verifyResult?.data?.firebaseCustomToken;
+    if (!customToken) throw new Error('Missing Firebase custom token from OTP verification.');
+    await signInWithCustomToken(auth, customToken);
+    await tryRegisterCustomer(email, toDisplayName(email));
+    trackButtonClick('email_otp_verified');
+    setLoginStatus('Login successful.');
+    closeLoginModal();
+  } catch (error) {
+    setLoginStatus(callableErrorMessage(error, 'OTP verification failed. Try again.'), true);
+  } finally {
+    verifyOtpBtn.disabled = false;
+  }
+});
+
+// Edit email
+editEmailBtn.addEventListener('click', () => {
+  showStep('email');
+  setLoginStatus('');
+  loginEmail.focus();
+});
+
+// Close modal on overlay click
+loginModal.addEventListener('click', (e) => {
+  if (e.target === loginModal) {
+    closeLoginModal();
+  }
+});
+
+// Handle redirect result
+getRedirectResult(auth)
+  .then(async (result) => {
+    if (!result?.user) return;
+    const email = result.user.email || '';
+    await tryRegisterCustomer(email, result.user.displayName || toDisplayName(email));
+    closeLoginModal();
+  })
+  .catch((error) => {
+    setLoginStatus(callableErrorMessage(error, 'Google sign-in failed. Try again.'), true);
+  });
+
+// Block scrolling past chart section until logged in
+const chartSectionEl = document.querySelector('.chart-section');
+
+// Auth state change handler
+auth.onAuthStateChanged((user) => {
+  isLoggedIn = !!user;
+  if (user) {
+    logoutBtn.classList.add('visible');
+    userEmailEl.textContent = user.email || '';
+    userEmailEl.classList.add('visible');
+    // Re-enable snap scroll after login
+    scrollContainer.style.scrollSnapType = 'y mandatory';
+  } else {
+    logoutBtn.classList.remove('visible');
+    userEmailEl.textContent = '';
+    userEmailEl.classList.remove('visible');
+  }
+});
+
+let lastScrollForDirection = 0;
+
+function blockScrollPastChart() {
+  if (isLoggedIn) return;
+
+  const currentScroll = scrollContainer.scrollTop;
+  const chartBottom = chartSectionEl.offsetTop + chartSectionEl.offsetHeight - window.innerHeight;
+  const scrollingDown = currentScroll > lastScrollForDirection;
+
+  // Near the bottom of chart section
+  if (currentScroll >= chartBottom - 50) {
+    if (scrollingDown) {
+      // Disable snap only when scrolling down at chart section
+      scrollContainer.style.scrollSnapType = 'none';
+    }
+  } else {
+    // Re-enable snap scroll when above the threshold (scrolling up)
+    scrollContainer.style.scrollSnapType = 'y mandatory';
+  }
+
+  // If trying to scroll past chart section
+  if (currentScroll > chartBottom + 10) {
+    // Show login modal
+    loginModal.classList.add('visible');
+    showStep('email');
+    setLoginStatus('');
+
+    // Force scroll back to chart section
+    scrollContainer.scrollTop = chartBottom;
+  }
+
+  lastScrollForDirection = currentScroll;
+}
+
+scrollContainer.addEventListener('scroll', blockScrollPastChart, { passive: true });
 
 // Get stored values
 const propertyPrice = parseInt(localStorage.getItem('houseValue')) || 10000000;
@@ -495,42 +761,48 @@ function showOptionDetails(strategyId) {
   }, 100);
 }
 
-const loanModal = document.getElementById('loan-modal');
-const constructionModal = document.getElementById('construction-modal');
 const detailModal = document.getElementById('detail-modal');
 
-document.getElementById('loan-settings-btn').addEventListener('click', () => {
-  document.getElementById('modal-loan-rate').value = modelInputs.selectedHomeLoanRatePct;
-  document.getElementById('modal-loan-tenure').value = modelInputs.homeLoanTenureYears;
-  document.getElementById('modal-loan-ltv').value = modelInputs.homeLoanLtvPct;
-  loanModal.classList.add('visible');
-});
+// Animate bars function
+function animateBars() {
+  document.querySelectorAll('.chart-section .bar').forEach(bar => {
+    bar.classList.add('animate');
+  });
+  document.querySelectorAll('.chart-section .bar-label').forEach(label => {
+    label.classList.add('animate');
+  });
+}
 
-document.getElementById('loan-modal-cancel').addEventListener('click', () => {
-  loanModal.classList.remove('visible');
-});
+// Draw modal growth curve (smaller version for modals)
+function drawModalGrowthCurve(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
 
-document.getElementById('loan-modal-save').addEventListener('click', () => {
-  modelInputs.selectedHomeLoanRatePct = parseFloat(document.getElementById('modal-loan-rate').value);
-  modelInputs.homeLoanTenureYears = parseInt(document.getElementById('modal-loan-tenure').value);
-  modelInputs.homeLoanLtvPct = parseFloat(document.getElementById('modal-loan-ltv').value);
-  trackValueSubmit('loan_settings_submit', JSON.stringify({
-    rate: modelInputs.selectedHomeLoanRatePct,
-    tenure_years: modelInputs.homeLoanTenureYears,
-    ltv_pct: modelInputs.homeLoanLtvPct,
-  }));
-  loanModal.classList.remove('visible');
-  updateUI();
-});
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
 
-const constructionExtraFields = document.getElementById('construction-extra-fields');
-const constructionSelect = document.getElementById('modal-construction');
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
 
-constructionSelect.addEventListener('change', () => {
-  if (constructionSelect.value === 'Under Construction') {
-    constructionExtraFields.classList.add('visible');
-  } else {
-    constructionExtraFields.classList.remove('visible');
+  const width = rect.width;
+  const height = rect.height;
+  const paddingLeft = 0;
+  const paddingRight = 30;
+  const paddingBottom = 5;
+  const paddingTop = 20;
+
+  ctx.clearRect(0, 0, width, height);
+
+  // Generate curve points
+  const points = [];
+  const numPoints = 100;
+  for (let i = 0; i <= numPoints; i++) {
+    const t = i / numPoints;
+    const x = paddingLeft + t * (width - paddingLeft - paddingRight);
+    const y = height - paddingBottom - (Math.pow(t, 2) * (height - paddingBottom - paddingTop));
+    points.push({ x, y });
   }
 
   // Draw gradient fill under curve
@@ -566,7 +838,7 @@ constructionSelect.addEventListener('change', () => {
   ctx.arc(endPoint.x, endPoint.y, 5, 0, Math.PI * 2);
   ctx.fillStyle = '#b4c864';
   ctx.fill();
-});
+}
 
 // Event listeners for columns
 document.querySelectorAll('.chart-column').forEach(col => {
@@ -585,13 +857,6 @@ document.getElementById('detail-modal').addEventListener('click', (e) => {
   if (e.target.id === 'detail-modal') {
     document.getElementById('detail-modal').classList.remove('visible');
   }
-
-  trackValueSubmit('construction_settings_submit', JSON.stringify({
-    property_status: modelInputs.propertyStatus,
-    construction_duration_years: modelInputs.constructionDurationYears,
-  }));
-  constructionModal.classList.remove('visible');
-  updateUI();
 });
 
 // Learn more buttons
@@ -602,96 +867,9 @@ document.querySelectorAll('.learn-more-btn').forEach(btn => {
   });
 });
 
-document.getElementById('back-btn').addEventListener('click', () => {
-  document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'location.html', 400);
-});
-
-// Assumptions modal
-const assumptionsModal = document.getElementById('assumptions-modal');
-
-document.getElementById('modify-assumptions-btn').addEventListener('click', () => {
-  // Populate current values
-  document.getElementById('assumption-zinc-tenure').value = modelInputs.zincLoanTenureYears;
-  document.getElementById('assumption-zinc-reinvestment').value = modelInputs.zincPaymentReinvestmentCagrPct;
-  document.getElementById('assumption-interiors').value = modelInputs.interiorsPct;
-  document.getElementById('assumption-cash-cagr').value = modelInputs.assets.cash.cagrPct;
-  document.getElementById('assumption-land-gain').value = modelInputs.assets.land.embeddedGainPct;
-  document.getElementById('assumption-land-tax').value = modelInputs.assets.land.ltcgTaxRatePct;
-  document.getElementById('assumption-land-cagr').value = modelInputs.assets.land.cagrPct;
-  document.getElementById('assumption-equity-gain').value = modelInputs.assets.indianEquity.embeddedGainPct;
-  document.getElementById('assumption-equity-tax').value = modelInputs.assets.indianEquity.ltcgTaxRatePct;
-  document.getElementById('assumption-equity-exemption').value = modelInputs.assets.indianEquity.exemptionAmount;
-  document.getElementById('assumption-equity-cagr').value = modelInputs.assets.indianEquity.cagrPct;
-  document.getElementById('assumption-rsu-gain').value = modelInputs.assets.foreignRsu.embeddedGainPct;
-  document.getElementById('assumption-rsu-tax').value = modelInputs.assets.foreignRsu.ltcgTaxRatePct;
-  document.getElementById('assumption-rsu-cagr').value = modelInputs.assets.foreignRsu.usdCagrPct;
-  document.getElementById('assumption-rsu-inr-dep').value = modelInputs.assets.foreignRsu.inrDepreciationPct;
-
-  assumptionsModal.classList.add('visible');
-});
-
-document.getElementById('assumptions-modal-cancel').addEventListener('click', () => {
-  assumptionsModal.classList.remove('visible');
-});
-
-document.getElementById('assumptions-modal-save').addEventListener('click', () => {
-  modelInputs.zincLoanTenureYears = parseInt(document.getElementById('assumption-zinc-tenure').value);
-  modelInputs.zincPaymentReinvestmentCagrPct = parseFloat(document.getElementById('assumption-zinc-reinvestment').value);
-  modelInputs.interiorsPct = parseFloat(document.getElementById('assumption-interiors').value);
-  modelInputs.assets.cash.cagrPct = parseFloat(document.getElementById('assumption-cash-cagr').value);
-  modelInputs.assets.land.embeddedGainPct = parseFloat(document.getElementById('assumption-land-gain').value);
-  modelInputs.assets.land.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-land-tax').value);
-  modelInputs.assets.land.cagrPct = parseFloat(document.getElementById('assumption-land-cagr').value);
-  modelInputs.assets.indianEquity.embeddedGainPct = parseFloat(document.getElementById('assumption-equity-gain').value);
-  modelInputs.assets.indianEquity.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-equity-tax').value);
-  modelInputs.assets.indianEquity.exemptionAmount = parseFloat(document.getElementById('assumption-equity-exemption').value);
-  modelInputs.assets.indianEquity.cagrPct = parseFloat(document.getElementById('assumption-equity-cagr').value);
-  modelInputs.assets.foreignRsu.embeddedGainPct = parseFloat(document.getElementById('assumption-rsu-gain').value);
-  modelInputs.assets.foreignRsu.ltcgTaxRatePct = parseFloat(document.getElementById('assumption-rsu-tax').value);
-  modelInputs.assets.foreignRsu.usdCagrPct = parseFloat(document.getElementById('assumption-rsu-cagr').value);
-  modelInputs.assets.foreignRsu.inrDepreciationPct = parseFloat(document.getElementById('assumption-rsu-inr-dep').value);
-
-  trackValueSubmit('assumptions_submit', JSON.stringify({
-    zinc_loan_tenure_years: modelInputs.zincLoanTenureYears,
-    interiors_pct: modelInputs.interiorsPct,
-    cash_cagr_pct: modelInputs.assets.cash.cagrPct,
-  }));
-  assumptionsModal.classList.remove('visible');
-  updateUI();
-});
-
-assumptionsModal.addEventListener('click', (e) => {
-  if (e.target === assumptionsModal) assumptionsModal.classList.remove('visible');
-});
-
-// House value edit functionality
-const houseValueModal = document.getElementById('house-value-modal');
-const modalHouseValue = document.getElementById('modal-house-value');
-
-function formatIndianNumber(num) {
-  const str = Math.round(num).toString();
-  let result = '';
-  let count = 0;
-  for (let i = str.length - 1; i >= 0; i--) {
-    count++;
-    result = str[i] + result;
-    if (count === 3 && i > 0) {
-      result = ',' + result;
-    } else if (count > 3 && (count - 3) % 2 === 0 && i > 0) {
-      result = ',' + result;
-    }
-  }
-  return result;
-}
-
-function parseIndianNumber(str) {
-  return parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
-}
 
 // Use Intersection Observer to trigger animation when scrolled into view
 const chartSection = document.querySelector('.chart-section');
-const scrollContainer = document.querySelector('.scroll-container');
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -707,12 +885,10 @@ const observer = new IntersectionObserver((entries) => {
 
 observer.observe(chartSection);
 
-document.getElementById('house-value-modal-save').addEventListener('click', () => {
-  const newHouseValue = parseIndianNumber(modalHouseValue.value);
-  if (newHouseValue > 0) {
-    modelInputs.propertyPrice = newHouseValue;
-    localStorage.setItem('houseValue', newHouseValue);
-    trackValueSubmit('house_value_edit_submit', newHouseValue);
+// Fallback: trigger animation after 2 seconds if observer doesn't fire
+setTimeout(() => {
+  if (!document.querySelector('.chart-section .bar.animate')) {
+    animateBars();
   }
 }, 2000);
 
@@ -760,7 +936,7 @@ function updateOptionSections() {
   document.getElementById('zinc-growth').textContent = '+' + formatCr(rsuGrowth);
 }
 
-// Draw growth curve on canvas
+// Draw animated growth curve on canvas
 function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -780,62 +956,87 @@ function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
   const paddingBottom = 10;
   const paddingTop = 30;
 
-  ctx.clearRect(0, 0, width, height);
-
-  // Generate curve points
-  const points = [];
+  // Generate all curve points
+  const allPoints = [];
   const numPoints = 100;
   for (let i = 0; i <= numPoints; i++) {
     const t = i / numPoints;
     const x = paddingLeft + t * (width - paddingLeft - paddingRight);
     const y = height - paddingBottom - (Math.pow(t, 2) * (height - paddingBottom - paddingTop));
-    points.push({ x, y });
+    allPoints.push({ x, y });
   }
 
-  // Draw gradient fill under curve
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, height - paddingBottom);
-  points.forEach(p => ctx.lineTo(p.x, p.y));
-  ctx.lineTo(points[points.length - 1].x, height - paddingBottom);
-  ctx.closePath();
+  // Animation
+  const animationDuration = 1500; // 1.5 seconds
+  const startTime = performance.now();
 
-  const fillGradient = ctx.createLinearGradient(0, height, 0, 0);
-  fillGradient.addColorStop(0, 'rgba(100, 140, 80, 0.0)');
-  fillGradient.addColorStop(0.5, 'rgba(100, 140, 80, 0.15)');
-  fillGradient.addColorStop(1, 'rgba(150, 180, 100, 0.3)');
-  ctx.fillStyle = fillGradient;
-  ctx.fill();
+  function animate(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / animationDuration, 1);
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
 
-  // Draw curve line with gradient
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  points.forEach(p => ctx.lineTo(p.x, p.y));
+    const pointsToShow = Math.floor(easedProgress * numPoints);
 
-  const lineGradient = ctx.createLinearGradient(0, height, width, 0);
-  lineGradient.addColorStop(0, '#6a8a50');
-  lineGradient.addColorStop(0.5, '#9ab060');
-  lineGradient.addColorStop(1, '#c4c870');
-  ctx.strokeStyle = lineGradient;
-  ctx.lineWidth = 3;
-  ctx.stroke();
+    ctx.clearRect(0, 0, width, height);
 
-  // Draw glowing end dot
-  const endPoint = points[points.length - 1];
+    if (pointsToShow < 1) {
+      requestAnimationFrame(animate);
+      return;
+    }
 
-  // Glow effect
-  ctx.beginPath();
-  ctx.arc(endPoint.x, endPoint.y, 16, 0, Math.PI * 2);
-  const glowGradient = ctx.createRadialGradient(endPoint.x, endPoint.y, 0, endPoint.x, endPoint.y, 16);
-  glowGradient.addColorStop(0, 'rgba(180, 200, 100, 0.6)');
-  glowGradient.addColorStop(1, 'rgba(180, 200, 100, 0)');
-  ctx.fillStyle = glowGradient;
-  ctx.fill();
+    const points = allPoints.slice(0, pointsToShow + 1);
 
-  // Solid dot
-  ctx.beginPath();
-  ctx.arc(endPoint.x, endPoint.y, 8, 0, Math.PI * 2);
-  ctx.fillStyle = '#b4c864';
-  ctx.fill();
+    // Draw gradient fill under curve
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, height - paddingBottom);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(points[points.length - 1].x, height - paddingBottom);
+    ctx.closePath();
+
+    const fillGradient = ctx.createLinearGradient(0, height, 0, 0);
+    fillGradient.addColorStop(0, 'rgba(100, 140, 80, 0.0)');
+    fillGradient.addColorStop(0.5, 'rgba(100, 140, 80, 0.15)');
+    fillGradient.addColorStop(1, 'rgba(150, 180, 100, 0.3)');
+    ctx.fillStyle = fillGradient;
+    ctx.fill();
+
+    // Draw curve line with gradient
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    points.forEach(p => ctx.lineTo(p.x, p.y));
+
+    const lineGradient = ctx.createLinearGradient(0, height, width, 0);
+    lineGradient.addColorStop(0, '#6a8a50');
+    lineGradient.addColorStop(0.5, '#9ab060');
+    lineGradient.addColorStop(1, '#c4c870');
+    ctx.strokeStyle = lineGradient;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    // Draw glowing dot at current position
+    const currentPoint = points[points.length - 1];
+
+    // Glow effect
+    ctx.beginPath();
+    ctx.arc(currentPoint.x, currentPoint.y, 16, 0, Math.PI * 2);
+    const glowGradient = ctx.createRadialGradient(currentPoint.x, currentPoint.y, 0, currentPoint.x, currentPoint.y, 16);
+    glowGradient.addColorStop(0, 'rgba(180, 200, 100, 0.6)');
+    glowGradient.addColorStop(1, 'rgba(180, 200, 100, 0)');
+    ctx.fillStyle = glowGradient;
+    ctx.fill();
+
+    // Solid dot
+    ctx.beginPath();
+    ctx.arc(currentPoint.x, currentPoint.y, 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#b4c864';
+    ctx.fill();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  requestAnimationFrame(animate);
 }
 
 // Sticky nav scroll handling
@@ -889,15 +1090,6 @@ function updateActivePill() {
 
 updateUI();
 
-// Page load animation - left column starts full width, then shrinks
-const leftColumn = document.querySelector('.left-column');
-const rightColumn = document.querySelector('.right-column');
-const settingsSection = document.querySelector('.settings-section');
-const fundingLabel = document.querySelector('.funding-label');
-const fundingAmountRow = document.querySelector('.funding-amount-row');
-const fundingSubtitle = document.querySelector('.funding-subtitle');
-const houseInfo = document.querySelector('.house-info');
-
 document.addEventListener('click', (event) => {
   const button = event.target.closest('button');
   if (!button) return;
@@ -905,39 +1097,28 @@ document.addEventListener('click', (event) => {
   trackButtonClick(buttonName);
 });
 
-// Start with left column full width
-leftColumn.classList.add('fullwidth');
-
-// Staggered animation for left column content on page load
-setTimeout(() => {
-  fundingLabel.classList.add('visible');
-}, 300);
-
-setTimeout(() => {
-  fundingAmountRow.classList.add('visible');
-}, 600);
-
-setTimeout(() => {
-  fundingSubtitle.classList.add('visible');
-}, 900);
-
-setTimeout(() => {
-  houseInfo.classList.add('visible');
-}, 1200);
-
 // Scroll listener
 scrollContainer.addEventListener('scroll', () => {
   updateActivePill();
 
-  // Draw charts when sections come into view
+  // Animate sections and draw charts when they come into view
   optionSections.forEach(section => {
     const rect = section.getBoundingClientRect();
-    if (rect.top < window.innerHeight && rect.bottom > 0) {
-      const canvasId = 'chart-' + section.dataset.option;
-      const canvas = document.getElementById(canvasId);
-      if (canvas && !canvas.dataset.drawn) {
-        drawGrowthCurve(canvasId, 0, 100);
-        canvas.dataset.drawn = 'true';
+    // Check if section is mostly visible (top is within viewport)
+    if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) {
+      // Add animate class for staggered element animations
+      if (!section.classList.contains('animate')) {
+        section.classList.add('animate');
+
+        // Draw chart after a delay to sync with other animations
+        const canvasId = 'chart-' + section.dataset.option;
+        const canvas = document.getElementById(canvasId);
+        if (canvas && !canvas.dataset.drawn) {
+          setTimeout(() => {
+            drawGrowthCurve(canvasId, 0, 100);
+            canvas.dataset.drawn = 'true';
+          }, 500); // Start chart animation after value comparison appears
+        }
       }
     }
   });

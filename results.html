@@ -10,6 +10,15 @@
   <link rel="stylesheet" href="results.css">
 </head>
 <body>
+  <!-- Fixed Header -->
+  <header class="site-header" id="site-header">
+    <img src="/zinc_logo.png" alt="Zinc" class="header-logo">
+    <div class="header-right">
+      <span class="user-email" id="user-email"></span>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
   <div class="scroll-container">
     <!-- Section 1: Hero - "You still need X Cr to get in your house" -->
     <section class="snap-section hero-section">
@@ -365,6 +374,45 @@
       <div class="modal-actions">
         <button class="modal-save" id="detail-modal-close">Close</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-modal-overlay" id="login-modal">
+    <div class="login-modal">
+      <div class="login-step active" id="login-step-email">
+        <h2 class="login-title">Sign in to see detailed analysis</h2>
+        <p class="login-subtitle">Choose Google or continue with email OTP</p>
+        <button class="login-btn login-google-btn" id="google-signin-btn">
+          <img src="/google-logo.webp" alt="Google" class="google-icon">
+          Continue with Google
+        </button>
+        <div class="login-divider">OR</div>
+        <div class="login-field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com">
+        </div>
+        <button class="login-btn login-secondary-btn" id="send-otp-btn">Send OTP</button>
+      </div>
+
+      <div class="login-step" id="login-step-otp">
+        <h2 class="login-title">Verify OTP</h2>
+        <p class="login-subtitle">Enter the 6-digit code sent to your email</p>
+        <div class="login-field">
+          <label>Email</label>
+          <div class="login-email-row">
+            <p class="login-email-chip" id="login-email-chip"></p>
+            <button class="login-email-edit" id="edit-email-btn" aria-label="Edit email">✎</button>
+          </div>
+        </div>
+        <div class="login-field">
+          <label>OTP</label>
+          <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
+        </div>
+        <button class="login-btn" id="verify-otp-btn">Verify OTP</button>
+      </div>
+
+      <p class="login-status" id="login-status" aria-live="polite"></p>
     </div>
   </div>
 

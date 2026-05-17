@@ -50,12 +50,53 @@ const registerCustomer = httpsCallable(functions, 'registerCustomer');
 
 trackPageView('home');
 
-if (getStartedBtn && loginModal) {
+// Header scroll behavior
+const siteHeader = document.getElementById('site-header');
+const logoutBtn = document.getElementById('logout-btn');
+let lastScrollY = 0;
+
+function handleScroll() {
+  const currentScrollY = window.scrollY;
+
+  if (currentScrollY > lastScrollY && currentScrollY > 70) {
+    siteHeader.classList.add('hidden');
+  } else {
+    siteHeader.classList.remove('hidden');
+  }
+
+  lastScrollY = currentScrollY;
+}
+
+window.addEventListener('scroll', handleScroll, { passive: true });
+
+// Check auth state and show/hide logout button
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    logoutBtn.classList.add('visible');
+  } else {
+    logoutBtn.classList.remove('visible');
+  }
+});
+
+// Logout functionality
+logoutBtn.addEventListener('click', async () => {
+  trackButtonClick('logout_click');
+  try {
+    await auth.signOut();
+    sessionStorage.removeItem('zinc-flow-started');
+    trackButtonClick('logout_success');
+  } catch (error) {
+    console.error('Logout error:', error);
+    trackButtonClick('logout_failed');
+  }
+});
+
+if (getStartedBtn) {
   getStartedBtn.addEventListener('click', () => {
     trackButtonClick('get_started');
-    loginModal.classList.add('visible');
-    showStep('email');
-    setLoginStatus('');
+    sessionStorage.setItem('zinc-flow-started', 'true');
+    document.body.classList.add('page-exit');
+    setTimeout(() => window.location.href = 'planner.html', 400);
   });
 }
 
