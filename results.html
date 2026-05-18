@@ -54,77 +54,117 @@
       </div>
     </section>
 
-    <!-- Section 2: Funding Options Chart -->
+    <!-- Section 2: Zinc Intro -->
+    <section class="snap-section zinc-intro-section" id="zinc-intro-section">
+      <div class="zinc-intro-content">
+        <p class="zinc-intro-label">Introducing Zinc HomeGap loan</p>
+        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against vested RSUs without selling them — finance big goals while staying invested in your company's growth"></span></h2>
+      </div>
+      <div class="scroll-indicator">
+        <p class="scroll-text">Scroll to compare options</p>
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Section 3: Funding Options Chart -->
     <section class="snap-section chart-section">
-      <h2 class="chart-title">Let's evaluate your funding options<br><span class="chart-subtitle">and their impact over 10 years</span></h2>
+      <h2 class="chart-title">Let's compare your funding options<br><span class="chart-subtitle">and their impact over 10 years</span></h2>
 
       <div class="chart-wrapper">
         <div class="chart-columns">
-          <!-- Column 1: Zinc Loan -->
-          <div class="chart-column" data-option="zinc-loan">
-            <div class="column-header">Use Zinc Loan</div>
+          <!-- Column 1: Cash vs Zinc -->
+          <div class="chart-column" data-option="use-cash">
+            <div class="column-header">Cash vs Zinc HomeGap</div>
             <div class="column-upper">
               <div class="bar-label positive">
-                <span class="bar-amount-row"><span class="bar-amount" id="zinc-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash positive</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-cash-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">Zinc benefit</span>
               </div>
-              <div class="bar bar-positive" id="zinc-bar"></div>
+              <div class="bar bar-positive" id="zinc-cash-bar">
+                <span class="bar-name">Zinc HomeGap</span>
+              </div>
             </div>
-            <div class="column-lower"></div>
-            <div class="chart-tooltip" id="tooltip-zinc-loan"></div>
-          </div>
-
-          <!-- Column 2: Use Cash -->
-          <div class="chart-column" data-option="use-cash">
-            <div class="column-header">Use Cash</div>
-            <div class="column-upper"></div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="cash-bar"></div>
+              <div class="bar bar-negative" id="cash-bar">
+                <span class="bar-name">Cash</span>
+              </div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="cash-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">opportunity cost</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-use-cash"></div>
           </div>
 
-          <!-- Column 3: Sell Land -->
+          <!-- Column 2: Land vs Zinc -->
           <div class="chart-column" data-option="sell-land">
-            <div class="column-header">Sell Land</div>
-            <div class="column-upper"></div>
+            <div class="column-header">Sell Land vs Zinc HomeGap</div>
+            <div class="column-upper">
+              <div class="bar-label positive">
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-land-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">Zinc benefit</span>
+              </div>
+              <div class="bar bar-positive" id="zinc-land-bar">
+                <span class="bar-name">Zinc HomeGap</span>
+              </div>
+            </div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="land-bar"></div>
+              <div class="bar bar-negative" id="land-bar">
+                <span class="bar-name">Land</span>
+              </div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="land-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">opportunity cost</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-land"></div>
           </div>
 
-          <!-- Column 4: Sell Equities -->
+          <!-- Column 3: Equities vs Zinc -->
           <div class="chart-column" data-option="sell-indian-equity">
-            <div class="column-header">Sell Equities</div>
-            <div class="column-upper"></div>
+            <div class="column-header">Sell Equities vs Zinc HomeGap</div>
+            <div class="column-upper">
+              <div class="bar-label positive">
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-equity-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">Zinc benefit</span>
+              </div>
+              <div class="bar bar-positive" id="zinc-equity-bar">
+                <span class="bar-name">Zinc HomeGap</span>
+              </div>
+            </div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="equity-bar"></div>
+              <div class="bar bar-negative" id="equity-bar">
+                <span class="bar-name">Equities</span>
+              </div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="equity-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">opportunity cost</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-indian-equity"></div>
           </div>
 
-          <!-- Column 5: Sell RSUs -->
+          <!-- Column 4: RSUs vs Zinc -->
           <div class="chart-column" data-option="sell-rsus">
-            <div class="column-header">Sell RSUs</div>
-            <div class="column-upper"></div>
+            <div class="column-header">Sell RSUs vs Zinc HomeGap</div>
+            <div class="column-upper">
+              <div class="bar-label positive">
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-rsu-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">Zinc benefit</span>
+              </div>
+              <div class="bar bar-positive" id="zinc-rsu-bar">
+                <span class="bar-name">Zinc HomeGap</span>
+              </div>
+            </div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="rsu-bar"></div>
+              <div class="bar bar-negative" id="rsu-bar">
+                <span class="bar-name">RSUs</span>
+              </div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="rsu-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">opportunity cost</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-rsus"></div>
@@ -400,6 +440,7 @@
     <div class="page-dot" data-section="4"></div>
     <div class="page-dot" data-section="5"></div>
     <div class="page-dot" data-section="6"></div>
+    <div class="page-dot" data-section="7"></div>
   </div>
 
   <!-- Option Detail Modal -->

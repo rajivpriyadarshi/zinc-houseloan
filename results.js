@@ -525,10 +525,10 @@ function formatCrSigned(amount) {
   const cr = Math.abs(amount) / 10000000;
   const sign = amount >= 0 ? '+' : '-';
   if (cr >= 1) {
-    return sign + cr.toFixed(1) + ' Cr';
+    return sign + cr.toFixed(2) + ' Cr';
   }
   const lacs = Math.abs(amount) / 100000;
-  return sign + lacs.toFixed(0) + ' L';
+  return sign + lacs.toFixed(2) + ' L';
 }
 
 function formatLacs(amount) {
@@ -565,29 +565,41 @@ function updateUI() {
   const equityCost = equityStrategy.impact - zincImpact;
   const rsuCost = rsuStrategy.impact - zincImpact;
 
-  // Update amounts
-  document.getElementById('zinc-amount').textContent = formatCrSigned(zincBenefit);
+  // Update amounts - each column shows Zinc benefit (top) and alternative cost (bottom)
+  // Zinc benefit is the same for all columns (compared to each alternative)
+  document.getElementById('zinc-cash-amount').textContent = formatCrSigned(cashCost);
+  document.getElementById('zinc-land-amount').textContent = formatCrSigned(landCost);
+  document.getElementById('zinc-equity-amount').textContent = formatCrSigned(equityCost);
+  document.getElementById('zinc-rsu-amount').textContent = formatCrSigned(rsuCost);
+
+  // Alternative opportunity costs (shown as negative)
   document.getElementById('cash-amount').textContent = formatCrSigned(-cashCost);
   document.getElementById('land-amount').textContent = formatCrSigned(-landCost);
   document.getElementById('equity-amount').textContent = formatCrSigned(-equityCost);
   document.getElementById('rsu-amount').textContent = formatCrSigned(-rsuCost);
 
-  // Calculate bar heights (max 150px)
-  const maxBarHeight = 150;
-  const allCosts = [zincBenefit, cashCost, landCost, equityCost, rsuCost];
+  // Calculate bar heights (max 130px, min 60px to fit label)
+  const maxBarHeight = 130;
+  const minBarHeight = 60;
+  const allCosts = [cashCost, landCost, equityCost, rsuCost];
   const maxCost = Math.max(...allCosts.map(Math.abs));
 
-  const zincBarHeight = Math.max((zincBenefit / maxCost) * maxBarHeight, 30);
-  const cashBarHeight = Math.max((cashCost / maxCost) * maxBarHeight, 30);
-  const landBarHeight = Math.max((landCost / maxCost) * maxBarHeight, 30);
-  const equityBarHeight = Math.max((equityCost / maxCost) * maxBarHeight, 30);
-  const rsuBarHeight = Math.max((rsuCost / maxCost) * maxBarHeight, 30);
+  // Zinc bars (positive, top) - proportional to the benefit vs each alternative
+  const zincCashBarHeight = Math.max((cashCost / maxCost) * maxBarHeight, minBarHeight);
+  const zincLandBarHeight = Math.max((landCost / maxCost) * maxBarHeight, minBarHeight);
+  const zincEquityBarHeight = Math.max((equityCost / maxCost) * maxBarHeight, minBarHeight);
+  const zincRsuBarHeight = Math.max((rsuCost / maxCost) * maxBarHeight, minBarHeight);
 
-  document.getElementById('zinc-bar').style.height = zincBarHeight + 'px';
-  document.getElementById('cash-bar').style.height = cashBarHeight + 'px';
-  document.getElementById('land-bar').style.height = landBarHeight + 'px';
-  document.getElementById('equity-bar').style.height = equityBarHeight + 'px';
-  document.getElementById('rsu-bar').style.height = rsuBarHeight + 'px';
+  document.getElementById('zinc-cash-bar').style.height = zincCashBarHeight + 'px';
+  document.getElementById('zinc-land-bar').style.height = zincLandBarHeight + 'px';
+  document.getElementById('zinc-equity-bar').style.height = zincEquityBarHeight + 'px';
+  document.getElementById('zinc-rsu-bar').style.height = zincRsuBarHeight + 'px';
+
+  // Alternative bars (negative, bottom) - same heights as corresponding Zinc bars
+  document.getElementById('cash-bar').style.height = zincCashBarHeight + 'px';
+  document.getElementById('land-bar').style.height = zincLandBarHeight + 'px';
+  document.getElementById('equity-bar').style.height = zincEquityBarHeight + 'px';
+  document.getElementById('rsu-bar').style.height = zincRsuBarHeight + 'px';
 
   // Update chart tooltips
   updateChartTooltips(results);
@@ -625,78 +637,11 @@ function updateChartTooltips(results) {
   const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
   const rsuCost = rsuFV - zincNetPosition;
 
-  // Get strategy impacts for comparison
-  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
-  const cashStrategy = results.strategies.find(s => s.strategyId === 'use-cash');
-  const zincBenefitVsCash = cashStrategy.impact - zincStrategy.impact;
-
-  // Zinc Loan tooltip
-  document.getElementById('tooltip-zinc-loan').innerHTML = `
-    <div class="tooltip-title">With Zinc HomeGap Loan</div>
-    <ul class="tooltip-list">
-      <li>Funding gap: <span class="chart-tooltip-highlight">${formatCurrency(fundingGap)}</span></li>
-      <li>RSUs you'd otherwise sell: <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span></li>
-      <li>With Zinc, these RSUs grow to: <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} yrs</li>
-      <li>Zinc cost (interest + principal): <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span></li>
-      <li>You keep: <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span></li>
-    </ul>
-    <div class="tooltip-result positive">That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than using cash</div>
-  `;
-
-  // Use Cash tooltip
-  const cashCostVsZinc = cashStrategy.impact - zincStrategy.impact;
-  document.getElementById('tooltip-use-cash').innerHTML = `
-    <div class="tooltip-title">Using Your Cash</div>
-    <ul class="tooltip-list">
-      <li>Funding gap: <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span></li>
-      <li>Cash used: <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span></li>
-      <li>Could grow to @ ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> in ${years} yrs</li>
-      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(cashFV - fundingGap)}</span></li>
-    </ul>
-    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse than Zinc</div>
-  `;
-
-  // Sell Land tooltip
-  const landStrategy = results.strategies.find(s => s.strategyId === 'sell-land');
-  const landCostVsZinc = landStrategy.impact - zincStrategy.impact;
-  document.getElementById('tooltip-sell-land').innerHTML = `
-    <div class="tooltip-title">Selling Land</div>
-    <ul class="tooltip-list">
-      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
-      <li>Land to sell (incl. 12.5% LTCG): <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span></li>
-      <li>Could grow to @ ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> in ${years} yrs</li>
-      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(landFV - landGrossSale)}</span></li>
-    </ul>
-    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse than Zinc</div>
-  `;
-
-  // Sell Equities tooltip
-  const equityStrategy = results.strategies.find(s => s.strategyId === 'sell-indian-equity');
-  const equityCostVsZinc = equityStrategy.impact - zincStrategy.impact;
-  document.getElementById('tooltip-sell-indian-equity').innerHTML = `
-    <div class="tooltip-title">Selling Equities</div>
-    <ul class="tooltip-list">
-      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
-      <li>Equities to sell (incl. LTCG): <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span></li>
-      <li>Could grow to @ ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> in ${years} yrs</li>
-      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(equityFV - equityGrossSale)}</span></li>
-    </ul>
-    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse than Zinc</div>
-  `;
-
-  // Sell RSUs tooltip
-  const rsuStrategy = results.strategies.find(s => s.strategyId === 'sell-rsus');
-  const rsuCostVsZinc = rsuStrategy.impact - zincStrategy.impact;
-  document.getElementById('tooltip-sell-rsus').innerHTML = `
-    <div class="tooltip-title">Selling RSUs</div>
-    <ul class="tooltip-list">
-      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
-      <li>RSUs to sell (incl. 12.5% LTCG, no exemption): <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span></li>
-      <li>Could grow to @ ${(effectiveRsuCagr * 100).toFixed(1)}%: <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> in ${years} yrs</li>
-      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(rsuFV - rsuGrossSale)}</span></li>
-    </ul>
-    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse than Zinc</div>
-  `;
+  // Simple tooltips - just "click to know more"
+  document.getElementById('tooltip-use-cash').innerHTML = `Click to know more`;
+  document.getElementById('tooltip-sell-land').innerHTML = `Click to know more`;
+  document.getElementById('tooltip-sell-indian-equity').innerHTML = `Click to know more`;
+  document.getElementById('tooltip-sell-rsus').innerHTML = `Click to know more`;
 }
 
 // Show option details modal
@@ -1177,29 +1122,13 @@ function showChartCalculation(strategyId) {
     const taxAmount = taxableGain * taxRate;
     const netProceeds = assetValue - taxAmount;
 
-    // Build tax breakdown rows
+    // Build tax breakdown rows - simplified to show only what adds up
     let taxBreakdownRows = '';
     if (strategyId !== 'use-cash') {
       taxBreakdownRows = `
             <div class="detail-row">
-              <span class="detail-label">Embedded gain (${(embeddedGainPct * 100).toFixed(0)}% of sale)</span>
-              <span class="detail-value">${formatCurrency(embeddedGain)}</span>
-            </div>
-            ${exemption > 0 ? `<div class="detail-row">
-              <span class="detail-label">Less: LTCG exemption</span>
-              <span class="detail-value">- ${formatCurrency(exemption)}</span>
-            </div>` : ''}
-            <div class="detail-row">
-              <span class="detail-label">Taxable gain</span>
-              <span class="detail-value">${formatCurrency(taxableGain)}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">LTCG tax @ ${(taxRate * 100).toFixed(1)}%</span>
-              <span class="detail-value detail-value-red">- ${formatCurrency(taxAmount)}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Net proceeds after tax</span>
-              <span class="detail-value">${formatCurrency(netProceeds)}</span>
+              <span class="detail-label">LTCG tax @ ${(taxRate * 100).toFixed(1)}%${exemption > 0 ? ` (after ₹${(exemption/100000).toFixed(2)}L exemption)` : ''} on ${(embeddedGainPct * 100).toFixed(0)}% embedded gain</span>
+              <span class="detail-value detail-value-red">+ ${formatCurrency(taxAmount)}</span>
             </div>
       `;
     }
@@ -1304,37 +1233,28 @@ function showChartCalculation(strategyId) {
 
         ${opportunityCostSection}
 
-        <div class="detail-group highlight-group negative">
-          <h3 class="group-heading">Why "-${formatCr(opportunityCost)}" on the chart?</h3>
-          <p class="group-description">Here's what happens if you take a Zinc HomeGap loan instead:</p>
+        <div class="detail-group highlight-group positive">
+          <h3 class="group-heading">How Zinc HomeGap gives you +${formatCr(opportunityCost)} benefit</h3>
+          <p class="group-description">With Zinc, you pledge RSUs instead of selling assets. Here's how it works out:</p>
           <div class="detail-rows">
             <div class="detail-row">
-              <span class="detail-label">Your RSUs grow to (in ${years} years)</span>
-              <span class="detail-value">${formatCurrency(retainedRsuFV)}</span>
+              <span class="detail-label">RSUs pledged (worth today)</span>
+              <span class="detail-value">${formatCurrency(rsuGrossSale)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">RSUs grow to (in ${years} years)</span>
+              <span class="detail-value detail-value-green">${formatCurrency(retainedRsuFV)}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">You pay back Zinc (interest + principal)</span>
               <span class="detail-value">- ${formatCurrency(zincBurden)}</span>
             </div>
-            <div class="detail-row detail-row-subtotal">
-              <span class="detail-label">Net position with Zinc</span>
-              <span class="detail-value">${formatCurrency(retainedRsuFV - zincBurden)}</span>
-            </div>
-          </div>
-          <div class="detail-rows" style="margin-top: 16px;">
-            <div class="detail-row">
-              <span class="detail-label">Net position with Zinc</span>
-              <span class="detail-value">${formatCurrency(retainedRsuFV - zincBurden)}</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">${strategyId === 'use-cash' ? 'Your cash would grow to' : 'Your ' + strategyName.replace('Selling ', '').toLowerCase() + ' would grow to'}</span>
-              <span class="detail-value">- ${formatCurrency(futureValue)}</span>
-            </div>
             <div class="detail-row detail-row-total">
-              <span class="detail-label"><strong>Zinc is better by</strong></span>
-              <span class="detail-value detail-value-green"><strong>+${formatCr(opportunityCost)}</strong></span>
+              <span class="detail-label"><strong>You're left with</strong></span>
+              <span class="detail-value detail-value-green"><strong>${formatCurrency(retainedRsuFV - zincBurden)}</strong></span>
             </div>
           </div>
+          <p class="group-description" style="margin-top: 12px; font-size: 13px;">This is <strong>+${formatCr(opportunityCost)}</strong> more than ${strategyId === 'use-cash' ? 'using cash' : 'selling ' + strategyName.replace('Selling ', '').toLowerCase()}, which would only grow to ${formatCurrency(futureValue)}.</p>
         </div>
       </div>
     </div>
@@ -2006,6 +1926,48 @@ scrollContainer.addEventListener('scroll', () => {
     }
   });
 });
+
+// Zinc intro section typing animation
+const zincIntroSection = document.getElementById('zinc-intro-section');
+let zincIntroAnimated = false;
+
+async function animateZincIntro() {
+  if (zincIntroAnimated) return;
+  zincIntroAnimated = true;
+
+  const labelEl = zincIntroSection.querySelector('.zinc-intro-label');
+  const titleTextEl = zincIntroSection.querySelector('.zinc-intro-title-text');
+  const fullText = titleTextEl?.dataset.fullText || '';
+
+  // First fade in the label
+  await new Promise(r => setTimeout(r, 200));
+  if (labelEl) {
+    labelEl.classList.add('animate');
+  }
+
+  // Wait for label animation to complete, then start typing
+  await new Promise(r => setTimeout(r, 700));
+
+  if (titleTextEl && fullText) {
+    await typeText(titleTextEl, fullText, 25);
+    titleTextEl.classList.add('typing-done');
+  }
+}
+
+const zincIntroObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateZincIntro();
+    }
+  });
+}, {
+  threshold: 0.5,
+  root: scrollContainer
+});
+
+if (zincIntroSection) {
+  zincIntroObserver.observe(zincIntroSection);
+}
 
 // Initialize
 updateUI();
