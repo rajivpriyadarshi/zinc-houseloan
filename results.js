@@ -1958,6 +1958,7 @@ const zincIntroObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       animateZincIntro();
+      trackButtonClick('section_view_zinc_intro');
     }
   });
 }, {
@@ -1968,6 +1969,32 @@ const zincIntroObserver = new IntersectionObserver((entries) => {
 if (zincIntroSection) {
   zincIntroObserver.observe(zincIntroSection);
 }
+
+// Track section views
+const sectionViewTracker = new Map();
+
+function trackSectionView(sectionId) {
+  if (sectionViewTracker.has(sectionId)) return;
+  sectionViewTracker.set(sectionId, true);
+  trackButtonClick('section_view', { section: sectionId });
+}
+
+// Observe all snap sections for view tracking
+const sectionViewObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const sectionId = entry.target.id || entry.target.dataset.option || 'unknown';
+      trackSectionView(sectionId);
+    }
+  });
+}, {
+  threshold: 0.5,
+  root: scrollContainer
+});
+
+document.querySelectorAll('.snap-section').forEach(section => {
+  sectionViewObserver.observe(section);
+});
 
 // Initialize
 updateUI();
