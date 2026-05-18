@@ -632,34 +632,70 @@ function updateChartTooltips(results) {
 
   // Zinc Loan tooltip
   document.getElementById('tooltip-zinc-loan').innerHTML = `
-    To fund the gap of <span class="chart-tooltip-highlight">${formatCurrency(fundingGap)}</span>, you would need to sell RSUs worth <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span> (incl. tax). With Zinc HomeGap loan, you don't have to sell your RSUs. The ${formatCurrency(rsuGrossSale)} RSUs could grow to <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} years. After paying <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span> (Zinc interest + principal), you keep <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span>. That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than if you used cash.
+    <div class="tooltip-title">With Zinc HomeGap Loan</div>
+    <ul class="tooltip-list">
+      <li>Funding gap: <span class="chart-tooltip-highlight">${formatCurrency(fundingGap)}</span></li>
+      <li>RSUs you'd otherwise sell: <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span></li>
+      <li>With Zinc, these RSUs grow to: <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} yrs</li>
+      <li>Zinc cost (interest + principal): <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span></li>
+      <li>You keep: <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span></li>
+    </ul>
+    <div class="tooltip-result positive">That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than using cash</div>
   `;
 
   // Use Cash tooltip
   const cashCostVsZinc = cashStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-use-cash').innerHTML = `
-    To fund the gap of <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span>, you use your savings. This ${formatCurrency(fundingGap)} cash could grow to <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> if invested at ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}% for ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(cashFV - fundingGap)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse than using Zinc.
+    <div class="tooltip-title">Using Your Cash</div>
+    <ul class="tooltip-list">
+      <li>Funding gap: <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span></li>
+      <li>Cash used: <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span></li>
+      <li>Could grow to @ ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> in ${years} yrs</li>
+      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(cashFV - fundingGap)}</span></li>
+    </ul>
+    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse than Zinc</div>
   `;
 
   // Sell Land tooltip
   const landStrategy = results.strategies.find(s => s.strategyId === 'sell-land');
   const landCostVsZinc = landStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-land').innerHTML = `
-    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell land worth <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span> (incl. 12.5% LTCG tax). This land could grow to <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> at ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(landFV - landGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse than using Zinc.
+    <div class="tooltip-title">Selling Land</div>
+    <ul class="tooltip-list">
+      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
+      <li>Land to sell (incl. 12.5% LTCG): <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span></li>
+      <li>Could grow to @ ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> in ${years} yrs</li>
+      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(landFV - landGrossSale)}</span></li>
+    </ul>
+    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse than Zinc</div>
   `;
 
   // Sell Equities tooltip
   const equityStrategy = results.strategies.find(s => s.strategyId === 'sell-indian-equity');
   const equityCostVsZinc = equityStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-indian-equity').innerHTML = `
-    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell equities worth <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span> (incl. LTCG tax). These equities could grow to <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> at ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(equityFV - equityGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse than using Zinc.
+    <div class="tooltip-title">Selling Equities</div>
+    <ul class="tooltip-list">
+      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
+      <li>Equities to sell (incl. LTCG): <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span></li>
+      <li>Could grow to @ ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%: <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> in ${years} yrs</li>
+      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(equityFV - equityGrossSale)}</span></li>
+    </ul>
+    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse than Zinc</div>
   `;
 
   // Sell RSUs tooltip
   const rsuStrategy = results.strategies.find(s => s.strategyId === 'sell-rsus');
   const rsuCostVsZinc = rsuStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-rsus').innerHTML = `
-    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell RSUs worth <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span> (incl. 12.5% LTCG, no exemption). These RSUs could grow to <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> at ${(effectiveRsuCagr * 100).toFixed(1)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(rsuFV - rsuGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse than using Zinc.
+    <div class="tooltip-title">Selling RSUs</div>
+    <ul class="tooltip-list">
+      <li>Funding gap: ${formatCurrency(fundingGap)}</li>
+      <li>RSUs to sell (incl. 12.5% LTCG, no exemption): <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span></li>
+      <li>Could grow to @ ${(effectiveRsuCagr * 100).toFixed(1)}%: <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> in ${years} yrs</li>
+      <li>Growth you miss: <span class="chart-tooltip-negative">${formatCurrency(rsuFV - rsuGrossSale)}</span></li>
+    </ul>
+    <div class="tooltip-result negative">That's <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse than Zinc</div>
   `;
 }
 

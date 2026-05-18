@@ -560,6 +560,53 @@ body {
   color: #d03660;
 }
 
+.tooltip-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #000;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+.tooltip-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tooltip-list li:last-child {
+  border-bottom: none;
+}
+
+.tooltip-result {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.tooltip-result.positive {
+  background: rgba(74, 157, 91, 0.1);
+  color: #3a7d4b;
+}
+
+.tooltip-result.negative {
+  background: rgba(208, 54, 96, 0.1);
+  color: #b02d55;
+}
+
 /* Baseline - positioned right after column headers + upper section */
 .chart-baseline {
   position: absolute;
