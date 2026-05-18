@@ -195,95 +195,108 @@ async function handleGoogleSignIn() {
   }
 }
 
-googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+if (googleSignInBtn) {
+  googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+}
 
-sendOtpBtn.addEventListener('click', async () => {
-  trackButtonClick('email_otp_send_click');
-  const email = String(loginEmail.value || '').trim().toLowerCase();
-  if (!isValidEmail(email)) {
-    trackButtonClick('email_otp_send_invalid_email');
-    setLoginStatus('Enter a valid email address.', true);
-    return;
-  }
-
-  sendOtpBtn.disabled = true;
-  setLoginStatus('Sending OTP...');
-  try {
-    await sendEmailOtp({ email });
-    trackButtonClick('email_otp_sent');
-    setLoginStatus('OTP sent. Check your email and enter the code.');
-    loginEmailChip.textContent = email;
-    loginOtp.value = '';
-    showStep('otp');
-  } catch (error) {
-    trackButtonClick('email_otp_send_failed', {
-      error_message: callableErrorMessage(error, 'unknown'),
-    });
-    setLoginStatus(callableErrorMessage(error, 'Could not send OTP. Try again.'), true);
-  } finally {
-    sendOtpBtn.disabled = false;
-  }
-});
-
-verifyOtpBtn.addEventListener('click', async () => {
-  trackButtonClick('email_otp_verify_click');
-  const email = String(loginEmail.value || '').trim().toLowerCase();
-  const otp = String(loginOtp.value || '').trim();
-
-  if (!isValidEmail(email)) {
-    trackButtonClick('email_otp_verify_invalid_email');
-    setLoginStatus('Enter a valid email address.', true);
-    return;
-  }
-  if (!/^\d{6}$/.test(otp)) {
-    trackButtonClick('email_otp_verify_invalid_code');
-    setLoginStatus('Enter a valid 6-digit OTP.', true);
-    return;
-  }
-
-  verifyOtpBtn.disabled = true;
-  setLoginStatus('Verifying OTP...');
-  try {
-    const verifyResult = await verifyEmailOtp({ email, otp });
-    const customToken = verifyResult?.data?.firebaseCustomToken;
-    if (!customToken) {
-      throw new Error('Missing Firebase custom token from OTP verification.');
+if (sendOtpBtn) {
+  sendOtpBtn.addEventListener('click', async () => {
+    trackButtonClick('email_otp_send_click');
+    const email = String(loginEmail.value || '').trim().toLowerCase();
+    if (!isValidEmail(email)) {
+      trackButtonClick('email_otp_send_invalid_email');
+      setLoginStatus('Enter a valid email address.', true);
+      return;
     }
 
-    await signInWithCustomToken(auth, customToken);
-    await tryRegisterCustomer(email, toDisplayName(email));
+    sendOtpBtn.disabled = true;
+    setLoginStatus('Sending OTP...');
+    try {
+      await sendEmailOtp({ email });
+      trackButtonClick('email_otp_sent');
+      setLoginStatus('OTP sent. Check your email and enter the code.');
+      loginEmailChip.textContent = email;
+      loginOtp.value = '';
+      showStep('otp');
+    } catch (error) {
+      trackButtonClick('email_otp_send_failed', {
+        error_message: callableErrorMessage(error, 'unknown'),
+      });
+      setLoginStatus(callableErrorMessage(error, 'Could not send OTP. Try again.'), true);
+    } finally {
+      sendOtpBtn.disabled = false;
+    }
+  });
+}
 
-    trackButtonClick('email_otp_verified');
-    setLoginStatus('Login successful. Redirecting...');
-    await proceedToPlanner('email_otp_login_success');
-  } catch (error) {
-    trackButtonClick('email_otp_verify_failed', {
-      error_message: callableErrorMessage(error, 'unknown'),
-    });
-    setLoginStatus(callableErrorMessage(error, 'OTP verification failed. Try again.'), true);
-  } finally {
-    verifyOtpBtn.disabled = false;
-  }
-});
+if (verifyOtpBtn) {
+  verifyOtpBtn.addEventListener('click', async () => {
+    trackButtonClick('email_otp_verify_click');
+    const email = String(loginEmail.value || '').trim().toLowerCase();
+    const otp = String(loginOtp.value || '').trim();
 
-loginSkipBtn.addEventListener('click', () => {
-  trackButtonClick('auth_skip_click');
-  proceedToPlanner('skip_for_now');
-});
-editEmailBtn.addEventListener('click', () => {
-  trackButtonClick('email_otp_edit_email');
-  showStep('email');
-  setLoginStatus('');
-  loginEmail.focus();
-});
+    if (!isValidEmail(email)) {
+      trackButtonClick('email_otp_verify_invalid_email');
+      setLoginStatus('Enter a valid email address.', true);
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      trackButtonClick('email_otp_verify_invalid_code');
+      setLoginStatus('Enter a valid 6-digit OTP.', true);
+      return;
+    }
 
-loginModal.addEventListener('click', (e) => {
-  if (e.target === loginModal) {
-    trackButtonClick('auth_modal_dismiss_overlay');
-    loginModal.classList.remove('visible');
+    verifyOtpBtn.disabled = true;
+    setLoginStatus('Verifying OTP...');
+    try {
+      const verifyResult = await verifyEmailOtp({ email, otp });
+      const customToken = verifyResult?.data?.firebaseCustomToken;
+      if (!customToken) {
+        throw new Error('Missing Firebase custom token from OTP verification.');
+      }
+
+      await signInWithCustomToken(auth, customToken);
+      await tryRegisterCustomer(email, toDisplayName(email));
+
+      trackButtonClick('email_otp_verified');
+      setLoginStatus('Login successful. Redirecting...');
+      await proceedToPlanner('email_otp_login_success');
+    } catch (error) {
+      trackButtonClick('email_otp_verify_failed', {
+        error_message: callableErrorMessage(error, 'unknown'),
+      });
+      setLoginStatus(callableErrorMessage(error, 'OTP verification failed. Try again.'), true);
+    } finally {
+      verifyOtpBtn.disabled = false;
+    }
+  });
+}
+
+if (loginSkipBtn) {
+  loginSkipBtn.addEventListener('click', () => {
+    trackButtonClick('auth_skip_click');
+    proceedToPlanner('skip_for_now');
+  });
+}
+
+if (editEmailBtn) {
+  editEmailBtn.addEventListener('click', () => {
+    trackButtonClick('email_otp_edit_email');
     showStep('email');
-  }
-});
+    setLoginStatus('');
+    loginEmail.focus();
+  });
+}
+
+if (loginModal) {
+  loginModal.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      trackButtonClick('auth_modal_dismiss_overlay');
+      loginModal.classList.remove('visible');
+      showStep('email');
+    }
+  });
+}
 
 getRedirectResult(auth)
   .then(async (result) => {
@@ -299,3 +312,36 @@ getRedirectResult(auth)
     });
     setLoginStatus(callableErrorMessage(error, 'Google sign-in failed. Try again.'), true);
   });
+
+// Fun fact ticker
+const funFacts = [
+  "Stamp duty in Mumbai can be up to 6% of property value",
+  "Interior costs typically add 15-25% to your home budget",
+  "The average Indian spends 40% of income on housing EMI",
+  "Registration charges vary from 1-2% across states",
+  "Home loan interest can exceed the principal over 20 years",
+  "GST on under-construction properties is 5%",
+  "Brokerage fees can add 1-2% to your purchase cost",
+  "Maintenance deposits often equal 2 years of charges upfront",
+];
+
+let currentFactIndex = 0;
+
+function initFunFactTicker() {
+  const funFactText = document.getElementById('fun-fact-text');
+  if (!funFactText) return;
+
+  funFactText.textContent = funFacts[0];
+
+  setInterval(() => {
+    funFactText.classList.add('fade-out');
+
+    setTimeout(() => {
+      currentFactIndex = (currentFactIndex + 1) % funFacts.length;
+      funFactText.textContent = funFacts[currentFactIndex];
+      funFactText.classList.remove('fade-out');
+    }, 400);
+  }, 4000);
+}
+
+initFunFactTicker();

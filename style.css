@@ -552,3 +552,52 @@ body.page-exit {
     margin-top: 24px;
   }
 }
+
+
+/* Fun Fact Ticker */
+.fun-fact-ticker {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 24px;
+  background: rgb(0 0 0 / 40%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 52px;
+  backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.fun-fact-icon {
+  font-size: 16px;
+}
+
+.fun-fact-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+.fun-fact-text.fade-out {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .fun-fact-ticker {
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    transform: none;
+    justify-content: center;
+  }
+  
+  .fun-fact-text {
+    font-size: 13px;
+  }
+}
