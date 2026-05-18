@@ -364,6 +364,7 @@ body {
   align-items: center;
   border-right: 1px dashed rgba(255, 255, 255, 0.2);
   padding: 0 10px;
+  position: relative;
 }
 
 .chart-column:first-child {
