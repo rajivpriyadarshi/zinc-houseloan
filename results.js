@@ -1165,11 +1165,33 @@ function showChartCalculation(strategyId) {
 
         <div class="detail-group highlight-group negative">
           <h3 class="group-heading">Why "-${formatCr(opportunityCost)}" on the chart?</h3>
-          <p class="group-description">This is how much worse off you'd be compared to using Zinc HomeGap loan.</p>
+          <p class="group-description">Here's what happens if you take a Zinc HomeGap loan instead:</p>
           <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Your RSUs grow to (in ${years} years)</span>
+              <span class="detail-value">${formatCurrency(retainedRsuFV)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">You pay back Zinc (interest + principal)</span>
+              <span class="detail-value">- ${formatCurrency(zincBurden)}</span>
+            </div>
+            <div class="detail-row detail-row-subtotal">
+              <span class="detail-label">Net position with Zinc</span>
+              <span class="detail-value">${formatCurrency(retainedRsuFV - zincBurden)}</span>
+            </div>
+          </div>
+          <div class="detail-rows" style="margin-top: 16px;">
+            <div class="detail-row">
+              <span class="detail-label">Net position with Zinc</span>
+              <span class="detail-value">${formatCurrency(retainedRsuFV - zincBurden)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${strategyId === 'use-cash' ? 'Your cash would grow to' : 'Your ' + strategyName.replace('Selling ', '').toLowerCase() + ' would grow to'}</span>
+              <span class="detail-value">- ${formatCurrency(futureValue)}</span>
+            </div>
             <div class="detail-row detail-row-total">
-              <span class="detail-label"><strong>Opportunity cost vs Zinc</strong></span>
-              <span class="detail-value detail-value-red"><strong>-${formatCr(opportunityCost)}</strong></span>
+              <span class="detail-label"><strong>Zinc is better by</strong></span>
+              <span class="detail-value detail-value-green"><strong>+${formatCr(opportunityCost)}</strong></span>
             </div>
           </div>
         </div>
@@ -1798,9 +1820,41 @@ async function animateSection(section) {
   }
 }
 
+// Page indicator
+const pageDots = document.querySelectorAll('.page-dot');
+const allSections = document.querySelectorAll('.snap-section');
+
+function updatePageIndicator() {
+  let activeIndex = 0;
+  const scrollTop = scrollContainer.scrollTop;
+  const viewportHeight = window.innerHeight;
+
+  allSections.forEach((section, index) => {
+    const sectionTop = section.offsetTop;
+    if (scrollTop >= sectionTop - viewportHeight / 2) {
+      activeIndex = index;
+    }
+  });
+
+  pageDots.forEach((dot, index) => {
+    dot.classList.toggle('active', index === activeIndex);
+  });
+}
+
+// Click on page dot to scroll to section
+pageDots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    const targetSection = allSections[index];
+    if (targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
 // Scroll listener
 scrollContainer.addEventListener('scroll', () => {
   updateActivePill();
+  updatePageIndicator();
 
   // Animate sections when they come into view
   optionSections.forEach(section => {
@@ -1815,3 +1869,4 @@ scrollContainer.addEventListener('scroll', () => {
 // Initialize
 updateUI();
 updateOptionSections();
+updatePageIndicator();

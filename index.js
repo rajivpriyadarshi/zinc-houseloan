@@ -70,11 +70,21 @@ function handleScroll() {
 window.addEventListener('scroll', handleScroll, { passive: true });
 
 // Check auth state and show/hide logout button
+const userEmailEl = document.getElementById('user-email');
+
 auth.onAuthStateChanged((user) => {
   if (user) {
     logoutBtn.classList.add('visible');
+    if (userEmailEl) {
+      userEmailEl.textContent = user.email || '';
+      userEmailEl.classList.add('visible');
+    }
   } else {
     logoutBtn.classList.remove('visible');
+    if (userEmailEl) {
+      userEmailEl.textContent = '';
+      userEmailEl.classList.remove('visible');
+    }
   }
 });
 
