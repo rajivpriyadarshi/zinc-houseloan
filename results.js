@@ -632,34 +632,34 @@ function updateChartTooltips(results) {
 
   // Zinc Loan tooltip
   document.getElementById('tooltip-zinc-loan').innerHTML = `
-    Your <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span> RSUs grow to <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} years. After paying <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span> (Zinc interest + principal), you keep <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span>. That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than if you used cash.
+    To fund the gap of <span class="chart-tooltip-highlight">${formatCurrency(fundingGap)}</span>, you would need to sell RSUs worth <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span> (incl. tax). With Zinc HomeGap loan, you don't have to sell your RSUs. The ${formatCurrency(rsuGrossSale)} RSUs could grow to <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} years. After paying <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span> (Zinc interest + principal), you keep <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span>. That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than if you used cash.
   `;
 
   // Use Cash tooltip
   const cashCostVsZinc = cashStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-use-cash').innerHTML = `
-    Your <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span> cash would grow to <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> if invested at ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%. With Zinc instead, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan cost = ${formatCurrency(zincNetPosition)} net. Total: <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse.
+    To fund the gap of <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span>, you use your savings. This ${formatCurrency(fundingGap)} cash could grow to <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> if invested at ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}% for ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(cashFV - fundingGap)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse than using Zinc.
   `;
 
   // Sell Land tooltip
   const landStrategy = results.strategies.find(s => s.strategyId === 'sell-land');
   const landCostVsZinc = landStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-land').innerHTML = `
-    You pay 12.5% LTCG tax, plus your <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span> land would grow to <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> at ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%. With Zinc, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan = ${formatCurrency(zincNetPosition)} net. Difference: <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse.
+    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell land worth <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span> (incl. 12.5% LTCG tax). This land could grow to <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> at ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(landFV - landGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse than using Zinc.
   `;
 
   // Sell Equities tooltip
   const equityStrategy = results.strategies.find(s => s.strategyId === 'sell-indian-equity');
   const equityCostVsZinc = equityStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-indian-equity').innerHTML = `
-    You pay LTCG tax, plus your <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span> equities would grow to <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> at ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%. With Zinc, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan = ${formatCurrency(zincNetPosition)} net. Difference: <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse.
+    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell equities worth <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span> (incl. LTCG tax). These equities could grow to <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> at ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(equityFV - equityGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse than using Zinc.
   `;
 
   // Sell RSUs tooltip
   const rsuStrategy = results.strategies.find(s => s.strategyId === 'sell-rsus');
   const rsuCostVsZinc = rsuStrategy.impact - zincStrategy.impact;
   document.getElementById('tooltip-sell-rsus').innerHTML = `
-    You pay 12.5% LTCG (no exemption), plus your <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span> RSUs would grow to <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> at ${(effectiveRsuCagr * 100).toFixed(1)}%. With Zinc, you keep them growing and just pay ${formatCurrency(zincBurden)} loan cost. Difference: <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse.
+    To fund the gap of ${formatCurrency(fundingGap)}, you need to sell RSUs worth <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span> (incl. 12.5% LTCG, no exemption). These RSUs could grow to <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> at ${(effectiveRsuCagr * 100).toFixed(1)}% over ${years} years. You miss out on <span class="chart-tooltip-negative">${formatCurrency(rsuFV - rsuGrossSale)}</span> in potential growth. That's <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse than using Zinc.
   `;
 }
 
