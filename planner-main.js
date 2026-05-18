@@ -1,10 +1,16 @@
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
 
 const slider = document.getElementById('amount-slider');
-const amountInput = document.getElementById('amount-input');
 const amountDisplay = document.getElementById('amount-display');
+const amountDisplayContainer = document.getElementById('amount-display-container');
 const houseImage = document.getElementById('house-image');
 const houseShadow = document.getElementById('house-shadow');
+
+// Edit modal elements
+const editModal = document.getElementById('edit-modal');
+const editModalInput = document.getElementById('edit-modal-input');
+const editModalSave = document.getElementById('edit-modal-save');
+const editModalCancel = document.getElementById('edit-modal-cancel');
 
 const MIN_VALUE = 100000;
 const MAX_VALUE = 100000000;
@@ -144,44 +150,59 @@ slider.addEventListener('input', () => {
   lastHapticValue = value;
 });
 
-amountDisplay.addEventListener('click', () => {
-  amountInput.style.display = 'block';
-  amountInput.focus();
-  amountDisplay.style.display = 'none';
+// Open edit modal on click
+amountDisplayContainer.addEventListener('click', () => {
+  const currentValue = parseInt(slider.value, 10);
+  editModalInput.value = formatIndianNumber(currentValue);
+  editModal.classList.add('visible');
+  editModalInput.focus();
+  editModalInput.select();
 });
 
-amountInput.addEventListener('input', (e) => {
+// Format input as user types
+editModalInput.addEventListener('input', (e) => {
   const rawValue = e.target.value.replace(/[^0-9]/g, '');
   let numValue = parseInt(rawValue, 10) || 0;
-
   if (numValue > MAX_VALUE) numValue = MAX_VALUE;
-
-  amountInput.value = formatIndianNumber(numValue);
-
-  if (numValue >= MIN_VALUE && numValue <= MAX_VALUE) {
-    slider.value = numValue;
-    const newLevel = getHouseLevel(numValue);
-    if (newLevel !== currentLevel) {
-      currentLevel = newLevel;
-      updateHouseImage(currentLevel);
-    }
-  }
+  editModalInput.value = formatIndianNumber(numValue);
 });
 
-amountInput.addEventListener('blur', () => {
-  let value = parseIndianNumber(amountInput.value);
+// Save button click
+editModalSave.addEventListener('click', () => {
+  let value = parseIndianNumber(editModalInput.value);
   if (value < MIN_VALUE) value = MIN_VALUE;
   if (value > MAX_VALUE) value = MAX_VALUE;
-  amountInput.value = formatIndianNumber(value);
+
   slider.value = value;
   updateDisplay(value);
-  amountInput.style.display = 'none';
-  amountDisplay.style.display = 'inline';
 
   const newLevel = getHouseLevel(value);
   if (newLevel !== currentLevel) {
     currentLevel = newLevel;
     updateHouseImage(currentLevel);
+  }
+
+  editModal.classList.remove('visible');
+});
+
+// Cancel button click
+editModalCancel.addEventListener('click', () => {
+  editModal.classList.remove('visible');
+});
+
+// Close modal on overlay click
+editModal.addEventListener('click', (e) => {
+  if (e.target === editModal) {
+    editModal.classList.remove('visible');
+  }
+});
+
+// Handle Enter key in input
+editModalInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    editModalSave.click();
+  } else if (e.key === 'Escape') {
+    editModal.classList.remove('visible');
   }
 });
 

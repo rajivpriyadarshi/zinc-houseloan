@@ -58,7 +58,7 @@
     <section class="snap-section zinc-intro-section" id="zinc-intro-section">
       <div class="zinc-intro-content">
         <p class="zinc-intro-label">Introducing Zinc HomeGap loan</p>
-        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against vested RSUs without selling them — finance big goals while staying invested in your company's growth"></span></h2>
+        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against your RSUs, stocks & mutual funds without selling them — finance big goals while staying invested"></span></h2>
       </div>
       <div class="scroll-indicator">
         <p class="scroll-text">Scroll to compare options</p>
@@ -74,100 +74,74 @@
 
       <div class="chart-wrapper">
         <div class="chart-columns">
-          <!-- Column 1: Cash vs Zinc -->
-          <div class="chart-column" data-option="use-cash">
-            <div class="column-header">Cash vs Zinc HomeGap</div>
+          <!-- Column 1: Zinc Loan -->
+          <div class="chart-column" data-option="zinc-loan">
+            <div class="column-header">Use Zinc Loan</div>
             <div class="column-upper">
               <div class="bar-label positive">
-                <span class="bar-amount-row"><span class="bar-amount" id="zinc-cash-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">Zinc benefit</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">cash positive</span>
               </div>
-              <div class="bar bar-positive" id="zinc-cash-bar">
-                <span class="bar-name">Zinc HomeGap</span>
-              </div>
+              <div class="bar bar-positive" id="zinc-bar"></div>
             </div>
+            <div class="column-lower"></div>
+            <div class="chart-tooltip" id="tooltip-zinc-loan">Click to know more</div>
+          </div>
+
+          <!-- Column 2: Use Cash -->
+          <div class="chart-column" data-option="use-cash">
+            <div class="column-header">Use Cash</div>
+            <div class="column-upper"></div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="cash-bar">
-                <span class="bar-name">Cash</span>
-              </div>
+              <div class="bar bar-negative" id="cash-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="cash-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">opportunity cost</span>
+                <span class="bar-sublabel">cash negative</span>
               </div>
             </div>
-            <div class="chart-tooltip" id="tooltip-use-cash"></div>
+            <div class="chart-tooltip" id="tooltip-use-cash">Click to know more</div>
           </div>
 
-          <!-- Column 2: Land vs Zinc -->
+          <!-- Column 3: Sell Land -->
           <div class="chart-column" data-option="sell-land">
-            <div class="column-header">Sell Land vs Zinc HomeGap</div>
-            <div class="column-upper">
-              <div class="bar-label positive">
-                <span class="bar-amount-row"><span class="bar-amount" id="zinc-land-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">Zinc benefit</span>
-              </div>
-              <div class="bar bar-positive" id="zinc-land-bar">
-                <span class="bar-name">Zinc HomeGap</span>
-              </div>
-            </div>
+            <div class="column-header">Sell Land</div>
+            <div class="column-upper"></div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="land-bar">
-                <span class="bar-name">Land</span>
-              </div>
+              <div class="bar bar-negative" id="land-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="land-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">opportunity cost</span>
+                <span class="bar-sublabel">cash negative</span>
               </div>
             </div>
-            <div class="chart-tooltip" id="tooltip-sell-land"></div>
+            <div class="chart-tooltip" id="tooltip-sell-land">Click to know more</div>
           </div>
 
-          <!-- Column 3: Equities vs Zinc -->
+          <!-- Column 4: Sell Equities -->
           <div class="chart-column" data-option="sell-indian-equity">
-            <div class="column-header">Sell Equities vs Zinc HomeGap</div>
-            <div class="column-upper">
-              <div class="bar-label positive">
-                <span class="bar-amount-row"><span class="bar-amount" id="zinc-equity-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">Zinc benefit</span>
-              </div>
-              <div class="bar bar-positive" id="zinc-equity-bar">
-                <span class="bar-name">Zinc HomeGap</span>
-              </div>
-            </div>
+            <div class="column-header">Sell Equities</div>
+            <div class="column-upper"></div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="equity-bar">
-                <span class="bar-name">Equities</span>
-              </div>
+              <div class="bar bar-negative" id="equity-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="equity-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">opportunity cost</span>
+                <span class="bar-sublabel">cash negative</span>
               </div>
             </div>
-            <div class="chart-tooltip" id="tooltip-sell-indian-equity"></div>
+            <div class="chart-tooltip" id="tooltip-sell-indian-equity">Click to know more</div>
           </div>
 
-          <!-- Column 4: RSUs vs Zinc -->
+          <!-- Column 5: Sell RSUs -->
           <div class="chart-column" data-option="sell-rsus">
-            <div class="column-header">Sell RSUs vs Zinc HomeGap</div>
-            <div class="column-upper">
-              <div class="bar-label positive">
-                <span class="bar-amount-row"><span class="bar-amount" id="zinc-rsu-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">Zinc benefit</span>
-              </div>
-              <div class="bar bar-positive" id="zinc-rsu-bar">
-                <span class="bar-name">Zinc HomeGap</span>
-              </div>
-            </div>
+            <div class="column-header">Sell RSUs</div>
+            <div class="column-upper"></div>
             <div class="column-lower">
-              <div class="bar bar-negative" id="rsu-bar">
-                <span class="bar-name">RSUs</span>
-              </div>
+              <div class="bar bar-negative" id="rsu-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="rsu-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">opportunity cost</span>
+                <span class="bar-sublabel">cash negative</span>
               </div>
             </div>
-            <div class="chart-tooltip" id="tooltip-sell-rsus"></div>
+            <div class="chart-tooltip" id="tooltip-sell-rsus">Click to know more</div>
           </div>
         </div>
 
@@ -213,14 +187,14 @@
     <section class="snap-section option-section" data-option="zinc-loan" id="section-zinc-loan">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title"><span class="option-title-text" data-full-text="Zinc HomeGap loan unlocks funding against your vested RSUs without selling them upfront"></span></h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Zinc HomeGap loan unlocks funding against your RSUs, stocks & mutual funds without selling them"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
         <div class="value-comparison-wrapper">
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="zinc-value-today">₹47.60 Lacs</span>
-              <span class="value-label">RSUs you'd otherwise sell</span>
+              <span class="value-label">RSUs you'd otherwise sell (incl. tax)</span>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="zinc-growth">+37.6 lacs</span>
@@ -244,7 +218,7 @@
         </div>
         <div class="benefit-box benefit-positive">
           <span class="benefit-tag positive">Benefit of this method</span>
-          <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          <p class="benefit-text">By taking a <strong>Zinc HomeGap loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
           <button class="learn-more-btn" data-option="zinc-loan">Learn more</button>
         </div>
       </div>
@@ -348,7 +322,7 @@
     <section class="snap-section option-section" data-option="sell-indian-equity" id="section-sell-indian-equity">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title"><span class="option-title-text" data-full-text="Selling equities triggers tax and loses compounding gains"></span></h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Selling stocks & mutual funds triggers tax and loses compounding gains"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
         <div class="value-comparison-wrapper">
