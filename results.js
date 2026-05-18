@@ -544,6 +544,7 @@ function updateUI() {
 
   // Update hero section
   document.getElementById('hero-amount').textContent = formatCr(results.fundingGap);
+  document.getElementById('hero-ltv').textContent = (modelInputs.homeLoanLtvPct * 100).toFixed(0);
 
   // Update breakdown pills
   document.getElementById('breakdown-downpayment').textContent = formatLacs(results.downPayment);
