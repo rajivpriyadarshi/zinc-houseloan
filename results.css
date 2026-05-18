@@ -512,6 +512,53 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* Chart Tooltip */
+.chart-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  width: 320px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.95);
+}
+
+.chart-column:hover .chart-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.chart-tooltip-highlight {
+  font-weight: 600;
+  color: #4a9d5b;
+}
+
+.chart-tooltip-negative {
+  font-weight: 600;
+  color: #d03660;
+}
+
 /* Baseline - positioned right after column headers + upper section */
 .chart-baseline {
   position: absolute;
@@ -777,6 +824,11 @@ body {
   color: rgba(0, 0, 0, 0.5);
   margin: 8px 0 0 0;
   line-height: 1.5;
+}
+
+.group-description-italic {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .highlight-group {

@@ -588,6 +588,79 @@ function updateUI() {
   document.getElementById('land-bar').style.height = landBarHeight + 'px';
   document.getElementById('equity-bar').style.height = equityBarHeight + 'px';
   document.getElementById('rsu-bar').style.height = rsuBarHeight + 'px';
+
+  // Update chart tooltips
+  updateChartTooltips(results);
+}
+
+function updateChartTooltips(results) {
+  const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+
+  // Calculate Zinc loan values
+  const rsuGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+  const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+  const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
+  const zincInterest = fundingGap * zincRate * years;
+  const zincPaymentsFV = calculateFutureValue(zincInterest, modelInputs.zincPaymentReinvestmentCagrPct, years / 2);
+  const retainedRsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+  const zincBurden = zincPaymentsFV + fundingGap;
+  const zincNetPosition = retainedRsuFV - zincBurden;
+
+  // Cash values
+  const cashFV = calculateFutureValue(fundingGap, modelInputs.assets.cash.cagrPct, years);
+  const cashBenefit = zincNetPosition - (cashFV - fundingGap);
+
+  // Land values
+  const landGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+  const landFV = calculateFutureValue(landGrossSale, modelInputs.assets.land.cagrPct, years);
+  const landCost = landFV - zincNetPosition;
+
+  // Equity values
+  const equityGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+  const equityFV = calculateFutureValue(equityGrossSale, modelInputs.assets.indianEquity.cagrPct, years);
+  const equityCost = equityFV - zincNetPosition;
+
+  // RSU sell values
+  const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
+  const rsuCost = rsuFV - zincNetPosition;
+
+  // Get strategy impacts for comparison
+  const zincStrategy = results.strategies.find(s => s.strategyId === 'zinc-loan');
+  const cashStrategy = results.strategies.find(s => s.strategyId === 'use-cash');
+  const zincBenefitVsCash = cashStrategy.impact - zincStrategy.impact;
+
+  // Zinc Loan tooltip
+  document.getElementById('tooltip-zinc-loan').innerHTML = `
+    Your <span class="chart-tooltip-highlight">${formatCurrency(rsuGrossSale)}</span> RSUs grow to <span class="chart-tooltip-highlight">${formatCurrency(retainedRsuFV)}</span> in ${years} years. After paying <span class="chart-tooltip-highlight">${formatCurrency(zincBurden)}</span> (Zinc interest + principal), you keep <span class="chart-tooltip-highlight">${formatCurrency(zincNetPosition)}</span>. That's <span class="chart-tooltip-highlight">${formatCr(zincBenefitVsCash)}</span> more than if you used cash.
+  `;
+
+  // Use Cash tooltip
+  const cashCostVsZinc = cashStrategy.impact - zincStrategy.impact;
+  document.getElementById('tooltip-use-cash').innerHTML = `
+    Your <span class="chart-tooltip-negative">${formatCurrency(fundingGap)}</span> cash would grow to <span class="chart-tooltip-negative">${formatCurrency(cashFV)}</span> if invested at ${(modelInputs.assets.cash.cagrPct * 100).toFixed(0)}%. With Zinc instead, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan cost = ${formatCurrency(zincNetPosition)} net. Total: <span class="chart-tooltip-negative">${formatCr(cashCostVsZinc)}</span> worse.
+  `;
+
+  // Sell Land tooltip
+  const landStrategy = results.strategies.find(s => s.strategyId === 'sell-land');
+  const landCostVsZinc = landStrategy.impact - zincStrategy.impact;
+  document.getElementById('tooltip-sell-land').innerHTML = `
+    You pay 12.5% LTCG tax, plus your <span class="chart-tooltip-negative">${formatCurrency(landGrossSale)}</span> land would grow to <span class="chart-tooltip-negative">${formatCurrency(landFV)}</span> at ${(modelInputs.assets.land.cagrPct * 100).toFixed(0)}%. With Zinc, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan = ${formatCurrency(zincNetPosition)} net. Difference: <span class="chart-tooltip-negative">${formatCr(landCostVsZinc)}</span> worse.
+  `;
+
+  // Sell Equities tooltip
+  const equityStrategy = results.strategies.find(s => s.strategyId === 'sell-indian-equity');
+  const equityCostVsZinc = equityStrategy.impact - zincStrategy.impact;
+  document.getElementById('tooltip-sell-indian-equity').innerHTML = `
+    You pay LTCG tax, plus your <span class="chart-tooltip-negative">${formatCurrency(equityGrossSale)}</span> equities would grow to <span class="chart-tooltip-negative">${formatCurrency(equityFV)}</span> at ${(modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0)}%. With Zinc, RSUs grow to ${formatCurrency(retainedRsuFV)} minus ${formatCurrency(zincBurden)} loan = ${formatCurrency(zincNetPosition)} net. Difference: <span class="chart-tooltip-negative">${formatCr(equityCostVsZinc)}</span> worse.
+  `;
+
+  // Sell RSUs tooltip
+  const rsuStrategy = results.strategies.find(s => s.strategyId === 'sell-rsus');
+  const rsuCostVsZinc = rsuStrategy.impact - zincStrategy.impact;
+  document.getElementById('tooltip-sell-rsus').innerHTML = `
+    You pay 12.5% LTCG (no exemption), plus your <span class="chart-tooltip-negative">${formatCurrency(rsuGrossSale)}</span> RSUs would grow to <span class="chart-tooltip-negative">${formatCurrency(rsuFV)}</span> at ${(effectiveRsuCagr * 100).toFixed(1)}%. With Zinc, you keep them growing and just pay ${formatCurrency(zincBurden)} loan cost. Difference: <span class="chart-tooltip-negative">${formatCr(rsuCostVsZinc)}</span> worse.
+  `;
 }
 
 // Show option details modal
@@ -1100,12 +1173,11 @@ function showChartCalculation(strategyId) {
     if (strategyId === 'use-cash') {
       firstSection = `
         <div class="detail-group">
-          <h3 class="group-heading">Cash you'd use</h3>
-          <p class="group-description">You use your savings directly to cover the funding gap.</p>
+          <h3 class="group-heading">Your savings</h3>
           <div class="detail-rows">
-            <div class="detail-row detail-row-total">
-              <span class="detail-label"><strong>Savings to use</strong></span>
-              <span class="detail-value"><strong>${formatCurrency(fundingGap)}</strong></span>
+            <div class="detail-row">
+              <span class="detail-label">Cash you'd need</span>
+              <span class="detail-value">${formatCurrency(fundingGap)}</span>
             </div>
           </div>
         </div>
@@ -1130,19 +1202,38 @@ function showChartCalculation(strategyId) {
       `;
     }
 
-    content = `
-    <div class="detail-modal-container">
-      <div class="detail-header">
-        <h2 class="detail-modal-title">Why ${strategyName} Costs You More</h2>
-        <p class="detail-description">${taxInfo}</p>
-      </div>
-
-      <div class="detail-sections">
-        ${firstSection}
-
+    // Build the opportunity cost section
+    let opportunityCostSection = '';
+    if (strategyId === 'use-cash') {
+      opportunityCostSection = `
         <div class="detail-group">
-          <h3 class="group-heading">Opportunity cost over ${years} years</h3>
-          <p class="group-description">If you kept this ${strategyId === 'use-cash' ? 'cash' : 'asset'} invested instead of ${strategyId === 'use-cash' ? 'using' : 'selling'} it.</p>
+          <h3 class="group-heading">Financial impact over ${years} years</h3>
+          <p class="group-description group-description-italic">Let's see what if you kept this cash invested instead of using it</p>
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="detail-label">Cash value today</span>
+              <span class="detail-value">${formatCurrency(assetValue)}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Expected growth rate</span>
+              <span class="detail-value">${(growthRate * 100).toFixed(1)}% p.a.</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Value after ${years} years</span>
+              <span class="detail-value">${formatCurrency(futureValue)}</span>
+            </div>
+            <div class="detail-row detail-row-total">
+              <span class="detail-label"><strong>Growth you'd miss</strong></span>
+              <span class="detail-value detail-value-red"><strong>${formatCurrency(growth)}</strong></span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      opportunityCostSection = `
+        <div class="detail-group">
+          <h3 class="group-heading">Financial impact over ${years} years</h3>
+          <p class="group-description group-description-italic">Let's see what if you kept this asset invested instead of selling it</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Asset value today</span>
@@ -1162,6 +1253,20 @@ function showChartCalculation(strategyId) {
             </div>
           </div>
         </div>
+      `;
+    }
+
+    content = `
+    <div class="detail-modal-container">
+      <div class="detail-header">
+        <h2 class="detail-modal-title">Why ${strategyName} Costs You More</h2>
+        <p class="detail-description">${taxInfo}</p>
+      </div>
+
+      <div class="detail-sections">
+        ${firstSection}
+
+        ${opportunityCostSection}
 
         <div class="detail-group highlight-group negative">
           <h3 class="group-heading">Why "-${formatCr(opportunityCost)}" on the chart?</h3>
