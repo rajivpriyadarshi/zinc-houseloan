@@ -68,15 +68,33 @@
   const trigger = document.getElementById('community-trigger');
   const popup = document.getElementById('community-popup');
   const closeBtn = document.getElementById('community-popup-close');
+  const groupBtns = document.querySelectorAll('.community-group-btn');
+
+  // Analytics helper
+  function trackCommunityEvent(eventName) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, { event_category: 'community_widget' });
+    }
+    console.log('Community event:', eventName);
+  }
 
   // Open popup
   trigger.addEventListener('click', () => {
     popup.classList.add('visible');
+    trackCommunityEvent('community_widget_open');
   });
 
   // Close popup
   closeBtn.addEventListener('click', () => {
     popup.classList.remove('visible');
+  });
+
+  // Track group clicks
+  groupBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const groupName = btn.querySelector('.community-group-name')?.textContent || 'unknown';
+      trackCommunityEvent(`community_join_${groupName.replace(/\s+/g, '_').toLowerCase()}`);
+    });
   });
 
   // Close on overlay click

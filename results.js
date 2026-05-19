@@ -2097,6 +2097,7 @@ document.querySelectorAll('.faq-question').forEach(question => {
   question.addEventListener('click', () => {
     const faqItem = question.parentElement;
     const isOpen = faqItem.classList.contains('open');
+    const questionText = question.querySelector('span')?.textContent || 'unknown';
 
     // Close all other FAQ items
     document.querySelectorAll('.faq-item').forEach(item => {
@@ -2106,6 +2107,7 @@ document.querySelectorAll('.faq-question').forEach(question => {
     // Toggle current item
     if (!isOpen) {
       faqItem.classList.add('open');
+      trackButtonClick(`faq_open_${questionText.substring(0, 30).replace(/\s+/g, '_').toLowerCase()}`);
     }
   });
 });
@@ -2137,6 +2139,7 @@ if (faqSection && stickyNav) {
 // Scroll to top button click handler
 if (scrollToTopBtn) {
   scrollToTopBtn.addEventListener('click', () => {
+    trackButtonClick('scroll_to_top');
     scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
