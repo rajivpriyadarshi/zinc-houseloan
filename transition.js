@@ -1,4 +1,5 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
+import { navigateTo } from './router.js';
 
 // Get stored values
 const propertyPrice = parseInt(localStorage.getItem('houseValue')) || 10000000;
@@ -119,9 +120,7 @@ function showAll() {
 
 function navigateToResults() {
   document.body.classList.add('page-exit');
-  setTimeout(() => {
-    window.location.href = 'results.html';
-  }, 400);
+  navigateTo('/results', 400);
 }
 
 // Skip button

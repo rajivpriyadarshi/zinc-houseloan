@@ -2,6 +2,7 @@ import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAna
 import { app, auth } from './firebaseAuth.js';
 import { connectAuthEmulator, GoogleAuthProvider, signInWithCustomToken, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
+import { navigateTo } from './router.js';
 
 const loginModal = document.getElementById('login-modal');
 const getStartedBtn = document.getElementById('get-started-btn');
@@ -106,7 +107,7 @@ if (getStartedBtn) {
     trackButtonClick('get_started');
     sessionStorage.setItem('zinc-flow-started', 'true');
     document.body.classList.add('page-exit');
-    setTimeout(() => window.location.href = 'planner.html', 400);
+    navigateTo('/planner', 400);
   });
 }
 
@@ -153,7 +154,7 @@ async function proceedToPlanner(source) {
   sessionStorage.setItem('zinc-flow-started', 'true');
   loginModal.classList.remove('visible');
   document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'planner.html', 400);
+  navigateTo('/planner', 400);
 }
 
 async function tryRegisterCustomer(email, name) {

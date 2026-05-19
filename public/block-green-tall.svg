@@ -1,7 +1,22 @@
 <svg width="240" height="860" viewBox="0 0 240 860" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round">
-    <path d="M1 72L120 144L239 72L120 1L1 72Z" fill="#153225"/>
-    <path d="M1 72V789L120 858V144L1 72Z" fill="#153225"/>
-    <path d="M239 72V789L120 858V144L239 72Z" fill="#143020"/>
-  </g>
+  <!-- Fills (no strokes, seamless) -->
+  <path d="M1 72L120 144L239 72L120 1L1 72Z" fill="#153225"/>
+  <path d="M1 72V789L120 858V144L1 72Z" fill="#153225"/>
+  <path d="M239 72V789L120 858V144L239 72Z" fill="#143020"/>
+
+  <!-- Top face dotted -->
+  <path d="M1 72L120 144L239 72L120 1Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/>
+
+  <!-- Dotted vertical edges (top 38%) -->
+  <path d="M1 72V345" stroke="#F2F2F2" stroke-width="2" stroke-dasharray="6 4"/>
+  <path d="M239 72V345" stroke="#F2F2F2" stroke-width="2" stroke-dasharray="6 4"/>
+  <path d="M120 144V415" stroke="#F2F2F2" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- Solid vertical edges (bottom 62%) -->
+  <path d="M1 345V789" stroke="#F2F2F2" stroke-width="2"/>
+  <path d="M239 345V789" stroke="#F2F2F2" stroke-width="2"/>
+  <path d="M120 415V858" stroke="#F2F2F2" stroke-width="2"/>
+
+  <!-- Bottom face solid -->
+  <path d="M1 789L120 858L239 789" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round"/>
 </svg>

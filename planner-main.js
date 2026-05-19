@@ -1,4 +1,5 @@
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
+import { navigateTo } from './router.js';
 
 const slider = document.getElementById('amount-slider');
 const amountDisplay = document.getElementById('amount-display');
@@ -211,12 +212,12 @@ document.getElementById('proceed-btn').addEventListener('click', () => {
   trackValueSubmit('house_value_submit', value);
   localStorage.setItem('houseValue', value);
   document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'location.html', 400);
+  navigateTo('/location', 400);
 });
 
 document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
   trackButtonClick('planner_back');
   document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'index.html', 400);
+  navigateTo('/', 400);
 });
