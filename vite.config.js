@@ -14,6 +14,7 @@ export default defineConfig({
         location: resolve(__dirname, 'location.html'),
         breakdown: resolve(__dirname, 'breakdown.html'),
         results: resolve(__dirname, 'results.html'),
+        ping: resolve(__dirname, 'ping.html'),
       },
     },
   },
