@@ -27,11 +27,18 @@ function formatLacs(amount) {
   return `${Math.round(lacs)} L`;
 }
 
+const totalCost = propertyPrice + transactionDuty + interiors;
+
 document.getElementById('hero-amount').textContent = formatCr(fundingGap);
-document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
+document.getElementById('breakdown-loan').textContent = formatCr(totalCost);
 document.getElementById('breakdown-downpayment').textContent = formatLacs(downPayment);
 document.getElementById('breakdown-interior').textContent = formatLacs(interiors);
 document.getElementById('breakdown-stamp').textContent = formatLacs(transactionDuty);
+
+// Change label from total to loan amount after initial display
+setTimeout(() => {
+  document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
+}, 900);
 
 document.getElementById('continue-btn').addEventListener('click', () => {
   trackButtonClick('breakdown_continue');
