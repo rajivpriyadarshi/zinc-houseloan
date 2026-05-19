@@ -295,7 +295,7 @@ let modelInputs = {
   assets: {
     cash: { cagrPct: 0.06 },
     land: {
-      embeddedGainPct: 0.6,
+      embeddedGainPct: 0.5,
       ltcgTaxRatePct: 0.125,
       exemptionAmount: 0,
       cagrPct: 0.08,
@@ -307,7 +307,7 @@ let modelInputs = {
       cagrPct: 0.12,
     },
     foreignRsu: {
-      embeddedGainPct: 0.4,
+      embeddedGainPct: 0.5,
       ltcgTaxRatePct: 0.125,
       exemptionAmount: 0,
       usdCagrPct: 0.12,
@@ -2064,6 +2064,7 @@ if (comparisonChartSection && scrollContainer) {
       if (entry.isIntersecting) {
         comparisonChartSection.classList.add('animate-in');
         setTimeout(() => drawComparisonChart(true), 500);
+        trackButtonClick('section_view_comparison_chart');
         comparisonObserver.unobserve(entry.target);
       }
     });
@@ -2081,6 +2082,7 @@ document.querySelectorAll('.asset-toggle-btn').forEach(btn => {
     document.querySelectorAll('.asset-toggle-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     selectedComparisonAsset = btn.dataset.asset;
+    trackButtonClick('comparison_asset_toggle', { asset: btn.dataset.asset });
     drawComparisonChart(true);
   });
 });

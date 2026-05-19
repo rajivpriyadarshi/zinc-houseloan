@@ -79,69 +79,6 @@
       </div>
     </section>
 
-    <!-- RSU Growth vs Zinc Burden Comparison Section -->
-    <section class="snap-section comparison-chart-section" id="section-comparison-chart">
-      <div class="comparison-chart-content">
-        <h2 class="comparison-chart-title">With Zinc loan, you get to preserve the growth of your assets</h2>
-        <p class="comparison-chart-subtitle">You don't have to sell your stocks, mutual funds or RSUs — watch them grow while you pay off the loan</p>
-
-        <div class="comparison-asset-toggle">
-          <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
-          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
-          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
-        </div>
-
-        <div class="comparison-breakdown">
-          <span class="breakdown-item">Funding gap: <strong id="comparison-funding-gap">₹47.60 L</strong></span>
-          <span class="breakdown-separator">+</span>
-          <span class="breakdown-item">Tax on <span id="comparison-asset-type">RSUs</span>: <strong id="comparison-tax">₹4.00 L</strong></span>
-          <span class="breakdown-separator">=</span>
-          <span class="breakdown-item"><span id="comparison-asset-type-2">RSUs</span> to sell: <strong id="comparison-total">₹51.60 L</strong></span>
-        </div>
-
-        <div class="comparison-chart-container">
-          <canvas id="comparison-chart-canvas"></canvas>
-          <div class="comparison-chart-tooltip" id="comparison-chart-tooltip">
-            <div class="tooltip-year">Year <span id="tooltip-year-value">0</span></div>
-            <div class="tooltip-row tooltip-rsu">
-              <span class="tooltip-dot green"></span>
-              <span class="tooltip-label" id="tooltip-asset-label">RSU value:</span>
-              <span class="tooltip-value" id="tooltip-rsu-value">₹0</span>
-            </div>
-            <div class="tooltip-row tooltip-growth">
-              <span class="tooltip-label">Assumed growth:</span>
-              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
-            </div>
-            <div class="tooltip-row tooltip-burden">
-              <span class="tooltip-dot orange"></span>
-              <span class="tooltip-label">Zinc cost:</span>
-              <span class="tooltip-value" id="tooltip-burden-value">₹0</span>
-            </div>
-            <div class="tooltip-row tooltip-net">
-              <span class="tooltip-label">Net benefit:</span>
-              <span class="tooltip-value" id="tooltip-net-value">₹0</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="comparison-chart-legend">
-          <div class="legend-item">
-            <span class="legend-dot green"></span>
-            <span class="legend-label" id="legend-asset-label">Retained RSU future value</span>
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot orange"></span>
-            <span class="legend-label">Zinc loan cost</span>
-          </div>
-        </div>
-      </div>
-      <div class="scroll-indicator">
-        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 5v14M19 12l-7 7-7-7"/>
-        </svg>
-      </div>
-    </section>
-
     <!-- Section 3: Funding Options Chart -->
     <section class="snap-section chart-section">
       <h2 class="chart-title">Let's compare your funding options<br><span class="chart-subtitle">and their impact over 10 years</span></h2>
@@ -154,7 +91,7 @@
             <div class="column-upper">
               <div class="bar-label positive">
                 <span class="bar-amount-row"><span class="bar-amount" id="zinc-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">networth after 10 yrs</span>
+                <span class="bar-sublabel">net-gain after 10 yrs</span>
               </div>
               <div class="bar bar-positive" id="zinc-bar"></div>
             </div>
@@ -170,7 +107,7 @@
               <div class="bar bar-negative" id="cash-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="cash-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">networth after 10 yrs</span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-use-cash">Click to know more</div>
@@ -184,7 +121,7 @@
               <div class="bar bar-negative" id="land-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="land-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">networth after 10 yrs</span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-land">Click to know more</div>
@@ -198,7 +135,7 @@
               <div class="bar bar-negative" id="equity-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="equity-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">networth after 10 yrs</span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-indian-equity">Click to know more</div>
@@ -212,7 +149,7 @@
               <div class="bar bar-negative" id="rsu-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="rsu-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">networth after 10 yrs</span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-rsus">Click to know more</div>
@@ -511,6 +448,69 @@
         </svg>
       </div>
       <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
+    </section>
+
+    <!-- RSU Growth vs Zinc Burden Comparison Section -->
+    <section class="snap-section comparison-chart-section" id="section-comparison-chart">
+      <div class="comparison-chart-content">
+        <h2 class="comparison-chart-title">With Zinc loan, you get to preserve the growth of your assets</h2>
+        <p class="comparison-chart-subtitle">You don't have to sell your stocks, mutual funds or RSUs — watch them grow while you pay off the loan</p>
+
+        <div class="comparison-asset-toggle">
+          <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
+          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
+          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
+        </div>
+
+        <div class="comparison-breakdown">
+          <span class="breakdown-item">Funding gap: <strong id="comparison-funding-gap">₹47.60 L</strong></span>
+          <span class="breakdown-separator">+</span>
+          <span class="breakdown-item">Tax on <span id="comparison-asset-type">RSUs</span>: <strong id="comparison-tax">₹4.00 L</strong></span>
+          <span class="breakdown-separator">=</span>
+          <span class="breakdown-item"><span id="comparison-asset-type-2">RSUs</span> to sell: <strong id="comparison-total">₹51.60 L</strong></span>
+        </div>
+
+        <div class="comparison-chart-container">
+          <canvas id="comparison-chart-canvas"></canvas>
+          <div class="comparison-chart-tooltip" id="comparison-chart-tooltip">
+            <div class="tooltip-year">Year <span id="tooltip-year-value">0</span></div>
+            <div class="tooltip-row tooltip-rsu">
+              <span class="tooltip-dot green"></span>
+              <span class="tooltip-label" id="tooltip-asset-label">RSU value:</span>
+              <span class="tooltip-value" id="tooltip-rsu-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-growth">
+              <span class="tooltip-label">Assumed growth:</span>
+              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
+            </div>
+            <div class="tooltip-row tooltip-burden">
+              <span class="tooltip-dot orange"></span>
+              <span class="tooltip-label">Zinc cost:</span>
+              <span class="tooltip-value" id="tooltip-burden-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-net">
+              <span class="tooltip-label">Net benefit:</span>
+              <span class="tooltip-value" id="tooltip-net-value">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-chart-legend">
+          <div class="legend-item">
+            <span class="legend-dot green"></span>
+            <span class="legend-label" id="legend-asset-label">Retained RSU future value</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot orange"></span>
+            <span class="legend-label">Zinc loan cost</span>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
     </section>
 
     <!-- Section: FAQs -->

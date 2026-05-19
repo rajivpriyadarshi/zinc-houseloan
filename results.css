@@ -147,7 +147,7 @@ body {
   position: relative;
   background-image: url('/bg-planner.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
 }
 
 /* ============================================
