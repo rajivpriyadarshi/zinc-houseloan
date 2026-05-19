@@ -40,7 +40,10 @@ setTimeout(() => {
   document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
 }, 900);
 
-document.getElementById('continue-btn').addEventListener('click', () => {
+const heroSummary = document.querySelector('.hero-summary');
+heroSummary.addEventListener('animationend', () => {
   trackButtonClick('breakdown_continue');
-  window.location.href = 'results.html';
+  setTimeout(() => {
+    window.location.href = 'results.html';
+  }, 1500);
 });
