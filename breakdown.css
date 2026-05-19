@@ -80,30 +80,45 @@ body {
 
 .stack-top {
   top: 0;
-  animation: stackIn .55s ease-out both;
-  animation-delay: 4.80s;
 }
 
 .stack-middle {
   top: calc(var(--top-h) + var(--effective-gap));
-  animation: stackIn .55s ease-out both;
-  animation-delay: 3.60s;
 }
 
 .stack-lower {
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap));
-  animation: stackIn .55s ease-out both;
-  animation-delay: 2.40s;
 }
 
 .stack-base-tall {
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) - (var(--base-h) * 0.38));
-  animation: tallFadeOut 1.2s ease-out both;
-  animation-delay: 0.20s;
 }
 
 .stack-base {
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap));
+}
+
+.animating .stack-top {
+  animation: stackIn .55s ease-out both;
+  animation-delay: 4.80s;
+}
+
+.animating .stack-middle {
+  animation: stackIn .55s ease-out both;
+  animation-delay: 3.60s;
+}
+
+.animating .stack-lower {
+  animation: stackIn .55s ease-out both;
+  animation-delay: 2.40s;
+}
+
+.animating .stack-base-tall {
+  animation: tallFadeOut 1.2s ease-out both;
+  animation-delay: 0.20s;
+}
+
+.animating .stack-base {
   animation: normalFadeIn 1.2s ease-out both;
   animation-delay: 0.20s;
 }
@@ -115,8 +130,11 @@ body {
   top: 0;
   height: 100%;
   opacity: 0;
-  animation: fadeIn .5s ease-out 0.50s forwards;
   z-index: 4;
+}
+
+.animating .stack-side-label {
+  animation: fadeIn .5s ease-out 0.50s forwards;
 }
 
 .stack-side-dot {
@@ -130,6 +148,9 @@ body {
 
 .stack-side-dot-top {
   top: calc(var(--green-center) - 160px);
+}
+
+.animating .stack-side-dot-top {
   animation: dotTopMove 1.2s ease-out 0.50s forwards;
 }
 
@@ -144,6 +165,9 @@ body {
   height: 292px;
   border-right: 2px dashed rgba(255, 255, 255, .46);
   transform-origin: bottom center;
+}
+
+.animating .stack-side-line {
   animation: lineGrow 1.2s ease-out 0.50s forwards;
 }
 
@@ -158,6 +182,9 @@ body {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, .2);
   background: rgba(7, 8, 12, .78);
+}
+
+.animating .stack-side-pill {
   animation: pillMove 1.2s ease-out 0.50s forwards;
 }
 
@@ -203,21 +230,33 @@ body {
   left: 0;
   opacity: 0;
   transform: translateX(-12px);
-  animation: rowIn .45s ease-out forwards;
 }
 
 .stack-row:nth-child(1) {
   top: var(--row1-top);
-  animation-delay: 5.40s;
 }
 
 .stack-row:nth-child(2) {
   top: var(--row2-top);
-  animation-delay: 4.20s;
 }
 
 .stack-row:nth-child(3) {
   top: var(--row3-top);
+}
+
+.animating .stack-row {
+  animation: rowIn .45s ease-out forwards;
+}
+
+.animating .stack-row:nth-child(1) {
+  animation-delay: 5.40s;
+}
+
+.animating .stack-row:nth-child(2) {
+  animation-delay: 4.20s;
+}
+
+.animating .stack-row:nth-child(3) {
   animation-delay: 3.00s;
 }
 
@@ -261,6 +300,9 @@ body {
   margin-top: calc(var(--row1-top) + 95px);
   opacity: 0;
   transform: translateX(14px);
+}
+
+.animating .hero-summary {
   animation: fadeInLeft .6s ease-out 6.00s forwards;
 }
 
@@ -466,6 +508,53 @@ body {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+.continue-btn {
+  position: absolute;
+  bottom: 40px;
+  right: 38px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 24px 32px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: -0.56px;
+  min-width: 210px;
+  display: none;
+}
+
+.continue-btn.visible {
+  display: block;
+  animation: buttonPop 0.5s ease-out backwards;
+}
+
+.continue-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
+}
+
+.continue-btn:active {
+  transform: scale(0.98);
+}
+
+@keyframes buttonPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

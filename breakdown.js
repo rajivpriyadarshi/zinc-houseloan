@@ -35,15 +35,33 @@ document.getElementById('breakdown-downpayment').textContent = formatLacs(downPa
 document.getElementById('breakdown-interior').textContent = formatLacs(interiors);
 document.getElementById('breakdown-stamp').textContent = formatLacs(transactionDuty);
 
-// Change label from total to loan amount after initial display
-setTimeout(() => {
-  document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
-}, 900);
+const scene = document.querySelector('.hero-breakdown-scene');
+const continueBtn = document.getElementById('continue-btn');
+const LOOP_DURATION = 8000;
+const PAUSE_BEFORE_RESTART = 2000;
+
+function startAnimation() {
+  scene.classList.add('animating');
+  document.getElementById('breakdown-loan').textContent = formatCr(totalCost);
+  setTimeout(() => {
+    document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
+  }, 900);
+}
+
+function restartAnimation() {
+  scene.classList.remove('animating');
+  void scene.offsetWidth;
+  startAnimation();
+}
+
+startAnimation();
+setInterval(restartAnimation, LOOP_DURATION + PAUSE_BEFORE_RESTART);
 
 const heroSummary = document.querySelector('.hero-summary');
 heroSummary.addEventListener('animationend', () => {
+  continueBtn.classList.add('visible');
+});
+continueBtn.addEventListener('click', () => {
   trackButtonClick('breakdown_continue');
-  setTimeout(() => {
-    window.location.href = 'results.html';
-  }, 1500);
+  window.location.href = 'results.html';
 });
