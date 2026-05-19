@@ -2092,6 +2092,55 @@ document.querySelectorAll('.snap-section').forEach(section => {
   sectionViewObserver.observe(section);
 });
 
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(question => {
+  question.addEventListener('click', () => {
+    const faqItem = question.parentElement;
+    const isOpen = faqItem.classList.contains('open');
+
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.classList.remove('open');
+    });
+
+    // Toggle current item
+    if (!isOpen) {
+      faqItem.classList.add('open');
+    }
+  });
+});
+
+// Hide sticky nav and show scroll-to-top when FAQ section is visible
+const faqSection = document.getElementById('section-faq');
+const scrollToTopBtn = document.getElementById('scroll-to-top');
+
+if (faqSection && stickyNav) {
+  const faqNavObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        stickyNav.style.opacity = '0';
+        stickyNav.style.pointerEvents = 'none';
+        if (scrollToTopBtn) scrollToTopBtn.classList.add('visible');
+      } else {
+        stickyNav.style.opacity = '1';
+        stickyNav.style.pointerEvents = 'auto';
+        if (scrollToTopBtn) scrollToTopBtn.classList.remove('visible');
+      }
+    });
+  }, {
+    threshold: 0.3,
+    root: scrollContainer
+  });
+  faqNavObserver.observe(faqSection);
+}
+
+// Scroll to top button click handler
+if (scrollToTopBtn) {
+  scrollToTopBtn.addEventListener('click', () => {
+    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
 // Initialize
 updateUI();
 updateOptionSections();

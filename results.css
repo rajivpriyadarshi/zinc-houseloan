@@ -177,7 +177,7 @@ body {
 .hero-amount {
   font-family: 'Butler Pro', serif;
   font-weight: 300;
-  line-height: 0.95;
+  line-height: 1;
   margin-bottom: 0;
   opacity: 0;
   transform: translateY(30px);
@@ -185,15 +185,18 @@ body {
 }
 
 .hero-amount-value {
+  display: block;
   font-size: 140px;
   color: #fff;
   letter-spacing: -6px;
 }
 
 .hero-amount-suffix {
+  display: block;
   font-size: 100px;
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: -4px;
+  margin-top: -4px;
 }
 
 .hero-subtitle {
@@ -1316,6 +1319,7 @@ body {
   z-index: 100;
   padding: 30px 0;
   background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  transition: opacity 0.3s ease;
 }
 
 .nav-pills {
@@ -1327,8 +1331,7 @@ body {
 .nav-pill {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px 12px 12px;
+  padding: 14px 20px;
   border-radius: 40px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.4);
@@ -1361,18 +1364,6 @@ body {
 
 .nav-pill.active .pill-label {
   color: #000;
-}
-
-.nav-pill.active .pill-dot {
-  background: #000;
-}
-
-.pill-dot {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .pill-label {
@@ -1805,6 +1796,157 @@ body {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* ============================================
+   FAQ SECTION
+   ============================================ */
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 900;
+}
+
+.scroll-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-to-top:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.scroll-to-top svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Disclaimer Text */
+.section-disclaimer {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: -0.11px;
+}
+
+.faq-section {
+  padding: 80px 40px;
+}
+
+.faq-content {
+  max-width: 800px;
+  width: 100%;
+}
+
+.faq-title {
+  font-family: 'Butler Pro', serif;
+  font-size: 56px;
+  font-weight: 300;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 60px;
+  letter-spacing: -2px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.faq-item.open {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-question span {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -0.36px;
+  flex: 1;
+  padding-right: 16px;
+}
+
+.faq-icon {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-item.open .faq-answer {
+  max-height: 200px;
+}
+
+.faq-answer p {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  letter-spacing: -0.16px;
+  padding: 0 28px 24px;
+  margin: 0;
+}
+
 /* Page animations */
 body {
   animation: pageIn 0.6s ease-out;
@@ -1839,8 +1981,7 @@ body {
   .hero-amount-suffix {
     font-size: 36px;
     letter-spacing: -1px;
-    display: block;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   /* Funding Breakdown - Vertical on Mobile */
@@ -2139,6 +2280,36 @@ body {
 
   .group-description {
     font-size: 13px;
+  }
+
+  /* FAQ Section Mobile */
+  .faq-section {
+    padding: 60px 20px;
+  }
+
+  .faq-title {
+    font-size: 32px;
+    margin-bottom: 40px;
+    letter-spacing: -1px;
+  }
+
+  .faq-question {
+    padding: 20px;
+  }
+
+  .faq-question span {
+    font-size: 16px;
+  }
+
+  .faq-answer p {
+    font-size: 14px;
+    padding: 0 20px 20px;
+  }
+
+  .section-disclaimer {
+    bottom: 12px;
+    right: 20px;
+    font-size: 10px;
   }
 }
 
