@@ -79,6 +79,69 @@
       </div>
     </section>
 
+    <!-- RSU Growth vs Zinc Burden Comparison Section -->
+    <section class="snap-section comparison-chart-section" id="section-comparison-chart">
+      <div class="comparison-chart-content">
+        <h2 class="comparison-chart-title">With Zinc loan, you get to preserve the growth of your assets</h2>
+        <p class="comparison-chart-subtitle">You don't have to sell your stocks, mutual funds or RSUs — watch them grow while you pay off the loan</p>
+
+        <div class="comparison-asset-toggle">
+          <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
+          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
+          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
+        </div>
+
+        <div class="comparison-breakdown">
+          <span class="breakdown-item">Funding gap: <strong id="comparison-funding-gap">₹47.60 L</strong></span>
+          <span class="breakdown-separator">+</span>
+          <span class="breakdown-item">Tax on <span id="comparison-asset-type">RSUs</span>: <strong id="comparison-tax">₹4.00 L</strong></span>
+          <span class="breakdown-separator">=</span>
+          <span class="breakdown-item"><span id="comparison-asset-type-2">RSUs</span> to sell: <strong id="comparison-total">₹51.60 L</strong></span>
+        </div>
+
+        <div class="comparison-chart-container">
+          <canvas id="comparison-chart-canvas"></canvas>
+          <div class="comparison-chart-tooltip" id="comparison-chart-tooltip">
+            <div class="tooltip-year">Year <span id="tooltip-year-value">0</span></div>
+            <div class="tooltip-row tooltip-rsu">
+              <span class="tooltip-dot green"></span>
+              <span class="tooltip-label" id="tooltip-asset-label">RSU value:</span>
+              <span class="tooltip-value" id="tooltip-rsu-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-growth">
+              <span class="tooltip-label">Assumed growth:</span>
+              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
+            </div>
+            <div class="tooltip-row tooltip-burden">
+              <span class="tooltip-dot orange"></span>
+              <span class="tooltip-label">Zinc cost:</span>
+              <span class="tooltip-value" id="tooltip-burden-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-net">
+              <span class="tooltip-label">Net benefit:</span>
+              <span class="tooltip-value" id="tooltip-net-value">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-chart-legend">
+          <div class="legend-item">
+            <span class="legend-dot green"></span>
+            <span class="legend-label" id="legend-asset-label">Retained RSU future value</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot orange"></span>
+            <span class="legend-label">Zinc loan cost</span>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
     <!-- Section 3: Funding Options Chart -->
     <section class="snap-section chart-section">
       <h2 class="chart-title">Let's compare your funding options<br><span class="chart-subtitle">and their impact over 10 years</span></h2>
@@ -172,9 +235,11 @@
     <!-- Sticky Navigation Bar -->
     <nav class="sticky-nav" id="sticky-nav">
       <div class="nav-pills">
+        <!-- Zinc loan pill commented out
         <button class="nav-pill" data-option="zinc-loan">
           <span class="pill-label">Zinc loan</span>
         </button>
+        -->
         <button class="nav-pill" data-option="use-cash">
           <span class="pill-label">Use cash</span>
         </button>
@@ -191,6 +256,8 @@
     </nav>
 
     <!-- Option Detail Sections -->
+
+    <!-- COMMENTED OUT: Zinc Loan Detail Section - may bring back later
     <section class="snap-section option-section" data-option="zinc-loan" id="section-zinc-loan">
       <div class="option-content">
         <div class="option-header">
@@ -236,6 +303,7 @@
       </div>
       <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
+    END COMMENTED OUT -->
 
     <section class="snap-section option-section" data-option="use-cash" id="section-use-cash">
       <div class="option-content">
@@ -247,7 +315,13 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="cash-value-today">₹47.60 Lacs</span>
-              <span class="value-label">Value today</span>
+              <span class="value-label">Value today <span class="value-info-icon" data-section="cash">i</span></span>
+              <div class="value-info-tooltip" id="cash-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="cash-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>Tax</span><span id="cash-tooltip-tax">₹0</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Total</span><span id="cash-tooltip-total">₹47.60 L</span></div>
+              </div>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="cash-growth">+37.6 lacs</span>
@@ -293,7 +367,13 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="land-value-today">₹54.28 Lacs</span>
-              <span class="value-label">Land to sell (incl. tax)</span>
+              <span class="value-label">Land to sell (incl. tax) <span class="value-info-icon" data-section="land">i</span></span>
+              <div class="value-info-tooltip" id="land-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="land-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="land-tooltip-tax">₹6.68 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="land-tooltip-total">₹54.28 L</span></div>
+              </div>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="land-growth">+63.0 lacs</span>
@@ -339,7 +419,13 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="equity-value-today">₹50.71 Lacs</span>
-              <span class="value-label">Equities to sell (incl. tax)</span>
+              <span class="value-label">Equities to sell (incl. tax) <span class="value-info-icon" data-section="equity">i</span></span>
+              <div class="value-info-tooltip" id="equity-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="equity-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="equity-tooltip-tax">₹3.11 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="equity-tooltip-total">₹50.71 L</span></div>
+              </div>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="equity-growth">+1.07 Cr</span>
@@ -385,7 +471,13 @@
           <div class="value-comparison">
             <div class="value-box value-today">
               <span class="value-amount" id="rsu-value-today">₹51.60 Lacs</span>
-              <span class="value-label">RSUs to sell (incl. tax)</span>
+              <span class="value-label">RSUs to sell (incl. tax) <span class="value-info-icon" data-section="rsu">i</span></span>
+              <div class="value-info-tooltip" id="rsu-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="rsu-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="rsu-tooltip-tax">₹4.00 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="rsu-tooltip-total">₹51.60 L</span></div>
+              </div>
             </div>
             <div class="growth-badge">
               <span class="growth-amount" id="rsu-growth">+1.17 Cr</span>

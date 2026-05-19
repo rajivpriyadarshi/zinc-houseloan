@@ -1538,6 +1538,99 @@ body {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: -0.16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.value-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  font-weight: 600;
+  font-style: normal;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.value-info-icon:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.value-today {
+  position: relative;
+}
+
+.value-info-tooltip {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.value-today:hover .value-info-tooltip,
+.value-info-icon:hover + .value-info-tooltip,
+.value-info-tooltip:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.value-info-tooltip .tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  gap: 24px;
+}
+
+.value-info-tooltip .tooltip-row span:first-child {
+  color: #fff;
+  font-weight: 500;
+}
+
+.value-info-tooltip .tooltip-row span:last-child {
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.value-info-tooltip .tooltip-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 8px 0;
+}
+
+.value-info-tooltip .tooltip-row.total {
+  font-weight: 600;
+}
+
+.value-info-tooltip .tooltip-row.total span:first-child {
+  color: #fff;
+}
+
+.value-info-tooltip .tooltip-row.total span:last-child {
+  color: #4ade80;
 }
 
 .growth-badge {
@@ -1689,6 +1782,285 @@ body {
   color: #fff;
   letter-spacing: -0.13px;
   margin-top: 10px;
+}
+
+/* ============================================
+   Comparison Chart Section (RSU vs Zinc)
+   ============================================ */
+.comparison-chart-section {
+  padding: 80px 40px;
+}
+
+.comparison-chart-content {
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.comparison-chart-title {
+  font-family: 'Butler Pro', serif;
+  font-size: 48px;
+  font-weight: 300;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 16px;
+  letter-spacing: -2px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.comparison-chart-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+}
+
+.comparison-asset-toggle {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+}
+
+.comparison-chart-container {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+}
+
+.comparison-chart-legend {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+}
+
+.comparison-chart-section.animate-in .comparison-chart-title,
+.comparison-chart-section.animate-in .comparison-chart-subtitle,
+.comparison-chart-section.animate-in .comparison-asset-toggle,
+.comparison-chart-section.animate-in .comparison-chart-container,
+.comparison-chart-section.animate-in .comparison-chart-legend {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.comparison-asset-toggle {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+}
+
+.asset-toggle-btn {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.asset-toggle-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.asset-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.comparison-breakdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  flex-wrap: wrap;
+}
+
+.comparison-breakdown .breakdown-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comparison-breakdown .breakdown-item strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.comparison-breakdown .breakdown-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+}
+
+.comparison-chart-container {
+  width: 100%;
+  height: 350px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+#comparison-chart-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.comparison-chart-tooltip {
+  position: absolute;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+  min-width: 280px;
+}
+
+.comparison-chart-tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip-year {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tooltip-row:last-child {
+  margin-bottom: 0;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tooltip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltip-dot.green {
+  background: linear-gradient(90deg, rgba(255, 193, 92, 1) 0%, rgba(1, 87, 60, 1) 100%);
+}
+
+.tooltip-dot.orange {
+  background: linear-gradient(90deg, rgb(247, 147, 46) 0%, rgb(235, 39, 39) 100%);
+}
+
+.tooltip-label {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tooltip-value {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-left: auto;
+}
+
+.comparison-chart-tooltip .tooltip-growth {
+  padding: 4px 0 !important;
+  margin-left: 16px;
+}
+
+.comparison-chart-tooltip .tooltip-growth .tooltip-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.comparison-chart-tooltip .tooltip-growth .tooltip-value {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.tooltip-net .tooltip-label,
+.comparison-chart-tooltip .tooltip-net .tooltip-label {
+  color: #fff !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.tooltip-net .tooltip-value,
+.comparison-chart-tooltip .tooltip-net .tooltip-value {
+  color: #4ade80 !important;
+  font-weight: 700 !important;
+}
+
+.comparison-chart-legend {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.green {
+  background: linear-gradient(90deg, rgba(255, 193, 92, 1) 0%, rgba(1, 87, 60, 1) 100%);
+}
+
+.legend-dot.orange {
+  background: linear-gradient(90deg, rgb(247, 147, 46) 0%, rgb(235, 39, 39) 100%);
+}
+
+.legend-label {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* Option Section Animations */
@@ -2437,6 +2809,68 @@ body {
 
   .group-description {
     font-size: 13px;
+  }
+
+  /* Comparison Chart Section Mobile */
+  .comparison-chart-section {
+    padding: 40px 20px;
+  }
+
+  .comparison-chart-title {
+    font-size: 28px;
+    letter-spacing: -1px;
+    line-height: 1.2;
+  }
+
+  .comparison-chart-subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .comparison-asset-toggle {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .asset-toggle-btn {
+    font-size: 12px;
+    padding: 8px 14px;
+  }
+
+  .comparison-breakdown {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .comparison-breakdown .breakdown-separator {
+    display: none;
+  }
+
+  .comparison-breakdown .breakdown-item {
+    justify-content: center;
+  }
+
+  .comparison-chart-container {
+    height: 280px;
+    padding: 16px;
+  }
+
+  .comparison-chart-tooltip {
+    min-width: 200px;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+
+  .comparison-chart-legend {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .legend-label {
+    font-size: 12px;
   }
 
   /* FAQ Section Mobile */

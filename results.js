@@ -1775,6 +1775,316 @@ if (chartSection && scrollContainer) {
   chartObserver.observe(chartSection);
 }
 
+// ============================================
+// Comparison Chart (RSU Growth vs Zinc Burden)
+// ============================================
+let selectedComparisonAsset = 'rsu';
+let comparisonChartInitialized = false;
+
+function drawComparisonChart(animate = false) {
+  const canvas = document.getElementById('comparison-chart-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const container = canvas.parentElement;
+  const tooltip = document.getElementById('comparison-chart-tooltip');
+
+  // Set canvas size
+  const dpr = window.devicePixelRatio || 1;
+  const rect = container.getBoundingClientRect();
+  canvas.width = (rect.width - 48) * dpr;
+  canvas.height = (rect.height - 48) * dpr;
+  canvas.style.width = (rect.width - 48) + 'px';
+  canvas.style.height = (rect.height - 48) + 'px';
+  ctx.scale(dpr, dpr);
+
+  const width = rect.width - 48;
+  const height = rect.height - 48;
+  const padding = { top: 20, right: 20, bottom: 40, left: 70 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  // Calculate data points
+  const results = calculateModel(modelInputs);
+  const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+
+  // Get asset-specific parameters based on selection
+  let assetGrossSale, effectiveCagr, assetLabel;
+  if (selectedComparisonAsset === 'rsu') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+    effectiveCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
+    assetLabel = 'RSU';
+  } else if (selectedComparisonAsset === 'stocks') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
+    assetLabel = 'Stock';
+  } else {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    effectiveCagr = modelInputs.assets.cash.cagrPct;
+    assetLabel = 'Mutual Fund';
+  }
+
+  // Calculate tax amount
+  const assetTax = assetGrossSale - fundingGap;
+
+  // Update breakdown line
+  const comparisonFundingGap = document.getElementById('comparison-funding-gap');
+  const comparisonTax = document.getElementById('comparison-tax');
+  const comparisonTotal = document.getElementById('comparison-total');
+  const comparisonAssetType = document.getElementById('comparison-asset-type');
+  const comparisonAssetType2 = document.getElementById('comparison-asset-type-2');
+
+  if (comparisonFundingGap) comparisonFundingGap.textContent = formatCurrency(fundingGap);
+  if (comparisonTax) comparisonTax.textContent = formatCurrency(assetTax);
+  if (comparisonTotal) comparisonTotal.textContent = formatCurrency(assetGrossSale);
+  if (comparisonAssetType) comparisonAssetType.textContent = assetLabel + 's';
+  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabel + 's';
+
+  // Update legend label
+  const legendLabel = document.getElementById('legend-asset-label');
+  if (legendLabel) {
+    legendLabel.textContent = `Retained ${assetLabel} future value`;
+  }
+
+  // Update tooltip labels
+  const tooltipAssetLabel = document.getElementById('tooltip-asset-label');
+  if (tooltipAssetLabel) {
+    tooltipAssetLabel.textContent = `${assetLabel} value:`;
+  }
+
+  // Update growth percentage in tooltip
+  const tooltipGrowthValue = document.getElementById('tooltip-growth-value');
+  if (tooltipGrowthValue) {
+    tooltipGrowthValue.textContent = `${(effectiveCagr * 100).toFixed(1)}%`;
+  }
+
+  const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
+  const zincEmi = calculateEmi(fundingGap, zincRate, years);
+
+  // Generate data for each year
+  const dataPoints = [];
+  for (let year = 0; year <= years; year++) {
+    const assetValue = calculateFutureValue(assetGrossSale, effectiveCagr, year);
+    const totalPaidSoFar = zincEmi * 12 * year;
+    const zincBurdenAtYear = calculateFutureValue(totalPaidSoFar, modelInputs.zincPaymentReinvestmentCagrPct, (years - year) / 2);
+    dataPoints.push({ year, assetValue, zincBurden: zincBurdenAtYear });
+  }
+
+  // Find max value for scale
+  const maxValue = Math.max(...dataPoints.map(d => Math.max(d.assetValue, d.zincBurden))) * 1.1;
+
+  // Function to get coordinates
+  function getCoords(year, value) {
+    const x = padding.left + (chartWidth / years) * year;
+    const y = padding.top + chartHeight - (value / maxValue) * chartHeight;
+    return { x, y };
+  }
+
+  // Create gradients
+  const assetGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
+  assetGradient.addColorStop(0, 'rgba(255, 193, 92, 1)');
+  assetGradient.addColorStop(1, 'rgba(1, 87, 60, 1)');
+
+  const burdenGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
+  burdenGradient.addColorStop(0, 'rgb(247, 147, 46)');
+  burdenGradient.addColorStop(1, 'rgb(235, 39, 39)');
+
+  // Draw static elements (grid, labels)
+  function drawStatic() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw grid lines
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    const gridLines = 5;
+    for (let i = 0; i <= gridLines; i++) {
+      const y = padding.top + (chartHeight / gridLines) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(width - padding.right, y);
+      ctx.stroke();
+    }
+
+    // Draw Y-axis labels
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = '12px Satoshi, sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= gridLines; i++) {
+      const value = maxValue - (maxValue / gridLines) * i;
+      const y = padding.top + (chartHeight / gridLines) * i;
+      ctx.fillText(formatCr(value), padding.left - 10, y + 4);
+    }
+
+    // Draw X-axis labels
+    ctx.textAlign = 'center';
+    for (let year = 0; year <= years; year++) {
+      const x = padding.left + (chartWidth / years) * year;
+      ctx.fillText(year.toString(), x, height - padding.bottom + 25);
+    }
+
+    // X-axis title
+    ctx.fillText('Years', width / 2, height - 5);
+  }
+
+  // Draw lines and dots up to a certain progress (0-1)
+  function drawLines(progress) {
+    drawStatic();
+
+    const totalPoints = dataPoints.length;
+    const pointsToDraw = Math.floor(progress * totalPoints);
+    const partialProgress = (progress * totalPoints) - pointsToDraw;
+
+    // Draw asset value line
+    ctx.strokeStyle = assetGradient;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
+      const coords = getCoords(dataPoints[i].year, dataPoints[i].assetValue);
+      if (i === 0) ctx.moveTo(coords.x, coords.y);
+      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
+        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].assetValue);
+        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
+        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
+        ctx.lineTo(coords.x, coords.y);
+        ctx.lineTo(interpX, interpY);
+      } else {
+        ctx.lineTo(coords.x, coords.y);
+      }
+    }
+    ctx.stroke();
+
+    // Draw burden line
+    ctx.strokeStyle = burdenGradient;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
+      const coords = getCoords(dataPoints[i].year, dataPoints[i].zincBurden);
+      if (i === 0) ctx.moveTo(coords.x, coords.y);
+      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
+        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].zincBurden);
+        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
+        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
+        ctx.lineTo(coords.x, coords.y);
+        ctx.lineTo(interpX, interpY);
+      } else {
+        ctx.lineTo(coords.x, coords.y);
+      }
+    }
+    ctx.stroke();
+
+    // Draw dots for completed points
+    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
+      const point = dataPoints[i];
+      const assetCoords = getCoords(point.year, point.assetValue);
+      const burdenCoords = getCoords(point.year, point.zincBurden);
+
+      const dotProgress = point.year / years;
+      const assetDotColor = dotProgress < 0.5 ? 'rgba(255, 193, 92, 1)' : 'rgba(1, 87, 60, 1)';
+      ctx.fillStyle = assetDotColor;
+      ctx.beginPath();
+      ctx.arc(assetCoords.x, assetCoords.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      const burdenDotColor = dotProgress < 0.5 ? 'rgb(247, 147, 46)' : 'rgb(235, 39, 39)';
+      ctx.fillStyle = burdenDotColor;
+      ctx.beginPath();
+      ctx.arc(burdenCoords.x, burdenCoords.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Animate or draw immediately
+  if (animate) {
+    const duration = 1500;
+    const startTime = performance.now();
+
+    function animateFrame(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+      drawLines(easedProgress);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateFrame);
+      }
+    }
+
+    requestAnimationFrame(animateFrame);
+  } else {
+    drawLines(1);
+  }
+
+  // Store data for hover
+  canvas.dataPoints = dataPoints;
+  canvas.getCoords = getCoords;
+  canvas.padding = padding;
+  canvas.chartWidth = chartWidth;
+  canvas.years = years;
+
+  // Only add event listeners once
+  if (!comparisonChartInitialized) {
+    comparisonChartInitialized = true;
+
+    canvas.addEventListener('mousemove', (e) => {
+      const canvasRect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - canvasRect.left;
+
+      const yearWidth = canvas.chartWidth / canvas.years;
+      const relativeX = mouseX - canvas.padding.left;
+      const closestYear = Math.round(relativeX / yearWidth);
+
+      if (closestYear >= 0 && closestYear <= canvas.years && canvas.dataPoints[closestYear]) {
+        const point = canvas.dataPoints[closestYear];
+        const assetCoords = canvas.getCoords(point.year, point.assetValue);
+
+        document.getElementById('tooltip-year-value').textContent = point.year;
+        document.getElementById('tooltip-rsu-value').textContent = formatCurrency(point.assetValue);
+        document.getElementById('tooltip-burden-value').textContent = formatCurrency(point.zincBurden);
+        document.getElementById('tooltip-net-value').textContent = formatCurrency(point.assetValue - point.zincBurden);
+
+        tooltip.style.left = (assetCoords.x + 20) + 'px';
+        tooltip.style.top = (assetCoords.y - 50) + 'px';
+        tooltip.classList.add('visible');
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  }
+}
+
+// Draw comparison chart when section is in view
+const comparisonChartSection = document.querySelector('.comparison-chart-section');
+if (comparisonChartSection && scrollContainer) {
+  const comparisonObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        comparisonChartSection.classList.add('animate-in');
+        setTimeout(() => drawComparisonChart(true), 500);
+        comparisonObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.3,
+    root: scrollContainer
+  });
+
+  comparisonObserver.observe(comparisonChartSection);
+}
+
+// Asset toggle buttons
+document.querySelectorAll('.asset-toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.asset-toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedComparisonAsset = btn.dataset.asset;
+    drawComparisonChart(true);
+  });
+});
+
 // Update option section values
 function updateOptionSections() {
   const results = calculateModel(modelInputs);
@@ -1787,31 +2097,50 @@ function updateOptionSections() {
   document.getElementById('cash-value-today').textContent = formatCurrency(cashNeeded);
   document.getElementById('cash-value-future').textContent = formatCurrency(cashFV);
   document.getElementById('cash-growth').textContent = '+' + formatCr(cashGrowth);
+  // Cash tooltip (no tax for cash)
+  document.getElementById('cash-tooltip-gap').textContent = formatCurrency(cashNeeded);
+  document.getElementById('cash-tooltip-tax').textContent = '₹0';
+  document.getElementById('cash-tooltip-total').textContent = formatCurrency(cashNeeded);
 
   // Land section
   const landGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+  const landTax = landGrossSale - results.fundingGap;
   const landFV = calculateFutureValue(landGrossSale, modelInputs.assets.land.cagrPct, years);
   const landGrowth = landFV - landGrossSale;
   document.getElementById('land-value-today').textContent = formatCurrency(landGrossSale);
   document.getElementById('land-value-future').textContent = formatCurrency(landFV);
   document.getElementById('land-growth').textContent = '+' + formatCr(landGrowth);
+  // Land tooltip
+  document.getElementById('land-tooltip-gap').textContent = formatCurrency(results.fundingGap);
+  document.getElementById('land-tooltip-tax').textContent = formatCurrency(landTax);
+  document.getElementById('land-tooltip-total').textContent = formatCurrency(landGrossSale);
 
   // Equity section
   const equityGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+  const equityTax = equityGrossSale - results.fundingGap;
   const equityFV = calculateFutureValue(equityGrossSale, modelInputs.assets.indianEquity.cagrPct, years);
   const equityGrowth = equityFV - equityGrossSale;
   document.getElementById('equity-value-today').textContent = formatCurrency(equityGrossSale);
   document.getElementById('equity-value-future').textContent = formatCurrency(equityFV);
   document.getElementById('equity-growth').textContent = '+' + formatCr(equityGrowth);
+  // Equity tooltip
+  document.getElementById('equity-tooltip-gap').textContent = formatCurrency(results.fundingGap);
+  document.getElementById('equity-tooltip-tax').textContent = formatCurrency(equityTax);
+  document.getElementById('equity-tooltip-total').textContent = formatCurrency(equityGrossSale);
 
   // RSU section
   const rsuGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
+  const rsuTax = rsuGrossSale - results.fundingGap;
   const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
   const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
   const rsuGrowth = rsuFV - rsuGrossSale;
   document.getElementById('rsu-value-today').textContent = formatCurrency(rsuGrossSale);
   document.getElementById('rsu-value-future').textContent = formatCurrency(rsuFV);
   document.getElementById('rsu-growth').textContent = '+' + formatCr(rsuGrowth);
+  // RSU tooltip
+  document.getElementById('rsu-tooltip-gap').textContent = formatCurrency(results.fundingGap);
+  document.getElementById('rsu-tooltip-tax').textContent = formatCurrency(rsuTax);
+  document.getElementById('rsu-tooltip-total').textContent = formatCurrency(rsuGrossSale);
 
   // Zinc section (same as RSU values but kept)
   document.getElementById('zinc-value-today').textContent = formatCurrency(rsuGrossSale);
@@ -2018,7 +2347,7 @@ const navObserver = new IntersectionObserver((entries) => {
   root: scrollContainer
 });
 
-const firstOptionSection = document.getElementById('section-zinc-loan');
+const firstOptionSection = document.getElementById('section-zinc-loan') || document.getElementById('section-use-cash');
 if (firstOptionSection) {
   navObserver.observe(firstOptionSection);
 }
