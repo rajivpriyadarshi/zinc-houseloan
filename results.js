@@ -1768,19 +1768,12 @@ if (chartSection && scrollContainer) {
       }
     });
   }, {
-    threshold: 0.2,
+    threshold: 0.5,
     root: scrollContainer
   });
 
   chartObserver.observe(chartSection);
 }
-
-// Fallback: trigger animation after 3 seconds if observer doesn't fire
-setTimeout(() => {
-  if (!barsAnimated) {
-    animateBars();
-  }
-}, 3000);
 
 // Update option section values
 function updateOptionSections() {
