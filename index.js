@@ -345,3 +345,39 @@ function initFunFactTicker() {
 }
 
 initFunFactTicker();
+
+// Rotating phrase animation
+function initRotatingPhrases() {
+  const phrases = document.querySelectorAll('.rotating-phrase');
+  if (phrases.length === 0) return;
+
+  let currentIndex = 0;
+  const intervalTime = 2500;
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function rotatePhrase() {
+    const currentPhrase = phrases[currentIndex];
+    const nextIndex = (currentIndex + 1) % phrases.length;
+    const nextPhrase = phrases[nextIndex];
+
+    // Exit current phrase
+    currentPhrase.classList.remove('active');
+    currentPhrase.classList.add('exit');
+
+    // Enter next phrase
+    nextPhrase.classList.add('active');
+
+    // Clean up exit class after animation
+    setTimeout(() => {
+      currentPhrase.classList.remove('exit');
+    }, prefersReducedMotion ? 300 : 500);
+
+    currentIndex = nextIndex;
+  }
+
+  setInterval(rotatePhrase, intervalTime);
+}
+
+initRotatingPhrases();
