@@ -94,7 +94,7 @@ proceedBtn.addEventListener('click', () => {
     trackValueSubmit('city_submit', selectedCity);
     localStorage.setItem('selectedCity', selectedCity);
     document.body.classList.add('page-exit');
-    setTimeout(() => window.location.href = 'results.html', 400);
+    setTimeout(() => window.location.href = 'breakdown.html', 400);
   }
 });
 
