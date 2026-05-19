@@ -12,6 +12,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         planner: resolve(__dirname, 'planner.html'),
         location: resolve(__dirname, 'location.html'),
+        breakdown: resolve(__dirname, 'breakdown.html'),
         results: resolve(__dirname, 'results.html'),
       },
     },

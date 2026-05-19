@@ -5,63 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zinc - Plan Your Home Purchase</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="community-widget.css">
 </head>
 <body>
-  <div class="container">
-    <img src="/zinc_logo.png" alt="Zinc" class="logo">
-    <div class="vertical-lines"></div>
-    <h1 class="title">Plan your home<br>purchase</h1>
-    <p class="subtitle">Understand the real cost of buying a home and prepare your finances with confidence.</p>
-    <button class="get-started-btn" id="get-started-btn" data-open-login="true">Get started</button>
-  </div>
-
-  <!-- Login Modal -->
-  <div class="login-modal-overlay" id="login-modal">
-    <div class="login-modal">
-      <div class="login-step active" id="login-step-email">
-        <h2 class="login-title">Sign in to continue</h2>
-        <p class="login-subtitle">Choose Google or continue with email OTP</p>
-        <button class="login-btn login-google-btn" id="google-signin-btn">Continue with Google</button>
-        <div class="login-divider">OR</div>
-        <div class="login-field">
-          <label>Email</label>
-          <input type="email" id="login-email" placeholder="you@example.com">
-        </div>
-        <button class="login-btn login-secondary-btn" id="send-otp-btn">Send OTP</button>
-      </div>
-
-      <div class="login-step" id="login-step-otp">
-        <h2 class="login-title">Verify OTP</h2>
-        <p class="login-subtitle">Enter the 6-digit code sent to your email</p>
-        <div class="login-field">
-          <label>Email</label>
-          <div class="login-email-row">
-            <p class="login-email-chip" id="login-email-chip"></p>
-            <button class="login-email-edit" id="edit-email-btn" aria-label="Edit email">✎</button>
-          </div>
-        </div>
-        <div class="login-field">
-          <label>OTP</label>
-          <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
-        </div>
-        <button class="login-btn" id="verify-otp-btn">Verify OTP</button>
-      </div>
-
-      <p class="login-status" id="login-status" aria-live="polite"></p>
-      <button class="login-skip" id="login-skip">Skip for now</button>
+  <!-- Fixed Header -->
+  <header class="site-header" id="site-header">
+    <img src="/zinc_logo.png" alt="Zinc" class="header-logo">
+    <div class="header-right">
+      <span class="user-email" id="user-email"></span>
+      <button class="logout-btn" id="logout-btn">Logout</button>
     </div>
+  </header>
+
+  <div class="container">
+    <div class="vertical-lines"></div>
+    <div class="hero-text">
+      <h1 class="title">Planning to fund your new home</h1>
+      <div class="title-rotating">
+        <div class="rotating-wrapper">
+          <span class="rotating-phrase active">by selling RSUs?</span>
+          <span class="rotating-phrase">by selling stocks?</span>
+          <span class="rotating-phrase">by redeeming mutual funds?</span>
+          <span class="rotating-phrase">by using savings?</span>
+          <span class="rotating-phrase">by breaking FDs?</span>
+          <span class="rotating-phrase">by selling land?</span>
+        </div>
+      </div>
+    </div>
+    <p class="subtitle">Your home loan may cover up to 80% of the property value. But the actual cost includes down payment, stamp duty, registration, GST, interiors, furniture, and move-in expenses.</p>
+    <p class="punchline">Let's find out the smartest way to fund it</p>
+    <button class="get-started-btn" id="get-started-btn">Get started</button>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const trigger = document.querySelector('[data-open-login="true"]');
-      const modal = document.getElementById('login-modal');
-      if (!trigger || !modal) return;
-      trigger.addEventListener('click', function () {
-        modal.classList.add('visible');
-      });
-    });
-  </script>
+  <div class="fun-fact-ticker" id="fun-fact-ticker">
+    <span class="fun-fact-icon">💡</span>
+    <span class="fun-fact-text" id="fun-fact-text"></span>
+  </div>
   <script type="module" src="index.js"></script>
+  <script src="community-widget.js"></script>
 </body>
 </html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funding Breakdown - Zinc</title>
+  <link rel="stylesheet" href="breakdown.css">
+</head>
+<body>
+  <section class="breakdown-page">
+    <div class="hero-breakdown-scene">
+      <div class="stack-cluster">
+        <div class="stack-side-label">
+          <span class="stack-side-dot stack-side-dot-top"></span>
+          <div class="stack-side-line"></div>
+          <span class="stack-side-dot stack-side-dot-bottom"></span>
+          <div class="stack-side-pill">
+            <span class="stack-side-value" id="breakdown-loan">3 Cr</span>
+            <span class="stack-side-text">Loan amount</span>
+          </div>
+        </div>
+
+        <div class="stack-visual">
+          <img class="stack-block stack-base-tall" src="/block-green-tall.svg" alt="Tall loan block">
+          <img class="stack-block stack-base" src="/block-green.svg" alt="Loan block">
+          <img class="stack-block stack-mid stack-lower" src="/block-lower.svg" alt="Down payment block">
+          <img class="stack-block stack-mid stack-middle" src="/block-middle.svg" alt="Interior block">
+          <img class="stack-block stack-top" src="/block-top.svg" alt="Stamp duty block">
+        </div>
+
+        <div class="stack-breakdown">
+          <div class="stack-row">
+            <span class="stack-dot"></span>
+            <div class="stack-pill">
+              <span class="stack-pill-value" id="breakdown-stamp">8 L</span>
+              <span class="stack-pill-label">Stamp duty</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <span class="stack-dot"></span>
+            <div class="stack-pill">
+              <span class="stack-pill-value" id="breakdown-interior">20 L</span>
+              <span class="stack-pill-label">Interior cost</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <span class="stack-dot"></span>
+            <div class="stack-pill">
+              <span class="stack-pill-value" id="breakdown-downpayment">20 L</span>
+              <span class="stack-pill-label">Down-payment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-summary">
+        <div class="summary-bracket"></div>
+        <div class="hero-amount">
+          <span class="hero-amount-lead">You still need</span>
+          <h1 class="hero-amount-line">
+            <span class="hero-amount-value" id="hero-amount">1.23 Cr</span>
+            <span class="hero-amount-suffix">to get in your house</span>
+          </h1>
+        </div>
+      </div>
+
+      <button id="continue-btn" class="continue-btn">Continue</button>
+    </div>
+  </section>
+
+  <script>
+    if (!sessionStorage.getItem('zinc-flow-started')) {
+      window.location.href = '/';
+    }
+  </script>
+  <script type="module" src="breakdown.js"></script>
+</body>
+</html>

@@ -8,18 +8,37 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="results.css">
+  <link rel="stylesheet" href="community-widget.css">
 </head>
 <body>
+  <!-- Fixed Header -->
+  <header class="site-header" id="site-header">
+    <a href="/"><img src="/zinc_logo.png" alt="Zinc" class="header-logo"></a>
+    <div class="header-right">
+      <span class="user-email" id="user-email"></span>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
   <div class="scroll-container">
     <!-- Section 1: Hero - "You still need X Cr to get in your house" -->
     <section class="snap-section hero-section">
       <div class="hero-content">
-        <p class="hero-label">You still need additional</p>
+        <div class="property-value-pill" id="property-value-pill">
+          <img src="/houses/level1.png" alt="House" class="property-pill-image" id="property-pill-image">
+          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">property cost</span></span>
+          <button class="property-pill-edit" id="property-pill-edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="hero-label">Even after taking <span id="hero-ltv">80</span>% home loan, you'd still need additional</p>
         <h1 class="hero-amount">
           <span class="hero-amount-value" id="hero-amount">1.23 Cr</span>
-          <span class="hero-amount-suffix">to get in</span>
+          <span class="hero-amount-suffix">to get in your house</span>
         </h1>
-        <p class="hero-subtitle">your house</p>
 
         <div class="funding-breakdown">
           <div class="breakdown-pill">
@@ -46,9 +65,23 @@
       </div>
     </section>
 
-    <!-- Section 2: Funding Options Chart -->
+    <!-- Section 2: Zinc Intro -->
+    <section class="snap-section zinc-intro-section" id="zinc-intro-section">
+      <div class="zinc-intro-content">
+        <p class="zinc-intro-label">Introducing Zinc loan, starting at 9.8%</p>
+        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against your stocks, mutual funds & RSUs without selling them — fund big goals while staying invested"></span></h2>
+      </div>
+      <div class="scroll-indicator">
+        <p class="scroll-text">Scroll to compare options</p>
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Section 3: Funding Options Chart -->
     <section class="snap-section chart-section">
-      <h2 class="chart-title">Let's evaluate your funding options<br><span class="chart-subtitle">and their impact 10 years down the line</span></h2>
+      <h2 class="chart-title">Let's compare your funding options<br><span class="chart-subtitle">and their impact over 10 years</span></h2>
 
       <div class="chart-wrapper">
         <div class="chart-columns">
@@ -57,12 +90,13 @@
             <div class="column-header">Use Zinc Loan</div>
             <div class="column-upper">
               <div class="bar-label positive">
-                <span class="bar-amount" id="zinc-amount">+2 Cr</span>
-                <span class="bar-sublabel">cash positive</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="zinc-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">net-gain after 10 yrs</span>
               </div>
               <div class="bar bar-positive" id="zinc-bar"></div>
             </div>
             <div class="column-lower"></div>
+            <div class="chart-tooltip" id="tooltip-zinc-loan">Click to know more</div>
           </div>
 
           <!-- Column 2: Use Cash -->
@@ -72,10 +106,11 @@
             <div class="column-lower">
               <div class="bar bar-negative" id="cash-bar"></div>
               <div class="bar-label negative">
-                <span class="bar-amount" id="cash-amount">-2 Cr</span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="cash-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
+            <div class="chart-tooltip" id="tooltip-use-cash">Click to know more</div>
           </div>
 
           <!-- Column 3: Sell Land -->
@@ -85,10 +120,11 @@
             <div class="column-lower">
               <div class="bar bar-negative" id="land-bar"></div>
               <div class="bar-label negative">
-                <span class="bar-amount" id="land-amount">-2 Cr</span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="land-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
+            <div class="chart-tooltip" id="tooltip-sell-land">Click to know more</div>
           </div>
 
           <!-- Column 4: Sell Equities -->
@@ -98,10 +134,11 @@
             <div class="column-lower">
               <div class="bar bar-negative" id="equity-bar"></div>
               <div class="bar-label negative">
-                <span class="bar-amount" id="equity-amount">-2 Cr</span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="equity-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
+            <div class="chart-tooltip" id="tooltip-sell-indian-equity">Click to know more</div>
           </div>
 
           <!-- Column 5: Sell RSUs -->
@@ -111,10 +148,11 @@
             <div class="column-lower">
               <div class="bar bar-negative" id="rsu-bar"></div>
               <div class="bar-label negative">
-                <span class="bar-amount" id="rsu-amount">-2 Cr</span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-amount-row"><span class="bar-amount" id="rsu-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
+                <span class="bar-sublabel">net-loss after 10 yrs</span>
               </div>
             </div>
+            <div class="chart-tooltip" id="tooltip-sell-rsus">Click to know more</div>
           </div>
         </div>
 
@@ -128,64 +166,69 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
 
     <!-- Sticky Navigation Bar -->
     <nav class="sticky-nav" id="sticky-nav">
       <div class="nav-pills">
+        <!-- Zinc loan pill commented out
         <button class="nav-pill" data-option="zinc-loan">
-          <span class="pill-dot"></span>
-          <span class="pill-label">Zinc HomeGap loan</span>
+          <span class="pill-label">Zinc loan</span>
         </button>
+        -->
         <button class="nav-pill" data-option="use-cash">
-          <span class="pill-dot"></span>
           <span class="pill-label">Use cash</span>
         </button>
         <button class="nav-pill" data-option="sell-land">
-          <span class="pill-dot"></span>
           <span class="pill-label">Sell your land</span>
         </button>
         <button class="nav-pill" data-option="sell-indian-equity">
-          <span class="pill-dot"></span>
           <span class="pill-label">Sell equities</span>
         </button>
         <button class="nav-pill" data-option="sell-rsus">
-          <span class="pill-dot"></span>
           <span class="pill-label">Sell RSUs</span>
         </button>
       </div>
     </nav>
 
     <!-- Option Detail Sections -->
+
+    <!-- COMMENTED OUT: Zinc Loan Detail Section - may bring back later
     <section class="snap-section option-section" data-option="zinc-loan" id="section-zinc-loan">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title">Zinc HomeGap loan unlocks funding<br>against your vested RSUs without selling them upfront</h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Zinc loan unlocks funding against your stocks, mutual funds & RSUs without selling them"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
-        <div class="value-comparison">
-          <div class="value-box value-today">
-            <span class="value-amount" id="zinc-value-today">₹47.60 Lacs</span>
-            <span class="value-label">RSU value today</span>
+        <div class="value-comparison-wrapper">
+          <div class="value-comparison">
+            <div class="value-box value-today">
+              <span class="value-amount" id="zinc-value-today">₹47.60 Lacs</span>
+              <span class="value-label">RSUs you'd otherwise sell (incl. tax)</span>
+            </div>
+            <div class="growth-badge">
+              <span class="growth-amount" id="zinc-growth">+37.6 lacs</span>
+              <span class="growth-label">growth retained</span>
+            </div>
+            <div class="value-box value-future">
+              <span class="value-amount gradient-text" id="zinc-value-future">₹85.24 Lacs</span>
+              <span class="value-label">Value after <span class="year-count" id="zinc-year-count">10</span> years</span>
+            </div>
           </div>
-          <div class="growth-badge">
-            <span class="growth-amount" id="zinc-growth">+37.6 lacs</span>
-            <span class="growth-label">growth retained</span>
-          </div>
-          <div class="value-box value-future">
-            <span class="value-amount gradient-text" id="zinc-value-future">₹85.24 Lacs</span>
-            <span class="value-label">Value after 10 years</span>
+          <div class="growth-callout">
+            <p>You'd miss this if you decide to sell your RSUs today</p>
           </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-zinc-loan"></canvas>
           <div class="chart-labels">
             <span>Today</span>
-            <span>After 10 years</span>
+            <span>After <span class="chart-year-count" id="zinc-chart-year">10</span> years</span>
           </div>
         </div>
         <div class="benefit-box benefit-positive">
-          <span class="benefit-tag positive">Benefit of this method</span>
+          <span class="benefit-tag positive">Advantage</span>
           <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
           <button class="learn-more-btn" data-option="zinc-loan">Learn more</button>
         </div>
@@ -195,37 +238,50 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
+    END COMMENTED OUT -->
 
     <section class="snap-section option-section" data-option="use-cash" id="section-use-cash">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title">Using your savings comes with a<br>higher opportunity cost</h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Using your savings comes with a higher opportunity cost"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
-        <div class="value-comparison">
-          <div class="value-box value-today">
-            <span class="value-amount" id="cash-value-today">₹47.60 Lacs</span>
-            <span class="value-label">Value today</span>
+        <div class="value-comparison-wrapper">
+          <div class="value-comparison">
+            <div class="value-box value-today">
+              <span class="value-amount" id="cash-value-today">₹47.60 Lacs</span>
+              <span class="value-label">Value today <span class="value-info-icon" data-section="cash">i</span></span>
+              <div class="value-info-tooltip" id="cash-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="cash-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>Tax</span><span id="cash-tooltip-tax">₹0</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Total</span><span id="cash-tooltip-total">₹47.60 L</span></div>
+              </div>
+            </div>
+            <div class="growth-badge">
+              <span class="growth-amount" id="cash-growth">+37.6 lacs</span>
+              <span class="growth-label">growth opportunity</span>
+            </div>
+            <div class="value-box value-future">
+              <span class="value-amount gradient-text" id="cash-value-future">₹85.24 Lacs</span>
+              <span class="value-label">Value after <span class="year-count" id="cash-year-count">10</span> years</span>
+            </div>
           </div>
-          <div class="growth-badge">
-            <span class="growth-amount" id="cash-growth">+37.6 lacs</span>
-            <span class="growth-label">growth opportunity</span>
-          </div>
-          <div class="value-box value-future">
-            <span class="value-amount gradient-text" id="cash-value-future">₹85.24 Lacs</span>
-            <span class="value-label">Value after 10 years</span>
+          <div class="growth-callout">
+            <p>You'd miss this if you decide to use your savings today</p>
           </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-use-cash"></canvas>
           <div class="chart-labels">
             <span>Today</span>
-            <span>After 10 years</span>
+            <span>After <span class="chart-year-count" id="cash-chart-year">10</span> years</span>
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By using your savings worth <span class="highlight">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red">₹85.24 Lacs</span> over <strong>10 years</strong> if you use that cash in a safe fund to get 6%.</p>
           <button class="learn-more-btn" data-option="use-cash">Learn more</button>
         </div>
@@ -235,37 +291,49 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
 
     <section class="snap-section option-section" data-option="sell-land" id="section-sell-land">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title">Selling land means losing<br>appreciation + paying tax</h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Selling land means losing appreciation + paying tax"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
-        <div class="value-comparison">
-          <div class="value-box value-today">
-            <span class="value-amount" id="land-value-today">₹54.28 Lacs</span>
-            <span class="value-label">Land to sell today</span>
+        <div class="value-comparison-wrapper">
+          <div class="value-comparison">
+            <div class="value-box value-today">
+              <span class="value-amount" id="land-value-today">₹54.28 Lacs</span>
+              <span class="value-label">Land to sell (incl. tax) <span class="value-info-icon" data-section="land">i</span></span>
+              <div class="value-info-tooltip" id="land-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="land-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="land-tooltip-tax">₹6.68 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="land-tooltip-total">₹54.28 L</span></div>
+              </div>
+            </div>
+            <div class="growth-badge">
+              <span class="growth-amount" id="land-growth">+63.0 lacs</span>
+              <span class="growth-label">growth opportunity</span>
+            </div>
+            <div class="value-box value-future">
+              <span class="value-amount gradient-text" id="land-value-future">₹1.17 Cr</span>
+              <span class="value-label">Value after <span class="year-count" id="land-year-count">10</span> years</span>
+            </div>
           </div>
-          <div class="growth-badge">
-            <span class="growth-amount" id="land-growth">+63.0 lacs</span>
-            <span class="growth-label">growth opportunity</span>
-          </div>
-          <div class="value-box value-future">
-            <span class="value-amount gradient-text" id="land-value-future">₹1.17 Cr</span>
-            <span class="value-label">Value after 10 years</span>
+          <div class="growth-callout">
+            <p>You'd miss this if you decide to sell your land today</p>
           </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-land"></canvas>
           <div class="chart-labels">
             <span>Today</span>
-            <span>After 10 years</span>
+            <span>After <span class="chart-year-count" id="land-chart-year">10</span> years</span>
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling land worth <span class="highlight">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">₹1.17 Cr</span> over <strong>10 years</strong> at 8% appreciation.</p>
           <button class="learn-more-btn" data-option="sell-land">Learn more</button>
         </div>
@@ -275,37 +343,49 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
 
     <section class="snap-section option-section" data-option="sell-indian-equity" id="section-sell-indian-equity">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title">Selling equities triggers tax and<br>loses compounding gains</h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Selling stocks & mutual funds triggers tax and loses compounding gains"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
-        <div class="value-comparison">
-          <div class="value-box value-today">
-            <span class="value-amount" id="equity-value-today">₹50.71 Lacs</span>
-            <span class="value-label">Equities to sell today</span>
+        <div class="value-comparison-wrapper">
+          <div class="value-comparison">
+            <div class="value-box value-today">
+              <span class="value-amount" id="equity-value-today">₹50.71 Lacs</span>
+              <span class="value-label">Equities to sell (incl. tax) <span class="value-info-icon" data-section="equity">i</span></span>
+              <div class="value-info-tooltip" id="equity-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="equity-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="equity-tooltip-tax">₹3.11 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="equity-tooltip-total">₹50.71 L</span></div>
+              </div>
+            </div>
+            <div class="growth-badge">
+              <span class="growth-amount" id="equity-growth">+1.07 Cr</span>
+              <span class="growth-label">growth opportunity</span>
+            </div>
+            <div class="value-box value-future">
+              <span class="value-amount gradient-text" id="equity-value-future">₹1.57 Cr</span>
+              <span class="value-label">Value after <span class="year-count" id="equity-year-count">10</span> years</span>
+            </div>
           </div>
-          <div class="growth-badge">
-            <span class="growth-amount" id="equity-growth">+1.07 Cr</span>
-            <span class="growth-label">growth opportunity</span>
-          </div>
-          <div class="value-box value-future">
-            <span class="value-amount gradient-text" id="equity-value-future">₹1.57 Cr</span>
-            <span class="value-label">Value after 10 years</span>
+          <div class="growth-callout">
+            <p>You'd miss this if you decide to sell your equities today</p>
           </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-indian-equity"></canvas>
           <div class="chart-labels">
             <span>Today</span>
-            <span>After 10 years</span>
+            <span>After <span class="chart-year-count" id="equity-chart-year">10</span> years</span>
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling equities worth <span class="highlight">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red">₹1.57 Cr</span> over <strong>10 years</strong> at 12% returns.</p>
           <button class="learn-more-btn" data-option="sell-indian-equity">Learn more</button>
         </div>
@@ -315,37 +395,49 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
 
     <section class="snap-section option-section" data-option="sell-rsus" id="section-sell-rsus">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title">Selling RSUs means tax hit plus<br>missing stock + forex gains</h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Selling RSUs means tax hit plus missing stock + forex gains"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
-        <div class="value-comparison">
-          <div class="value-box value-today">
-            <span class="value-amount" id="rsu-value-today">₹51.60 Lacs</span>
-            <span class="value-label">RSUs to sell today</span>
+        <div class="value-comparison-wrapper">
+          <div class="value-comparison">
+            <div class="value-box value-today">
+              <span class="value-amount" id="rsu-value-today">₹51.60 Lacs</span>
+              <span class="value-label">RSUs to sell (incl. tax) <span class="value-info-icon" data-section="rsu">i</span></span>
+              <div class="value-info-tooltip" id="rsu-info-tooltip">
+                <div class="tooltip-row"><span>Funding gap</span><span id="rsu-tooltip-gap">₹47.60 L</span></div>
+                <div class="tooltip-row"><span>LTCG tax (12.5%)</span><span id="rsu-tooltip-tax">₹4.00 L</span></div>
+                <div class="tooltip-divider"></div>
+                <div class="tooltip-row total"><span>Gross sale needed</span><span id="rsu-tooltip-total">₹51.60 L</span></div>
+              </div>
+            </div>
+            <div class="growth-badge">
+              <span class="growth-amount" id="rsu-growth">+1.17 Cr</span>
+              <span class="growth-label">growth opportunity</span>
+            </div>
+            <div class="value-box value-future">
+              <span class="value-amount gradient-text" id="rsu-value-future">₹1.69 Cr</span>
+              <span class="value-label">Value after <span class="year-count" id="rsu-year-count">10</span> years</span>
+            </div>
           </div>
-          <div class="growth-badge">
-            <span class="growth-amount" id="rsu-growth">+1.17 Cr</span>
-            <span class="growth-label">growth opportunity</span>
-          </div>
-          <div class="value-box value-future">
-            <span class="value-amount gradient-text" id="rsu-value-future">₹1.69 Cr</span>
-            <span class="value-label">Value after 10 years</span>
+          <div class="growth-callout">
+            <p>You'd miss this if you decide to sell your RSUs today</p>
           </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-rsus"></canvas>
           <div class="chart-labels">
             <span>Today</span>
-            <span>After 10 years</span>
+            <span>After <span class="chart-year-count" id="rsu-chart-year">10</span> years</span>
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem with this method</span>
+          <span class="benefit-tag negative">Problem</span>
           <p class="benefit-text">By selling RSUs worth <span class="highlight">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">₹1.69 Cr</span> over <strong>10 years</strong> (12% stock + 2.5% INR depreciation).</p>
           <button class="learn-more-btn" data-option="sell-rsus">Learn more</button>
         </div>
@@ -355,7 +447,165 @@
           <path d="M12 5v14M19 12l-7 7-7-7"/>
         </svg>
       </div>
+      <span class="section-disclaimer">Disclaimer: For planning purposes only. Not financial advice.</span>
     </section>
+
+    <!-- RSU Growth vs Zinc Burden Comparison Section -->
+    <section class="snap-section comparison-chart-section" id="section-comparison-chart">
+      <div class="comparison-chart-content">
+        <h2 class="comparison-chart-title">With Zinc loan, you get to preserve the growth of your assets</h2>
+        <p class="comparison-chart-subtitle">You don't have to sell your stocks, mutual funds or RSUs — watch them grow while you pay off the loan</p>
+
+        <div class="comparison-asset-toggle">
+          <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
+          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
+          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
+        </div>
+
+        <div class="comparison-breakdown">
+          <span class="breakdown-item">Funding gap: <strong id="comparison-funding-gap">₹47.60 L</strong></span>
+          <span class="breakdown-separator">+</span>
+          <span class="breakdown-item">Tax on <span id="comparison-asset-type">RSUs</span>: <strong id="comparison-tax">₹4.00 L</strong></span>
+          <span class="breakdown-separator">=</span>
+          <span class="breakdown-item"><span id="comparison-asset-type-2">RSUs</span> to sell: <strong id="comparison-total">₹51.60 L</strong></span>
+        </div>
+
+        <div class="comparison-chart-container">
+          <canvas id="comparison-chart-canvas"></canvas>
+          <div class="comparison-chart-tooltip" id="comparison-chart-tooltip">
+            <div class="tooltip-year">Year <span id="tooltip-year-value">0</span></div>
+            <div class="tooltip-row tooltip-rsu">
+              <span class="tooltip-dot green"></span>
+              <span class="tooltip-label" id="tooltip-asset-label">RSU value:</span>
+              <span class="tooltip-value" id="tooltip-rsu-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-growth">
+              <span class="tooltip-label">Assumed growth:</span>
+              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
+            </div>
+            <div class="tooltip-row tooltip-burden">
+              <span class="tooltip-dot orange"></span>
+              <span class="tooltip-label">Zinc cost:</span>
+              <span class="tooltip-value" id="tooltip-burden-value">₹0</span>
+            </div>
+            <div class="tooltip-row tooltip-net">
+              <span class="tooltip-label">Net benefit:</span>
+              <span class="tooltip-value" id="tooltip-net-value">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-chart-legend">
+          <div class="legend-item">
+            <span class="legend-dot green"></span>
+            <span class="legend-label" id="legend-asset-label">Retained RSU future value</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot orange"></span>
+            <span class="legend-label">Zinc loan cost</span>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <svg class="scroll-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Section: FAQs -->
+    <section class="snap-section faq-section" id="section-faq">
+      <div class="faq-content">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is Zinc's HomeGap Loan?</span>
+              <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>HomeGap lets you unlock funding against your vested stocks, mutual funds & RSUs without selling them upfront, helping you finance goals like buying a home while staying invested in your company's future growth.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do I still own my stocks, mutual funds & RSUs?</span>
+              <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes. You continue to own your stocks, mutual funds & RSUs and retain any potential future upside. Zinc simply evaluates your holdings to offer you a credit line.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does repayment work?</span>
+              <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>You repay the loan through monthly EMIs, similar to any other loan.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What happens if I miss repayments?</span>
+              <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>If repayments are missed, a portion of your stocks, mutual funds or RSUs may be liquidated to recover the outstanding dues.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-top">
+            <a href="/" class="footer-logo">
+              <img src="/zinc_logo.png" alt="Zinc">
+            </a>
+            <div class="footer-links">
+              <a href="tel:+919664299422" class="footer-link">Contact: +91 96642 99422</a>
+              <span class="footer-divider"></span>
+              <a href="https://www.linkedin.com/company/zincmoney/about/" target="_blank" class="footer-social">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>This page is for informational purposes only and does not constitute investment advice, an offer, or solicitation.</p>
+            <p>© 2026 ZINC. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Page Indicator -->
+  <div class="page-indicator" id="page-indicator">
+    <div class="page-dot" data-section="0"></div>
+    <div class="page-dot" data-section="1"></div>
+    <div class="page-dot" data-section="2"></div>
+    <div class="page-dot" data-section="3"></div>
+    <div class="page-dot" data-section="4"></div>
+    <div class="page-dot" data-section="5"></div>
+    <div class="page-dot" data-section="6"></div>
+    <div class="page-dot" data-section="7"></div>
+    <div class="page-dot" data-section="8"></div>
   </div>
 
   <!-- Option Detail Modal -->
@@ -368,12 +618,75 @@
     </div>
   </div>
 
+  <!-- Edit Value Modal -->
+  <div class="modal-overlay modal-overlay-top" id="edit-modal">
+    <div class="modal modal-edit">
+      <h3 class="edit-modal-title" id="edit-modal-title">Edit Value</h3>
+      <div class="edit-modal-field">
+        <span class="edit-modal-prefix" id="edit-modal-prefix"></span>
+        <input type="number" id="edit-modal-input" class="edit-modal-input" step="any">
+        <span class="edit-modal-unit" id="edit-modal-unit">%</span>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" id="edit-modal-cancel">Cancel</button>
+        <button class="modal-save" id="edit-modal-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-modal-overlay" id="login-modal">
+    <div class="login-modal">
+      <div class="login-step active" id="login-step-email">
+        <h2 class="login-title">Sign in to see detailed analysis</h2>
+        <p class="login-subtitle">Choose Google or continue with email OTP</p>
+        <button class="login-btn login-google-btn" id="google-signin-btn">
+          <img src="/google-logo.webp" alt="Google" class="google-icon">
+          Continue with Google
+        </button>
+        <div class="login-divider">OR</div>
+        <div class="login-field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com">
+        </div>
+        <button class="login-btn login-secondary-btn" id="send-otp-btn">Send OTP</button>
+      </div>
+
+      <div class="login-step" id="login-step-otp">
+        <h2 class="login-title">Verify OTP</h2>
+        <p class="login-subtitle">Enter the 6-digit code sent to your email</p>
+        <div class="login-field">
+          <label>Email</label>
+          <div class="login-email-row">
+            <p class="login-email-chip" id="login-email-chip"></p>
+            <button class="login-email-edit" id="edit-email-btn" aria-label="Edit email">✎</button>
+          </div>
+        </div>
+        <div class="login-field">
+          <label>OTP</label>
+          <input type="text" id="login-otp" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
+        </div>
+        <button class="login-btn" id="verify-otp-btn">Verify OTP</button>
+      </div>
+
+      <p class="login-status" id="login-status" aria-live="polite"></p>
+    </div>
+  </div>
+
   <script>
     if (!sessionStorage.getItem('zinc-flow-started')) {
       window.location.href = '/';
     }
   </script>
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="scroll-to-top" aria-label="Scroll to top">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </button>
+
   <script type="module" src="results.js"></script>
+  <script src="community-widget.js"></script>
 </body>
 </html>
 
