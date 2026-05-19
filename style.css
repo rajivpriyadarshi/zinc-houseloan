@@ -612,11 +612,11 @@ body.page-exit {
   }
 
   .title-rotating {
-    height: 48px;
+    height: 40px;
   }
 
   .rotating-phrase {
-    font-size: 36px;
+    font-size: 28px;
   }
 
   .subtitle {
@@ -677,13 +677,13 @@ body.page-exit {
 
 @media (max-width: 768px) {
   .fun-fact-ticker {
-    bottom: 24px;
+    bottom: 90px;
     left: 24px;
     right: 24px;
     transform: none;
     justify-content: center;
   }
-  
+
   .fun-fact-text {
     font-size: 13px;
   }
