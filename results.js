@@ -1850,8 +1850,24 @@ function drawComparisonChart(animate = false) {
   if (comparisonFundingGap) comparisonFundingGap.textContent = formatCurrency(fundingGap);
   if (comparisonTax) comparisonTax.textContent = formatCurrency(assetTax);
   if (comparisonTotal) comparisonTotal.textContent = formatCurrency(assetGrossSale);
-  if (comparisonAssetType) comparisonAssetType.textContent = assetLabel + 's';
-  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabel + 's';
+
+  // Handle pluralization and action text
+  let assetLabelPlural, actionText;
+  if (selectedComparisonAsset === 'cash') {
+    assetLabelPlural = 'Cash';
+    actionText = 'to use';
+  } else if (selectedComparisonAsset === 'land') {
+    assetLabelPlural = 'Land';
+    actionText = 'to sell';
+  } else {
+    assetLabelPlural = assetLabel + 's';
+    actionText = 'to sell';
+  }
+
+  if (comparisonAssetType) comparisonAssetType.textContent = assetLabelPlural;
+  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabelPlural;
+  const comparisonAction = document.getElementById('comparison-action');
+  if (comparisonAction) comparisonAction.textContent = actionText;
 
   // Update legend label
   const legendLabel = document.getElementById('legend-asset-label');
@@ -1947,22 +1963,62 @@ function drawComparisonChart(animate = false) {
     const pointsToDraw = Math.floor(progress * totalPoints);
     const partialProgress = (progress * totalPoints) - pointsToDraw;
 
+    // Build arrays of points to draw for area fill
+    const assetPoints = [];
+    const burdenPoints = [];
+
+    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
+      const assetCoords = getCoords(dataPoints[i].year, dataPoints[i].assetValue);
+      const burdenCoords = getCoords(dataPoints[i].year, dataPoints[i].zincBurden);
+
+      if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
+        const nextAssetCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].assetValue);
+        const nextBurdenCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].zincBurden);
+        assetPoints.push(assetCoords);
+        assetPoints.push({
+          x: assetCoords.x + (nextAssetCoords.x - assetCoords.x) * partialProgress,
+          y: assetCoords.y + (nextAssetCoords.y - assetCoords.y) * partialProgress
+        });
+        burdenPoints.push(burdenCoords);
+        burdenPoints.push({
+          x: burdenCoords.x + (nextBurdenCoords.x - burdenCoords.x) * partialProgress,
+          y: burdenCoords.y + (nextBurdenCoords.y - burdenCoords.y) * partialProgress
+        });
+      } else {
+        assetPoints.push(assetCoords);
+        burdenPoints.push(burdenCoords);
+      }
+    }
+
+    // Draw filled area between the two lines (green gradient)
+    if (assetPoints.length > 1) {
+      const areaGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
+      areaGradient.addColorStop(0, 'rgba(255, 193, 92, 0.25)');
+      areaGradient.addColorStop(1, 'rgba(1, 87, 60, 0.35)');
+
+      ctx.beginPath();
+      // Start from first asset point
+      ctx.moveTo(assetPoints[0].x, assetPoints[0].y);
+      // Draw along asset line (top)
+      for (let i = 1; i < assetPoints.length; i++) {
+        ctx.lineTo(assetPoints[i].x, assetPoints[i].y);
+      }
+      // Draw down to burden line and back along it (bottom)
+      for (let i = burdenPoints.length - 1; i >= 0; i--) {
+        ctx.lineTo(burdenPoints[i].x, burdenPoints[i].y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = areaGradient;
+      ctx.fill();
+    }
+
     // Draw asset value line
     ctx.strokeStyle = assetGradient;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
-      const coords = getCoords(dataPoints[i].year, dataPoints[i].assetValue);
-      if (i === 0) ctx.moveTo(coords.x, coords.y);
-      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
-        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].assetValue);
-        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
-        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
-        ctx.lineTo(coords.x, coords.y);
-        ctx.lineTo(interpX, interpY);
-      } else {
-        ctx.lineTo(coords.x, coords.y);
-      }
+    for (let i = 0; i < assetPoints.length; i++) {
+      if (i === 0) ctx.moveTo(assetPoints[i].x, assetPoints[i].y);
+      else ctx.lineTo(assetPoints[i].x, assetPoints[i].y);
     }
     ctx.stroke();
 
@@ -1970,18 +2026,9 @@ function drawComparisonChart(animate = false) {
     ctx.strokeStyle = burdenGradient;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
-      const coords = getCoords(dataPoints[i].year, dataPoints[i].zincBurden);
-      if (i === 0) ctx.moveTo(coords.x, coords.y);
-      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
-        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].zincBurden);
-        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
-        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
-        ctx.lineTo(coords.x, coords.y);
-        ctx.lineTo(interpX, interpY);
-      } else {
-        ctx.lineTo(coords.x, coords.y);
-      }
+    for (let i = 0; i < burdenPoints.length; i++) {
+      if (i === 0) ctx.moveTo(burdenPoints[i].x, burdenPoints[i].y);
+      else ctx.lineTo(burdenPoints[i].x, burdenPoints[i].y);
     }
     ctx.stroke();
 
