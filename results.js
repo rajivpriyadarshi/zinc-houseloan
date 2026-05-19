@@ -4,6 +4,7 @@ import { auth } from './firebaseAuth.js';
 import { app } from './firebaseAuth.js';
 import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithCustomToken } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { navigateTo } from './router.js';
 
 // Header scroll behavior
 const siteHeader = document.getElementById('site-header');
@@ -42,7 +43,7 @@ logoutBtn.addEventListener('click', async () => {
   try {
     await auth.signOut();
     sessionStorage.removeItem('zinc-flow-started');
-    window.location.href = '/';
+    navigateTo('/');
   } catch (error) {
     console.error('Logout error:', error);
   }

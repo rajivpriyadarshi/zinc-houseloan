@@ -1,4 +1,5 @@
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
+import { navigateTo } from './router.js';
 
 const cityButtons = document.querySelectorAll('.city-btn');
 const proceedBtn = document.getElementById('proceed-btn');
@@ -94,7 +95,7 @@ proceedBtn.addEventListener('click', () => {
     trackValueSubmit('city_submit', selectedCity);
     localStorage.setItem('selectedCity', selectedCity);
     document.body.classList.add('page-exit');
-    setTimeout(() => window.location.href = 'breakdown.html', 400);
+    navigateTo('/breakdown', 400);
   }
 });
 
@@ -102,5 +103,5 @@ document.getElementById('back-btn').addEventListener('click', (e) => {
   e.preventDefault();
   trackButtonClick('location_back');
   document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'planner.html', 400);
+  navigateTo('/planner', 400);
 });

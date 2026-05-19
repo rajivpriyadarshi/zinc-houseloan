@@ -7,6 +7,7 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
+    outDir: 'dist',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
@@ -14,6 +15,7 @@ export default defineConfig({
         location: resolve(__dirname, 'location.html'),
         breakdown: resolve(__dirname, 'breakdown.html'),
         results: resolve(__dirname, 'results.html'),
+        transition: resolve(__dirname, 'transition.html'),
         ping: resolve(__dirname, 'ping.html'),
       },
     },

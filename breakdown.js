@@ -1,5 +1,6 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
 import { trackButtonClick, trackPageView } from './firebaseAnalytics.js';
+import { navigateTo } from './router.js';
 
 trackPageView('funding_breakdown');
 
@@ -242,5 +243,5 @@ runAnimation();
 
 continueBtn.addEventListener('click', () => {
   trackButtonClick('breakdown_continue');
-  window.location.href = 'results.html';
+  navigateTo('/results');
 });
