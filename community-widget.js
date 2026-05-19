@@ -9,7 +9,7 @@
         </svg>
         <div class="community-trigger-text">
           <span class="community-trigger-title">Connect with techies like you</span>
-          <span class="community-trigger-subtitle">Discuss cross-border wealth strategies</span>
+          <span class="community-trigger-subtitle">Discuss cross-border wealth strategies and more</span>
         </div>
       </button>
     </div>

@@ -134,7 +134,6 @@ function triggerHaptic() {
 
 slider.addEventListener('input', () => {
   const value = parseInt(slider.value, 10);
-  amountInput.value = formatIndianNumber(value);
   updateDisplay(value);
 
   const newLevel = getHouseLevel(value);

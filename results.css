@@ -162,6 +162,70 @@ body {
   max-width: 900px;
 }
 
+/* Property Value Pill */
+.property-value-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 50px;
+  padding: 10px 20px 10px 12px;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: heroFadeUp 0.5s ease-out forwards;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.property-value-pill:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.property-pill-image {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.property-pill-text {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  letter-spacing: -0.36px;
+  white-space: nowrap;
+}
+
+.property-pill-amount {
+  font-weight: 700;
+}
+
+.property-pill-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.property-pill-edit {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin-left: 4px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.property-pill-edit:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.property-value-pill:hover .property-pill-edit {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .hero-label {
   font-family: 'Satoshi', sans-serif;
   font-size: 20px;
@@ -925,6 +989,12 @@ body {
 
 .edit-modal-input:focus {
   border-color: #000;
+}
+
+.edit-modal-prefix {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.5);
+  min-width: 20px;
 }
 
 .edit-modal-unit {

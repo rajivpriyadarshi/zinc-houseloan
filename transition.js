@@ -7,7 +7,7 @@ const transactionDutyPct = getTransactionDutyRate(selectedCity);
 
 // Calculate values
 const homeLoanLtvPct = 0.8;
-const interiorsPct = 0.2;
+const interiorsPct = 0.3;
 
 const homeLoanAmount = propertyPrice * homeLoanLtvPct;
 const downPayment = propertyPrice * (1 - homeLoanLtvPct);

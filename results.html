@@ -24,6 +24,16 @@
     <!-- Section 1: Hero - "You still need X Cr to get in your house" -->
     <section class="snap-section hero-section">
       <div class="hero-content">
+        <div class="property-value-pill" id="property-value-pill">
+          <img src="/houses/level1.png" alt="House" class="property-pill-image" id="property-pill-image">
+          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">property cost</span></span>
+          <button class="property-pill-edit" id="property-pill-edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
         <p class="hero-label">Even after taking <span id="hero-ltv">80</span>% home loan, you'd still need additional</p>
         <h1 class="hero-amount">
           <span class="hero-amount-value" id="hero-amount">1.23 Cr</span>
@@ -58,8 +68,8 @@
     <!-- Section 2: Zinc Intro -->
     <section class="snap-section zinc-intro-section" id="zinc-intro-section">
       <div class="zinc-intro-content">
-        <p class="zinc-intro-label">Introducing Zinc HomeGap loan</p>
-        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against your RSUs, stocks & mutual funds without selling them — finance big goals while staying invested"></span></h2>
+        <p class="zinc-intro-label">Introducing Zinc loan, starting at 9.8%</p>
+        <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against your stocks, mutual funds & RSUs without selling them — fund big goals while staying invested"></span></h2>
       </div>
       <div class="scroll-indicator">
         <p class="scroll-text">Scroll to compare options</p>
@@ -81,7 +91,7 @@
             <div class="column-upper">
               <div class="bar-label positive">
                 <span class="bar-amount-row"><span class="bar-amount" id="zinc-amount">+2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash positive</span>
+                <span class="bar-sublabel">networth after 10 yrs</span>
               </div>
               <div class="bar bar-positive" id="zinc-bar"></div>
             </div>
@@ -97,7 +107,7 @@
               <div class="bar bar-negative" id="cash-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="cash-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">networth after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-use-cash">Click to know more</div>
@@ -111,7 +121,7 @@
               <div class="bar bar-negative" id="land-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="land-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">networth after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-land">Click to know more</div>
@@ -125,7 +135,7 @@
               <div class="bar bar-negative" id="equity-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="equity-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">networth after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-indian-equity">Click to know more</div>
@@ -139,7 +149,7 @@
               <div class="bar bar-negative" id="rsu-bar"></div>
               <div class="bar-label negative">
                 <span class="bar-amount-row"><span class="bar-amount" id="rsu-amount">-2 Cr</span><span class="bar-info-icon">i</span></span>
-                <span class="bar-sublabel">cash negative</span>
+                <span class="bar-sublabel">networth after 10 yrs</span>
               </div>
             </div>
             <div class="chart-tooltip" id="tooltip-sell-rsus">Click to know more</div>
@@ -163,7 +173,7 @@
     <nav class="sticky-nav" id="sticky-nav">
       <div class="nav-pills">
         <button class="nav-pill" data-option="zinc-loan">
-          <span class="pill-label">Zinc HomeGap loan</span>
+          <span class="pill-label">Zinc loan</span>
         </button>
         <button class="nav-pill" data-option="use-cash">
           <span class="pill-label">Use cash</span>
@@ -184,7 +194,7 @@
     <section class="snap-section option-section" data-option="zinc-loan" id="section-zinc-loan">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title"><span class="option-title-text" data-full-text="Zinc HomeGap loan unlocks funding against your RSUs, stocks & mutual funds without selling them"></span></h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Zinc loan unlocks funding against your stocks, mutual funds & RSUs without selling them"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
         <div class="value-comparison-wrapper">
@@ -215,7 +225,7 @@
         </div>
         <div class="benefit-box benefit-positive">
           <span class="benefit-tag positive">Benefit of this method</span>
-          <p class="benefit-text">By taking a <strong>Zinc HomeGap loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
           <button class="learn-more-btn" data-option="zinc-loan">Learn more</button>
         </div>
       </div>
@@ -425,19 +435,19 @@
               </svg>
             </button>
             <div class="faq-answer">
-              <p>HomeGap lets you unlock funding against your vested RSUs, stocks & mutual funds without selling them upfront, helping you finance goals like buying a home while staying invested in your company's future growth.</p>
+              <p>HomeGap lets you unlock funding against your vested stocks, mutual funds & RSUs without selling them upfront, helping you finance goals like buying a home while staying invested in your company's future growth.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
-              <span>Do I still own my RSUs, stocks & mutual funds?</span>
+              <span>Do I still own my stocks, mutual funds & RSUs?</span>
               <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
             <div class="faq-answer">
-              <p>Yes. You continue to own your RSUs, stocks & mutual funds and retain any potential future upside. Zinc simply evaluates your holdings to offer you a credit line.</p>
+              <p>Yes. You continue to own your stocks, mutual funds & RSUs and retain any potential future upside. Zinc simply evaluates your holdings to offer you a credit line.</p>
             </div>
           </div>
 
@@ -461,7 +471,7 @@
               </svg>
             </button>
             <div class="faq-answer">
-              <p>If repayments are missed, a portion of your RSUs, stocks or mutual funds may be liquidated to recover the outstanding dues.</p>
+              <p>If repayments are missed, a portion of your stocks, mutual funds or RSUs may be liquidated to recover the outstanding dues.</p>
             </div>
           </div>
         </div>
@@ -497,6 +507,7 @@
     <div class="modal modal-edit">
       <h3 class="edit-modal-title" id="edit-modal-title">Edit Value</h3>
       <div class="edit-modal-field">
+        <span class="edit-modal-prefix" id="edit-modal-prefix"></span>
         <input type="number" id="edit-modal-input" class="edit-modal-input" step="any">
         <span class="edit-modal-unit" id="edit-modal-unit">%</span>
       </div>
