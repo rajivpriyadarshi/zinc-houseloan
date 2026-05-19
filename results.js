@@ -647,11 +647,17 @@ function updateChartTooltips(results) {
   const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
   const rsuCost = rsuFV - zincNetPosition;
 
-  // Simple tooltips - just "click to know more"
-  document.getElementById('tooltip-use-cash').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-land').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-indian-equity').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-rsus').innerHTML = `Click to know more`;
+  // Tooltips with explanatory text using the SAME values shown in the bars
+  const cashCagrPct = (modelInputs.assets.cash.cagrPct * 100).toFixed(0);
+  const landCagrPct = (modelInputs.assets.land.cagrPct * 100).toFixed(0);
+  const equityCagrPct = (modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0);
+  const effectiveRsuCagrPct = ((modelInputs.assets.foreignRsu.usdCagrPct + modelInputs.assets.foreignRsu.inrDepreciationPct) * 100).toFixed(0);
+
+  document.getElementById('tooltip-zinc-loan').innerHTML = `Your RSUs stay invested and keep growing while you pay off the loan — you end up ${formatCurrency(zincNetPosition)} richer after ${years} years.`;
+  document.getElementById('tooltip-use-cash').innerHTML = `The cash you use to fund the gap could have earned ~${cashCagrPct}% annually if invested — you miss out on ${formatCurrency(cashFV)} in ${years} years.`;
+  document.getElementById('tooltip-sell-land').innerHTML = `The land you sell to fund the gap would have appreciated ~${landCagrPct}% per year — you lose ${formatCurrency(landFV)} in future value.`;
+  document.getElementById('tooltip-sell-indian-equity').innerHTML = `The equities you sell to fund the gap would have grown ~${equityCagrPct}% annually — you miss ${formatCurrency(equityFV)} in market gains.`;
+  document.getElementById('tooltip-sell-rsus').innerHTML = `The RSUs you sell to fund the gap have the highest growth potential at ~${effectiveRsuCagrPct}% annually — you lose ${formatCurrency(rsuFV)} in future value.`;
 }
 
 // Show option details modal
@@ -1450,14 +1456,14 @@ function showChartCalculation(strategyId) {
   document.getElementById('detail-modal').classList.add('visible');
 }
 
-// Add click handlers to chart columns
-document.querySelectorAll('.chart-column').forEach(column => {
-  column.style.cursor = 'pointer';
-  column.addEventListener('click', () => {
-    const option = column.getAttribute('data-option');
-    showChartCalculation(option);
-  });
-});
+// Add click handlers to chart columns - COMMENTED OUT to use tooltips instead of popups
+// document.querySelectorAll('.chart-column').forEach(column => {
+//   column.style.cursor = 'pointer';
+//   column.addEventListener('click', () => {
+//     const option = column.getAttribute('data-option');
+//     showChartCalculation(option);
+//   });
+// });
 
 // Animate bars function
 let barsAnimated = false;
