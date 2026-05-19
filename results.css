@@ -2196,11 +2196,11 @@ body {
 
 .benefit-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
-  letter-spacing: -0.16px;
+  letter-spacing: -0.19px;
 }
 
 .benefit-text strong {
