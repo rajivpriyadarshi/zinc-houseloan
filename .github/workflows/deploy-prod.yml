@@ -1,4 +1,4 @@
-name: Deploy www.housing-zinc.money
+name: Deploy housing.zinc.money
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 env:
   ENVIRONMENT: prod
-  SERVICE: zincagent-webapp
+  SERVICE: housing-zinc-money
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -65,11 +65,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Update ECS service
-        run: |
-          aws ecs update-service \
-            --cluster ${{ vars.ECS_CLUSTER_NAME }} \
-            --service ${{ vars.ECS_SERVICE_NAME }} \
-            --force-new-deployment
+        run: aws ecs update-service --cluster "${{ vars.ECS_CLUSTER_NAME }}" --service "${{ vars.ECS_SERVICE_NAME }}" --force-new-deployment
 
       - name: Wait for service to be stable
         run: |
