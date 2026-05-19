@@ -52,6 +52,23 @@ function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function animateGreenToDotted(duration) {
+  // Animate the solid strokes disappearing (traveling from left to right)
+  const ids = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    const length = el.getTotalLength();
+    el.style.strokeDasharray = `${length}`;
+    el.style.strokeDashoffset = '0';
+    el.getBoundingClientRect();
+    el.style.transition = `stroke-dashoffset ${duration}ms ease-out`;
+    el.style.strokeDashoffset = `${length}`;
+  });
+  // Show the dotted path underneath
+  const dottedTravel = document.getElementById('gt-dotted-travel');
+  dottedTravel.setAttribute('opacity', '1');
+}
+
 function animateStrokeToSolid(svg, duration) {
   const solidPath = svg.querySelector('.red-solid');
   const dottedPath = svg.querySelector('.red-dotted');
@@ -83,10 +100,6 @@ function animateShrink(duration) {
     const rightEdgeS = document.getElementById('gt-right-edge-s');
     const centerEdgeS = document.getElementById('gt-center-edge-s');
 
-    // Start: top face at y=72, center at y=144
-    // End: top face moves to match small green block's top face position
-    // Small block is 624 tall, top face at y=71. Tall is 860. Bottom aligned.
-    // So small block top in tall coords: 860 - 624 + 71 = 307
     const startTopY = 72;
     const startCenterY = 144;
     const endTopY = 307;
@@ -103,22 +116,16 @@ function animateShrink(duration) {
       const curTopY = Math.round(lerp(startTopY, endTopY, ease));
       const curCenterY = Math.round(lerp(startCenterY, endCenterY, ease));
 
-      // Top face (dotted) moves down
       topFill.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
       topStroke.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
 
-      // Left face shrinks from top
       leftFill.setAttribute('d', `M1 ${curTopY}V789L120 858V${curCenterY}L1 ${curTopY}Z`);
-
-      // Right face shrinks from top
       rightFill.setAttribute('d', `M239 ${curTopY}V789L120 858V${curCenterY}L239 ${curTopY}Z`);
 
-      // Dotted edges stay between top face and the solid start
       leftEdgeD.setAttribute('d', `M1 ${curTopY}V307`);
       rightEdgeD.setAttribute('d', `M239 ${curTopY}V307`);
       centerEdgeD.setAttribute('d', `M120 ${curCenterY}V379`);
 
-      // Solid edges stay fixed
       leftEdgeS.setAttribute('d', `M1 307V789`);
       rightEdgeS.setAttribute('d', `M239 307V789`);
       centerEdgeS.setAttribute('d', `M120 379V858`);
@@ -142,16 +149,29 @@ function resetAnimation() {
   document.getElementById('gt-left').setAttribute('d', 'M1 72V789L120 858V144L1 72Z');
   document.getElementById('gt-right').setAttribute('d', 'M239 72V789L120 858V144L239 72Z');
   document.getElementById('gt-top-s').setAttribute('d', 'M1 72L120 144L239 72L120 1Z');
-  document.getElementById('gt-top-s').setAttribute('stroke-dasharray', '6 4');
+  document.getElementById('gt-top-s').removeAttribute('stroke-dasharray');
   document.getElementById('gt-left-edge-d').setAttribute('d', 'M1 72V307');
-  document.getElementById('gt-left-edge-d').setAttribute('stroke-dasharray', '6 4');
+  document.getElementById('gt-left-edge-d').removeAttribute('stroke-dasharray');
   document.getElementById('gt-right-edge-d').setAttribute('d', 'M239 72V307');
-  document.getElementById('gt-right-edge-d').setAttribute('stroke-dasharray', '6 4');
+  document.getElementById('gt-right-edge-d').removeAttribute('stroke-dasharray');
   document.getElementById('gt-center-edge-d').setAttribute('d', 'M120 144V379');
-  document.getElementById('gt-center-edge-d').setAttribute('stroke-dasharray', '6 4');
+  document.getElementById('gt-center-edge-d').removeAttribute('stroke-dasharray');
   document.getElementById('gt-left-edge-s').setAttribute('d', 'M1 307V789');
+  document.getElementById('gt-left-edge-s').removeAttribute('stroke-dasharray');
   document.getElementById('gt-right-edge-s').setAttribute('d', 'M239 307V789');
+  document.getElementById('gt-right-edge-s').removeAttribute('stroke-dasharray');
   document.getElementById('gt-center-edge-s').setAttribute('d', 'M120 379V858');
+  document.getElementById('gt-center-edge-s').removeAttribute('stroke-dasharray');
+  document.getElementById('gt-bottom').removeAttribute('stroke-dasharray');
+  // Reset solid strokes and hide dotted travel path
+  const strokeIds = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
+  strokeIds.forEach(id => {
+    const el = document.getElementById(id);
+    el.style.transition = '';
+    el.style.strokeDasharray = '';
+    el.style.strokeDashoffset = '';
+  });
+  document.getElementById('gt-dotted-travel').setAttribute('opacity', '0');
   baseTall.style.display = '';
 
   // Reset red blocks
@@ -174,6 +194,9 @@ function resetAnimation() {
 
   // Reset hero summary
   heroSummary.classList.remove('show');
+
+  // Reset label
+  document.querySelector('.stack-side-text').textContent = 'Total cost';
 }
 
 async function runAnimation() {
@@ -185,13 +208,11 @@ async function runAnimation() {
 
   // Step 2: Animate tall block shrinking (top face moves down)
   await animateShrink(1200);
-  // Make top face border solid after shrink
-  document.getElementById('gt-top-s').setAttribute('stroke-dasharray', '');
-  document.getElementById('gt-left-edge-d').setAttribute('stroke-dasharray', '');
-  document.getElementById('gt-right-edge-d').setAttribute('stroke-dasharray', '');
-  document.getElementById('gt-center-edge-d').setAttribute('stroke-dasharray', '');
+  // Animate solid to dotted (travels from top-left to top-right)
+  animateGreenToDotted(800);
   document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
-  await wait(600);
+  document.querySelector('.stack-side-text').textContent = 'Loan amount';
+  await wait(900);
 
   // Step 3: Lower red block appears dotted then stroke travels to solid
   lower.classList.add('show-dotted');
@@ -243,5 +264,5 @@ runAnimation();
 
 continueBtn.addEventListener('click', () => {
   trackButtonClick('breakdown_continue');
-  navigateTo('/results');
+  window.location.href = 'results.html';
 });
