@@ -37,11 +37,15 @@ body {
   --top-h: calc(var(--block-w) * 0.764);
   --red-blocks-h: calc((var(--mid-h) * 2) + var(--top-h));
   --total-scale: 1.4;
-  --pill-h: 56px;
+  --pill-h: 48px;
   --pill-gap-y: 14px;
-  --row1-top: calc((var(--top-h) / 2) - (var(--pill-h) / 2));
-  --row2-top: calc(var(--top-h) + var(--effective-gap) + (var(--mid-h) / 2) - (var(--pill-h) / 2) + var(--pill-gap-y));
-  --row3-top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) + (var(--mid-h) / 2) - (var(--pill-h) / 2) + (var(--pill-gap-y) * 2));
+  --red-blocks-total-h: calc(var(--top-h) + (var(--mid-h) * 2) + (var(--effective-gap) * 2));
+  --pill-group-gap: 16px;
+  --pill-group-h: calc((var(--pill-h) * 3) + (var(--pill-group-gap) * 2));
+  --pill-group-offset: calc((var(--red-blocks-total-h) - var(--pill-group-h)) / 2);
+  --row1-top: var(--pill-group-offset);
+  --row2-top: calc(var(--pill-group-offset) + var(--pill-h) + var(--pill-group-gap));
+  --row3-top: calc(var(--pill-group-offset) + (var(--pill-h) + var(--pill-group-gap)) * 2);
   --green-start: calc(var(--top-h) + (var(--mid-h) * 2) + (var(--effective-gap) * 3));
   --green-center: calc(var(--green-start) + (var(--base-h) / 2));
 
@@ -69,13 +73,24 @@ body {
   top: 0;
 }
 
-.stack-visual > img {
+.stack-visual > img,
+.stack-visual > svg.stack-mid,
+.stack-visual > svg.stack-top {
   width: var(--block-w);
   display: block;
   position: absolute;
   left: 0;
   transform: translateY(12px);
   opacity: 0;
+}
+
+.red-solid {
+  stroke-dashoffset: 9999;
+  stroke-dasharray: 9999;
+}
+
+.red-dotted {
+  transition: opacity 0.4s ease-out;
 }
 
 .stack-top {
@@ -90,37 +105,36 @@ body {
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap));
 }
 
-.stack-base-tall {
+.stack-visual > .stack-base-tall {
+  width: var(--block-w);
+  position: absolute;
+  left: 0;
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) - (var(--base-h) * 0.38));
+  opacity: 1;
+  transform: translateY(0);
+  display: block;
 }
 
 .stack-base {
   top: calc(var(--top-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap) + var(--mid-h) + var(--effective-gap));
 }
 
-.animating .stack-top {
-  animation: stackIn .55s ease-out both;
-  animation-delay: 4.80s;
+
+.stack-base.show {
+  animation: fadeInBlock 0.4s ease-out forwards;
 }
 
-.animating .stack-middle {
-  animation: stackIn .55s ease-out both;
-  animation-delay: 3.60s;
+svg.stack-lower.show-dotted,
+svg.stack-middle.show-dotted,
+svg.stack-top.show-dotted {
+  animation: stackIn .55s ease-out forwards;
 }
 
-.animating .stack-lower {
-  animation: stackIn .55s ease-out both;
-  animation-delay: 2.40s;
-}
-
-.animating .stack-base-tall {
-  animation: tallFadeOut 1.2s ease-out both;
-  animation-delay: 0.20s;
-}
-
-.animating .stack-base {
-  animation: normalFadeIn 1.2s ease-out both;
-  animation-delay: 0.20s;
+svg.stack-lower.show-solid,
+svg.stack-middle.show-solid,
+svg.stack-top.show-solid {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .stack-side-label {
@@ -244,20 +258,8 @@ body {
   top: var(--row3-top);
 }
 
-.animating .stack-row {
+.stack-row.show {
   animation: rowIn .45s ease-out forwards;
-}
-
-.animating .stack-row:nth-child(1) {
-  animation-delay: 5.40s;
-}
-
-.animating .stack-row:nth-child(2) {
-  animation-delay: 4.20s;
-}
-
-.animating .stack-row:nth-child(3) {
-  animation-delay: 3.00s;
 }
 
 .stack-dot {
@@ -302,8 +304,8 @@ body {
   transform: translateX(14px);
 }
 
-.animating .hero-summary {
-  animation: fadeInLeft .6s ease-out 6.00s forwards;
+.hero-summary.show {
+  animation: fadeInLeft .6s ease-out forwards;
 }
 
 .summary-bracket {
@@ -364,39 +366,13 @@ body {
   color: rgba(255, 255, 255, .32);
 }
 
-@keyframes tallFadeOut {
-  0% {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  12% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  58% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-}
 
-@keyframes normalFadeIn {
-  0% {
+@keyframes fadeInBlock {
+  from {
     opacity: 0;
     transform: translateY(0);
   }
-  12% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  58% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
