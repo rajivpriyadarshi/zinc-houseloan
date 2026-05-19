@@ -692,7 +692,7 @@ function showOptionDetails(strategyId) {
     isPositive = true;
   } else if (strategyId === 'use-cash') {
     title = "What if you use cash to cover the funding gap?";
-    description = "Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.";
+    description = "Using your cash means no debt, but you lose out on potential investment returns if that money was invested instead.";
     valueToday = fundingGap;
     valueFuture = calculateFutureValue(fundingGap, modelInputs.assets.cash.cagrPct, years);
     growth = valueFuture - valueToday;
@@ -754,7 +754,7 @@ function showOptionDetails(strategyId) {
     investedLabel = `If you let those RSUs remain invested for ${years} years`;
     cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
   } else if (strategyId === 'use-cash') {
-    assetLabelToday = 'Savings to use today';
+    assetLabelToday = 'Cash to use today';
     investedLabel = `If you let that cash remain invested for ${years} years`;
     cagrTooltip = `${growthRate}% CAGR in a safe debt fund`;
   } else if (strategyId === 'sell-land') {
@@ -1167,7 +1167,7 @@ function showChartCalculation(strategyId) {
     if (strategyId === 'use-cash') {
       firstSection = `
         <div class="detail-group">
-          <h3 class="group-heading">Your savings</h3>
+          <h3 class="group-heading">Your cash</h3>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash you'd need</span>
@@ -1339,11 +1339,11 @@ function showChartCalculation(strategyId) {
     let summarySection = '';
 
     if (strategyId === 'use-cash') {
-      // For cash: show how using cash depletes your savings
+      // For cash: show how using cash depletes your cash
       summarySection = `
         <div class="detail-group highlight-group negative">
           <h3 class="group-heading">Value lost after ${years} years: ${formatCr(futureValue)}</h3>
-          <p class="group-description">By using your savings, you lose out on potential investment returns.</p>
+          <p class="group-description">By using your cash, you lose out on potential investment returns.</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash used today</span>
@@ -1819,6 +1819,18 @@ function drawComparisonChart(animate = false) {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
     assetLabel = 'Stock';
+  } else if (selectedComparisonAsset === 'mutual-funds') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
+    assetLabel = 'Mutual Fund';
+  } else if (selectedComparisonAsset === 'land') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+    effectiveCagr = modelInputs.assets.land.cagrPct;
+    assetLabel = 'Land';
+  } else if (selectedComparisonAsset === 'cash') {
+    assetGrossSale = fundingGap; // No tax on cash
+    effectiveCagr = modelInputs.assets.cash.cagrPct;
+    assetLabel = 'Cash';
   } else {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.cash.cagrPct;
