@@ -86,6 +86,51 @@ function animateStrokeToSolid(svg, duration) {
   }, duration * 0.4);
 }
 
+function animateGreenFillUp(duration) {
+  return new Promise(resolve => {
+    const clipRect = document.getElementById('green-80-clip-rect');
+    const startY = 860;
+    const endY = 403;
+    let startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const t = Math.min((timestamp - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const curY = Math.round(lerp(startY, endY, ease));
+      clipRect.setAttribute('y', curY);
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  });
+}
+
+function animateRedFillLeftToRight(duration) {
+  return new Promise(resolve => {
+    const clipRect = document.getElementById('red-20-clip-rect');
+    let startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const t = Math.min((timestamp - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      clipRect.setAttribute('width', Math.round(240 * ease));
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  });
+}
+
 function lerp(a, b, t) {
   return a + (b - a) * t;
 }
@@ -154,10 +199,14 @@ function animateShrink(duration) {
 function resetAnimation() {
   scene.classList.remove('animating');
 
-  // Reset green tall block
+  // Reset green tall block (transparent wireframe)
   document.getElementById('gt-top').setAttribute('d', 'M1 72L120 144L239 72L120 1Z');
+  document.getElementById('gt-top').setAttribute('fill', 'none');
   document.getElementById('gt-left').setAttribute('d', 'M1 72V789L120 858V144L1 72Z');
+  document.getElementById('gt-left').setAttribute('fill', 'none');
   document.getElementById('gt-right').setAttribute('d', 'M239 72V789L120 858V144L239 72Z');
+  document.getElementById('gt-right').setAttribute('fill', 'none');
+  document.getElementById('green-80-clip-rect').setAttribute('y', '860');
   document.getElementById('gt-top-s').setAttribute('d', 'M1 72L120 144L239 72L120 1Z');
   document.getElementById('gt-top-s').removeAttribute('stroke-dasharray');
   document.getElementById('gt-left-edge-d').setAttribute('d', 'M1 72V307');
@@ -185,12 +234,7 @@ function resetAnimation() {
   baseTall.style.display = '';
 
   // Reset 20% overlay
-  const overlay20Ids = ['gt-20-top', 'gt-20-left', 'gt-20-right'];
-  overlay20Ids.forEach(id => {
-    const el = document.getElementById(id);
-    el.style.transition = '';
-    el.setAttribute('opacity', '0');
-  });
+  document.getElementById('red-20-clip-rect').setAttribute('width', '0');
   document.getElementById('gt-20-stroke').setAttribute('opacity', '0');
 
   // Reset right labels
@@ -228,27 +272,33 @@ async function runAnimation() {
 
   // Step 2: Shrink green bar (top face moves down to 20% mark)
   await animateShrink(1200);
-  animateGreenToDotted(800);
+
+  // Step 2b: Change all borders to dotted
+  const allStrokeIds = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
+  allStrokeIds.forEach(id => {
+    const el = document.getElementById(id);
+    el.setAttribute('stroke-dasharray', '6 4');
+  });
   await wait(400);
 
-  // Step 3: Show dotted 20% outline and "Home loan" label
-  document.getElementById('gt-20-stroke').setAttribute('opacity', '1');
+  // Step 3: Fill bottom 80% with green from bottom to top
+  await animateGreenFillUp(1000);
+  // Remove dotted from bottom 80% strokes, keep top 20% dotted
+  ['gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'].forEach(id => {
+    document.getElementById(id).removeAttribute('stroke-dasharray');
+  });
+  await wait(400);
+
+  // Show "Home loan" label
   document.getElementById('breakdown-homeloan').textContent = formatCr(homeLoanAmount);
   document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
   document.querySelector('.stack-right-row-loan').classList.add('show');
-  await wait(1000);
-
-  // Step 4: Fill 20% section with red (down-payment)
-  const top20 = document.getElementById('gt-20-top');
-  const left20 = document.getElementById('gt-20-left');
-  const right20 = document.getElementById('gt-20-right');
-  top20.style.transition = 'opacity 800ms ease-out';
-  left20.style.transition = 'opacity 800ms ease-out';
-  right20.style.transition = 'opacity 800ms ease-out';
-  top20.setAttribute('opacity', '1');
-  left20.setAttribute('opacity', '1');
-  right20.setAttribute('opacity', '1');
   await wait(800);
+
+  // Step 4: Fill 20% section with red (left to right reveal)
+  document.getElementById('gt-20-stroke').setAttribute('opacity', '1');
+  await animateRedFillLeftToRight(800);
+  await wait(400);
   document.getElementById('breakdown-downpayment').textContent = formatLacs(downPayment);
   document.querySelector('.stack-right-row-dp').classList.add('show');
   await wait(800);
