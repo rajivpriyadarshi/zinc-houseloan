@@ -2,8 +2,8 @@ import { getTransactionDutyRate } from './lib/stateDuty.js';
 import { trackButtonClick, trackPageView, trackValueSubmit } from './firebaseAnalytics.js';
 import { auth } from './firebaseAuth.js';
 import { app } from './firebaseAuth.js';
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithCustomToken } from 'firebase/auth';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { connectAuthEmulator, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithCustomToken } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions, httpsCallable } from 'firebase/functions';
 import { navigateTo } from './router.js';
 
 // Header scroll behavior
@@ -64,6 +64,29 @@ const loginStatus = document.getElementById('login-status');
 const provider = new GoogleAuthProvider();
 
 const functions = getFunctions(app, 'asia-south1');
+const functionsEmulatorFlag = String(import.meta.env.VITE_USE_FIREBASE_EMULATORS || '').toLowerCase();
+const authEmulatorFlag = String(import.meta.env.VITE_USE_AUTH_EMULATOR || '').toLowerCase();
+const useAuthEmulator = authEmulatorFlag === 'true';
+const useFunctionsEmulator = functionsEmulatorFlag === 'true' && authEmulatorFlag === 'true';
+const functionsEmulatorPort = Number(import.meta.env.VITE_FIREBASE_FUNCTIONS_EMULATOR_PORT || 5001);
+const authEmulatorPort = Number(import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_PORT || 9099);
+
+if (useFunctionsEmulator) {
+  try {
+    connectFunctionsEmulator(functions, window.location.hostname, functionsEmulatorPort);
+  } catch (error) {
+    console.warn('Functions emulator connect failed, continuing with default Firebase endpoints.', error);
+  }
+}
+
+if (useAuthEmulator) {
+  try {
+    connectAuthEmulator(auth, `http://${window.location.hostname}:${authEmulatorPort}`, { disableWarnings: true });
+  } catch (error) {
+    console.warn('Auth emulator connect failed, continuing with Firebase Auth server.', error);
+  }
+}
+
 const sendEmailOtp = httpsCallable(functions, 'sendEmailOtp');
 const verifyEmailOtp = httpsCallable(functions, 'verifyEmailOtp');
 const registerCustomer = httpsCallable(functions, 'registerCustomer');

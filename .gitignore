@@ -43,6 +43,7 @@ firepit-log.txt
 
 # firebase local tooling
 .firebase-config/
+functions/.eslintrc.js
 
 # typescript
 *.tsbuildinfo
