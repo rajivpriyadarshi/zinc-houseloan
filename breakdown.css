@@ -492,7 +492,8 @@ svg.stack-top.show-solid {
 .continue-btn {
   position: absolute;
   bottom: 40px;
-  right: 38px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Satoshi', sans-serif;
   font-size: 18px;
   font-weight: 400;
@@ -514,12 +515,12 @@ svg.stack-top.show-solid {
 }
 
 .continue-btn:hover {
-  transform: scale(1.05);
+  transform: translateX(-50%) scale(1.05);
   box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
 }
 
 .continue-btn:active {
-  transform: scale(0.98);
+  transform: translateX(-50%) scale(0.98);
 }
 
 @keyframes buttonPop {
