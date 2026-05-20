@@ -157,8 +157,10 @@ function resetAnimation() {
 
   // Re-trigger slide-in-from-bottom animation
   baseTall.style.animation = 'none';
+  baseTall.style.opacity = '0';
+  baseTall.style.transform = 'translateY(100vh)';
   baseTall.offsetHeight;
-  baseTall.style.animation = '';
+  baseTall.style.animation = 'slideInUp 800ms ease-in-out forwards';
 
   // Reset solid clip
   document.getElementById('solid-20-clip-rect').setAttribute('x', '0');
@@ -168,6 +170,7 @@ function resetAnimation() {
   document.getElementById('red-20-clip-rect').setAttribute('width', '0');
   document.getElementById('dotted-20-clip-rect').setAttribute('width', '0');
   document.getElementById('gt-20-bottom-solid').setAttribute('opacity', '0');
+  document.getElementById('gt-20-stroke').setAttribute('opacity', '1');
   document.getElementById('gt-top-overlay').setAttribute('opacity', '0');
 
   // Reset right labels
