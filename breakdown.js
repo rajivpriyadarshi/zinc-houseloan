@@ -102,11 +102,15 @@ function animateShrink(duration) {
     const leftEdgeS = document.getElementById('gt-left-edge-s');
     const rightEdgeS = document.getElementById('gt-right-edge-s');
     const centerEdgeS = document.getElementById('gt-center-edge-s');
+    const sideLine = document.querySelector('.stack-side-line');
 
     const startTopY = 72;
     const startCenterY = 144;
     const endTopY = 307;
     const endCenterY = 379;
+
+    const startScale = 1.47;
+    const endScale = 1;
 
     let startTime = null;
 
@@ -118,6 +122,7 @@ function animateShrink(duration) {
 
       const curTopY = Math.round(lerp(startTopY, endTopY, ease));
       const curCenterY = Math.round(lerp(startCenterY, endCenterY, ease));
+      const curScale = lerp(startScale, endScale, ease);
 
       topFill.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
       topStroke.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
@@ -132,6 +137,8 @@ function animateShrink(duration) {
       leftEdgeS.setAttribute('d', `M1 307V789`);
       rightEdgeS.setAttribute('d', `M239 307V789`);
       centerEdgeS.setAttribute('d', `M120 379V858`);
+
+      sideLine.style.transform = `scaleY(${curScale})`;
 
       if (t < 1) {
         requestAnimationFrame(tick);

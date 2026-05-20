@@ -33,8 +33,8 @@ body {
   --effective-gap: calc(var(--stack-gap) - var(--stack-overlap));
   --block-w: clamp(118px, 10vw, 150px);
   --base-h: calc(var(--block-w) * 2.63);
-  --top-h: calc(var(--block-w) * 0.671);
-  --middle-h: calc(var(--block-w) * 0.975);
+  --top-h: calc(var(--block-w) * 0.789);
+  --middle-h: calc(var(--block-w) * 1.198);
   --lower-h: calc(var(--block-w) * 0.852);
   --mid-h: var(--middle-h);
   --red-blocks-h: calc(var(--top-h) + var(--middle-h));
@@ -109,10 +109,16 @@ body {
   width: var(--block-w);
   position: absolute;
   left: 0;
-  top: calc(var(--top-h) + var(--effective-gap) + var(--middle-h) + var(--effective-gap) - (var(--base-h) * 0.38));
+  top: calc(var(--top-h) + var(--effective-gap) + var(--middle-h) + var(--effective-gap) - (var(--base-h) * 0.357));
   opacity: 1;
   transform: translateY(0);
   display: block;
+  z-index: 0;
+}
+
+.stack-visual > svg.stack-mid,
+.stack-visual > svg.stack-top {
+  z-index: 1;
 }
 
 .stack-base {
@@ -175,11 +181,12 @@ svg.stack-top.show-solid {
 
 .stack-side-line {
   position: absolute;
-  right: 16px;
+  right: 22px;
   top: calc(var(--green-center) - 148px);
-  height: 286px;
+  height: 304px;
   border-left: 2px solid rgba(255, 255, 255, .72);
   transform-origin: bottom center;
+  transform: scaleY(1.47);
 }
 
 .stack-side-line::before,
@@ -195,13 +202,13 @@ svg.stack-top.show-solid {
 .stack-side-line::after { bottom: 0; }
 
 .animating .stack-side-line {
-  animation: lineGrow 1.2s ease-out 0.50s forwards;
+  transform-origin: bottom center;
 }
 
 .stack-side-pill {
   position: absolute;
   top: calc(var(--green-center) - 34px);
-  right: 22px;
+  right: 40px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -257,7 +264,8 @@ svg.stack-top.show-solid {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding-top: 10px;
+  position: absolute;
+  top: calc((var(--top-h) / 2) - 24px);
 }
 
 .stack-right-group {
