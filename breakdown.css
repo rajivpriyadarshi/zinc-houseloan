@@ -349,7 +349,7 @@ svg.stack-top.show-solid {
 
 .stack-right-row-loan {
   position: absolute;
-  top: calc(var(--green-start) + (var(--base-h) * 0.6) - 24px);
+  top: calc(var(--green-start) + (var(--base-h) * 0.55) - 24px);
 }
 
 .stack-right-pill {

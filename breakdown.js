@@ -200,6 +200,18 @@ function resetAnimation() {
 
   // Reset label
   document.querySelector('.stack-side-text').textContent = 'Property cost';
+
+  // Reset side-label animations
+  const sideLabelEl = document.querySelector('.stack-side-label');
+  const sideLineEl = document.querySelector('.stack-side-line');
+  const sidePillEl = document.querySelector('.stack-side-pill');
+  sideLabelEl.style.animation = 'none';
+  sideLineEl.style.animation = 'none';
+  sidePillEl.style.animation = 'none';
+  sideLabelEl.offsetHeight;
+  sideLabelEl.style.animation = '';
+  sideLineEl.style.animation = '';
+  sidePillEl.style.animation = '';
 }
 
 async function runAnimation() {
