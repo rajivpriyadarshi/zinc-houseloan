@@ -1825,11 +1825,7 @@ function drawComparisonChart(animate = false) {
   } else if (selectedComparisonAsset === 'stocks') {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
-    assetLabel = 'Stock';
-  } else if (selectedComparisonAsset === 'mutual-funds') {
-    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
-    effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
-    assetLabel = 'Mutual Fund';
+    assetLabel = 'Stocks / MFs';
   } else if (selectedComparisonAsset === 'land') {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
     effectiveCagr = modelInputs.assets.land.cagrPct;
@@ -2771,3 +2767,61 @@ if (scrollToTopBtn) {
 updateUI();
 updateOptionSections();
 updatePageIndicator();
+
+// Zinc Loan Cost Modal - populate data when opened
+window.populateZincModal = function() {
+  const results = calculateModel(modelInputs);
+  const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+  const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
+
+  const monthlyRate = zincRate / 12;
+  const totalMonths = years * 12;
+  const emi = fundingGap * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+  // Update summary values
+  document.getElementById('modal-loan-amount').textContent = formatCurrency(fundingGap);
+  document.getElementById('modal-interest-rate').textContent = `${(zincRate * 100).toFixed(1)}% p.a.`;
+  document.getElementById('modal-monthly-emi').textContent = formatCurrency(emi);
+  document.getElementById('modal-tenure').textContent = `${years} years`;
+
+  // Build year-wise amortization table
+  const yearlyData = [];
+  let balance = fundingGap;
+  let cumulativeTotal = 0;
+
+  for (let year = 1; year <= years; year++) {
+    let yearPrincipal = 0;
+    let yearInterest = 0;
+
+    for (let month = 1; month <= 12; month++) {
+      const interestPayment = balance * monthlyRate;
+      const principalPayment = emi - interestPayment;
+      yearInterest += interestPayment;
+      yearPrincipal += principalPayment;
+      balance -= principalPayment;
+    }
+
+    cumulativeTotal += emi * 12;
+    yearlyData.push({
+      year,
+      annualEmi: emi * 12,
+      principalPaid: yearPrincipal,
+      interestPaid: yearInterest,
+      cumulativeTotal,
+      outstandingBalance: Math.max(0, balance)
+    });
+  }
+
+  const tableBody = document.getElementById('zinc-cost-table-body');
+  tableBody.innerHTML = yearlyData.map(row => `
+    <tr>
+      <td>Year ${row.year}</td>
+      <td>${formatCurrency(row.annualEmi)}</td>
+      <td>${formatCurrency(row.principalPaid)}</td>
+      <td>${formatCurrency(row.interestPaid)}</td>
+      <td>${formatCurrency(row.cumulativeTotal)}</td>
+      <td>${formatCurrency(row.outstandingBalance)}</td>
+    </tr>
+  `).join('');
+};

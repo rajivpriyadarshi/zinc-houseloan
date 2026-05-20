@@ -316,7 +316,7 @@ getRedirectResult(auth)
 
 // Fun fact ticker
 const funFacts = [
-  "Stamp duty in Mumbai can be up to 6% of property value",
+  "Stamp duty in Mumbai can be up to 6% of house value",
   "Interior costs typically add 15-25% to your home budget",
   "The average Indian spends 40% of income on housing EMI",
   "Registration charges vary from 1-2% across states",

@@ -26,7 +26,7 @@
       <div class="hero-content">
         <div class="property-value-pill" id="property-value-pill">
           <img src="/houses/level1.png" alt="House" class="property-pill-image" id="property-pill-image">
-          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">property cost</span></span>
+          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">house cost</span></span>
           <button class="property-pill-edit" id="property-pill-edit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -452,8 +452,7 @@
 
         <div class="comparison-asset-toggle">
           <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
-          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
-          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
+          <button class="asset-toggle-btn" data-asset="stocks">Stocks / MFs</button>
           <button class="asset-toggle-btn" data-asset="land">Land</button>
           <button class="asset-toggle-btn" data-asset="cash">Savings</button>
         </div>
@@ -681,8 +680,90 @@
     </svg>
   </button>
 
+  <!-- Zinc Loan Cost Modal -->
+  <div id="zinc-cost-modal" class="zinc-modal-overlay">
+    <div class="zinc-modal-box">
+      <button class="zinc-modal-close" id="close-zinc-modal">&times;</button>
+      <h2 class="zinc-modal-title">Zinc Loan Cost Breakdown</h2>
+      <p class="zinc-modal-subtitle">Here's how your loan cost builds up year by year</p>
+
+      <div class="zinc-modal-summary">
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Loan Amount</span>
+          <span class="zinc-summary-value" id="modal-loan-amount">₹0</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Interest Rate</span>
+          <span class="zinc-summary-value" id="modal-interest-rate">0%</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Monthly EMI</span>
+          <span class="zinc-summary-value" id="modal-monthly-emi">₹0</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Tenure</span>
+          <span class="zinc-summary-value" id="modal-tenure">0 years</span>
+        </div>
+      </div>
+
+      <div class="zinc-modal-table-wrap">
+        <table class="zinc-modal-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Annual EMI</th>
+              <th>Principal Paid</th>
+              <th>Interest Paid</th>
+              <th>Total Paid</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="zinc-cost-table-body">
+          </tbody>
+        </table>
+      </div>
+
+      <p class="zinc-modal-note">
+        <strong>How is this calculated?</strong><br>
+        Each year you pay 12 EMIs. The EMI is split into principal repayment and interest.
+        As you pay down the principal, the interest component decreases while the principal component increases.
+      </p>
+    </div>
+  </div>
+
   <script type="module" src="results.js"></script>
   <script src="/community-widget.js"></script>
+  <script>
+  (function() {
+    var openBtn = document.getElementById('open-zinc-modal');
+    var closeBtn = document.getElementById('close-zinc-modal');
+    var modal = document.getElementById('zinc-cost-modal');
+
+    if (openBtn) {
+      openBtn.onclick = function() {
+        console.log('Button clicked, populateZincModal exists:', !!window.populateZincModal);
+        try {
+          if (window.populateZincModal) window.populateZincModal();
+        } catch(e) {
+          console.error('Error in populateZincModal:', e);
+        }
+        modal.style.display = 'flex';
+      };
+    }
+
+    if (closeBtn) {
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      };
+    }
+
+    if (modal) {
+      modal.onclick = function(e) {
+        if (e.target === modal) modal.style.display = 'none';
+      };
+    }
+  })();
+  </script>
 </body>
 </html>
 
