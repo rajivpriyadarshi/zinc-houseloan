@@ -16,69 +16,116 @@
           <span class="stack-side-dot stack-side-dot-bottom"></span>
           <div class="stack-side-pill">
             <span class="stack-side-value" id="breakdown-loan">3 Cr</span>
-            <span class="stack-side-text">Total cost</span>
+            <span class="stack-side-text">Property cost</span>
           </div>
         </div>
 
         <div class="stack-visual">
           <svg class="stack-block stack-base-tall" id="green-tall-svg" viewBox="0 0 240 860" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path id="gt-top" d="M1 72L120 144L239 72L120 1Z" fill="#0D1F16"/>
-            <path id="gt-left" d="M1 72V789L120 858V144L1 72Z" fill="#153225"/>
-            <path id="gt-right" d="M239 72V789L120 858V144L239 72Z" fill="#143020"/>
+            <defs>
+              <linearGradient id="green-grad" x1="0%" y1="0%" x2="80%" y2="100%">
+                <stop offset="5.83%" stop-color="rgba(255, 193, 92, 0.58)"/>
+                <stop offset="100%" stop-color="rgba(1, 87, 60, 0.58)"/>
+              </linearGradient>
+            </defs>
+            <path id="gt-top" d="M1 72L120 144L239 72L120 1Z" fill="#1E1E1E"/>
+            <path id="gt-left" d="M1 72V789L120 858V144L1 72Z" fill="url(#green-grad)"/>
+            <path id="gt-right" d="M239 72V789L120 858V144L239 72Z" fill="url(#green-grad)"/>
             <path id="gt-top-s" d="M1 72L120 144L239 72L120 1Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
-            <path id="gt-left-edge-d" d="M1 72V307" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-right-edge-d" d="M239 72V307" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-center-edge-d" d="M120 144V379" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-left-edge-s" d="M1 307V789" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-right-edge-s" d="M239 307V789" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-center-edge-s" d="M120 379V858" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-bottom" d="M1 789L120 858L239 789" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
-            <path id="gt-dotted-travel" d="M1 307L120 236L239 307V789L120 858L1 789V307L120 379V858L120 379L239 307" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none" opacity="0"/>
+            <path id="gt-left-edge-d" d="M1 72V307" stroke="none" stroke-width="2"/>
+            <path id="gt-right-edge-d" d="M239 72V307" stroke="none" stroke-width="2"/>
+            <path id="gt-center-edge-d" d="M120 144V379" stroke="none" stroke-width="2"/>
+            <path id="gt-left-edge-s" d="M1 307V789" stroke="none" stroke-width="2"/>
+            <path id="gt-right-edge-s" d="M239 307V789" stroke="none" stroke-width="2"/>
+            <path id="gt-center-edge-s" d="M120 379V858" stroke="none" stroke-width="2"/>
+            <path id="gt-bottom" d="M1 789L120 858L239 789" stroke="none" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <path id="gt-dotted-travel" d="M1 307L120 236L239 307V789L120 858L1 789V307L120 379V858L120 379L239 307" stroke="none" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none" opacity="0"/>
+            <!-- 20% down-payment overlay -->
+            <defs>
+              <linearGradient id="red-grad-overlay" x1="0%" y1="0%" x2="80%" y2="100%">
+                <stop offset="5.83%" stop-color="rgba(222, 82, 31, 0.98)"/>
+                <stop offset="100%" stop-color="rgba(124, 3, 3, 0.98)"/>
+              </linearGradient>
+            </defs>
+            <path id="gt-20-top" d="M1 307L120 379L239 307L120 236Z" fill="#230B0B" opacity="0"/>
+            <path id="gt-20-left" d="M1 307V403L120 475V379L1 307Z" fill="url(#red-grad-overlay)" opacity="0"/>
+            <path id="gt-20-right" d="M239 307V403L120 475V379L239 307Z" fill="url(#red-grad-overlay)" opacity="0"/>
+            <path id="gt-20-stroke" d="M1 307L120 236L239 307V403L120 475L1 403V307L120 379V475L120 379L239 307" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none" opacity="0"/>
           </svg>
           <img class="stack-block stack-base" src="/block-green.svg" alt="Loan block">
           <svg class="stack-block stack-mid stack-lower" id="red-lower-svg" viewBox="0 0 237 202" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="red-face-fill" d="M2 70L122 142L237 71L120 0L2 70Z" fill="#461616"/>
-            <path class="red-face-fill" d="M2 70V130L120 202V142L2 70Z" fill="#461616"/>
-            <path class="red-face-fill" d="M237 71V131L120 202V142L237 71Z" fill="#461616"/>
-            <path class="red-dotted" d="M2 70V130L120 202V142L2 70L120 0L237 71V131L120 202V142L237 71" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
-            <path class="red-solid" d="M2 70V130L120 202V142L2 70L120 0L237 71V131L120 202V142L237 71" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="red-grad-lower" x1="0%" y1="0%" x2="80%" y2="100%">
+                <stop offset="5.83%" stop-color="rgba(222, 82, 31, 0.98)"/>
+                <stop offset="100%" stop-color="rgba(124, 3, 3, 0.98)"/>
+              </linearGradient>
+            </defs>
+            <path class="red-face-fill" d="M2 70L122 142L237 71L120 0L2 70Z" fill="#230B0B"/>
+            <path class="red-face-fill" d="M2 70V130L120 202V142L2 70Z" fill="url(#red-grad-lower)"/>
+            <path class="red-face-fill" d="M237 71V131L120 202V142L237 71Z" fill="url(#red-grad-lower)"/>
+            <path d="M2 70L120 0L237 71L122 142Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <path class="red-dotted" d="M2 70V130L120 202V142L2 70L120 0L237 71V131L120 202V142L237 71" stroke="none" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
+            <path class="red-solid" d="M2 70V130L120 202V142L2 70L120 0L237 71V131L120 202V142L237 71" stroke="none" stroke-width="2" stroke-linejoin="round" fill="none"/>
           </svg>
           <svg class="stack-block stack-mid stack-middle" id="red-middle-svg" viewBox="0 0 237 231" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="red-face-fill" d="M2 70L122 142L237 71L120 0L2 70Z" fill="#461616"/>
-            <path class="red-face-fill" d="M2 70V160L120 231V142L2 70Z" fill="#461616"/>
-            <path class="red-face-fill" d="M237 71V160L120 231V142L237 71Z" fill="#461616"/>
-            <path class="red-dotted" d="M2 70V160L120 231V142L2 70L120 0L237 71V160L120 231V142L237 71" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
-            <path class="red-solid" d="M2 70V160L120 231V142L2 70L120 0L237 71V160L120 231V142L237 71" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="red-grad-middle" x1="0%" y1="0%" x2="80%" y2="100%">
+                <stop offset="5.83%" stop-color="rgba(222, 82, 31, 0.98)"/>
+                <stop offset="100%" stop-color="rgba(124, 3, 3, 0.98)"/>
+              </linearGradient>
+            </defs>
+            <path class="red-face-fill" d="M2 70L122 142L237 71L120 0L2 70Z" fill="#230B0B"/>
+            <path class="red-face-fill" d="M2 70V160L120 231V142L2 70Z" fill="url(#red-grad-middle)"/>
+            <path class="red-face-fill" d="M237 71V160L120 231V142L237 71Z" fill="url(#red-grad-middle)"/>
+            <path d="M2 70L120 0L237 71L122 142Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <path class="red-dotted" d="M2 70V160L120 231V142L2 70L120 0L237 71V160L120 231V142L237 71" stroke="none" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
+            <path class="red-solid" d="M2 70V160L120 231V142L2 70L120 0L237 71V160L120 231V142L237 71" stroke="none" stroke-width="2" stroke-linejoin="round" fill="none"/>
           </svg>
           <svg class="stack-block stack-top" id="red-top-svg" viewBox="0 0 237 159" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="red-face-fill" d="M2 66L117 0L237 67L120 136L2 66Z" fill="#2A080B"/>
-            <path class="red-face-fill" d="M2 66V89L120 159V136L2 66Z" fill="#461616"/>
-            <path class="red-face-fill" d="M237 67V90L120 159V136L237 67Z" fill="#461616"/>
-            <path class="red-dotted" d="M2 66V89L120 159V136L2 66L117 0L237 67V90L120 159V136L237 67" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
-            <path class="red-solid" d="M2 66V89L120 159V136L2 66L117 0L237 67V90L120 159V136L237 67" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="red-grad-top" x1="0%" y1="0%" x2="80%" y2="100%">
+                <stop offset="5.83%" stop-color="rgba(222, 82, 31, 0.98)"/>
+                <stop offset="100%" stop-color="rgba(124, 3, 3, 0.98)"/>
+              </linearGradient>
+            </defs>
+            <path class="red-face-fill" d="M2 66L117 0L237 67L120 136L2 66Z" fill="#230B0B"/>
+            <path class="red-face-fill" d="M2 66V89L120 159V136L2 66Z" fill="url(#red-grad-top)"/>
+            <path class="red-face-fill" d="M237 67V90L120 159V136L237 67Z" fill="url(#red-grad-top)"/>
+            <path d="M2 66L117 0L237 67L120 136Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            <path class="red-dotted" d="M2 66V89L120 159V136L2 66L117 0L237 67V90L120 159V136L237 67" stroke="none" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
+            <path class="red-solid" d="M2 66V89L120 159V136L2 66L117 0L237 67V90L120 159V136L237 67" stroke="none" stroke-width="2" stroke-linejoin="round" fill="none"/>
           </svg>
         </div>
 
-        <div class="stack-breakdown">
-          <div class="stack-row">
-            <span class="stack-dot"></span>
-            <div class="stack-pill">
-              <span class="stack-pill-value" id="breakdown-stamp">8 L</span>
-              <span class="stack-pill-label">Stamp duty</span>
+        <div class="stack-right-labels">
+          <div class="stack-right-group">
+            <div class="stack-right-row stack-right-row-stamp">
+              <span class="stack-right-dot"></span>
+              <div class="stack-right-pill">
+                <span class="stack-right-value" id="breakdown-stamp">8 L</span>
+                <span class="stack-right-text">Stamp duty</span>
+              </div>
+            </div>
+            <div class="stack-right-row stack-right-row-interior">
+              <span class="stack-right-dot"></span>
+              <div class="stack-right-pill">
+                <span class="stack-right-value" id="breakdown-interior">20 L</span>
+                <span class="stack-right-text">Interior cost</span>
+              </div>
+            </div>
+            <div class="stack-right-row stack-right-row-dp">
+              <span class="stack-right-dot"></span>
+              <div class="stack-right-pill">
+                <span class="stack-right-value" id="breakdown-downpayment">20 L</span>
+                <span class="stack-right-text">Down-payment</span>
+              </div>
             </div>
           </div>
-          <div class="stack-row">
-            <span class="stack-dot"></span>
-            <div class="stack-pill">
-              <span class="stack-pill-value" id="breakdown-interior">20 L</span>
-              <span class="stack-pill-label">Interior cost</span>
-            </div>
-          </div>
-          <div class="stack-row">
-            <span class="stack-dot"></span>
-            <div class="stack-pill">
-              <span class="stack-pill-value" id="breakdown-downpayment">20 L</span>
-              <span class="stack-pill-label">Down-payment</span>
+          <div class="stack-right-row stack-right-row-loan">
+            <span class="stack-right-dot"></span>
+            <div class="stack-right-pill">
+              <span class="stack-right-value" id="breakdown-homeloan">2.4 Cr</span>
+              <span class="stack-right-text">Home loan</span>
             </div>
           </div>
         </div>

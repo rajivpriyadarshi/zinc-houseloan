@@ -1,20 +1,18 @@
 const crypto = require('node:crypto');
 const { getApps, initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
-const { getStorage } = require('firebase-admin/storage');
 const { getAuth } = require('firebase-admin/auth');
 const { HttpsError, onCall } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const { defineSecret } = require('firebase-functions/params');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+
 
 setGlobalOptions({ region: 'asia-south1', maxInstances: 10 });
 
 if (!getApps().length) initializeApp();
 
-const db = getFirestore();
-const bucket = getStorage().bucket();
+const db = getFirestore('zinc-home-finance');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_LENGTH = 6;
@@ -28,7 +26,6 @@ const WEB_ORIGIN = (() => {
 })();
 const AWS_ACCESS_KEY_ID = defineSecret('AWS_ACCESS_KEY_ID');
 const AWS_SECRET_ACCESS_KEY = defineSecret('AWS_SECRET_ACCESS_KEY');
-const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
 const ZINC_LABS_API_KEY = defineSecret('ZINC_LABS_API_KEY');
 const ZINC_LABS_REGISTER_URL = 'https://labs-sbox.zinc.money/api/customers/register/';
 const ALLOWED_RESIDENCE_COUNTRIES = new Set(['India', 'Singapore']);
@@ -88,9 +85,10 @@ function requireFirebaseSession(request, expectedApplicationId) {
   };
 }
 
-function callableOptions(secrets = []) {
-  const isEmulator = process.env.FUNCTIONS_EMULATOR === 'true';
-  return { cors: isEmulator ? true : WEB_ORIGIN, secrets };
+function callableOptions(secrets = [], { invoker } = {}) {
+  const opts = { cors: true, secrets };
+  if (invoker) opts.invoker = invoker;
+  return opts;
 }
 
 async function sendOtpEmail(email, otp) {
@@ -126,7 +124,7 @@ async function sendOtpEmail(email, otp) {
   }));
 }
 
-exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]), async (request) => {
+exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY], { invoker: 'public' }), async (request) => {
   const email = normalizeEmail(request.data?.email);
   const otp = makeOtp();
   const salt = crypto.randomBytes(16).toString('hex');
@@ -154,7 +152,7 @@ exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACC
   return { expiresAt: expiresAt.toISOString() };
 });
 
-exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
+exports.verifyEmailOtp = onCall(callableOptions([], { invoker: 'public' }), async (request) => {
   try {
     const email = normalizeEmail(request.data?.email);
     const otp = requireString(request.data?.otp, 'otp');
@@ -233,12 +231,7 @@ exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
   }
 });
 
-exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY]), async (request) => {
-  const auth = request.auth;
-  if (!auth?.uid) {
-    throw new HttpsError('unauthenticated', 'Login required before customer registration.');
-  }
-
+exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY], { invoker: 'public' }), async (request) => {
   const session = {
     applicationId: auth.uid,
     email: String(auth.token?.email || ''),
