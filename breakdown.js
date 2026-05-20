@@ -205,24 +205,63 @@ function resetAnimation() {
   const sideLabelEl = document.querySelector('.stack-side-label');
   const sideLineEl = document.querySelector('.stack-side-line');
   const sidePillEl = document.querySelector('.stack-side-pill');
-  sideLabelEl.style.animation = 'none';
-  sideLineEl.style.animation = 'none';
-  sidePillEl.style.animation = 'none';
-  sideLabelEl.offsetHeight;
-  sideLabelEl.style.animation = '';
-  sideLineEl.style.animation = '';
-  sidePillEl.style.animation = '';
+  if (isMobile) {
+    sidePillEl.classList.remove('mobile-show', 'mobile-hide');
+    sideLineEl.classList.remove('mobile-show', 'mobile-hide');
+    sidePillEl.style.animation = 'none';
+    sideLineEl.style.animation = 'none';
+    sidePillEl.offsetHeight;
+    sidePillEl.style.animation = '';
+    sideLineEl.style.animation = '';
+  } else {
+    sideLabelEl.style.animation = 'none';
+    sideLineEl.style.animation = 'none';
+    sidePillEl.style.animation = 'none';
+    sideLabelEl.offsetHeight;
+    sideLabelEl.style.animation = '';
+    sideLineEl.style.animation = '';
+    sidePillEl.style.animation = '';
+  }
+}
+
+const isMobile = window.matchMedia('(max-width: 1024px)').matches;
+
+if (isMobile) {
+  document.querySelector('.hero-breakdown-scene').appendChild(heroSummary);
 }
 
 async function runAnimation() {
   scene.classList.add('animating');
   document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 
-  // Wait for intro animations: block(800ms) + gap(300ms) + line(800ms) + gap(300ms) + pill(800ms)
-  await wait(3300);
+  if (isMobile) {
+    // Mobile: block slides in centered (800ms), shift left, line grows, then pill from right
+    await wait(1000);
+    document.querySelector('.stack-cluster').classList.add('shifted');
+    await wait(700);
+    document.querySelector('.stack-side-line').classList.add('mobile-show');
+    await wait(400);
+    const sidePill = document.querySelector('.stack-side-pill');
+    sidePill.classList.add('mobile-show');
+    await wait(2000);
+  } else {
+    // Wait for intro animations: block(800ms) + gap(300ms) + line(800ms) + gap(300ms) + pill(800ms)
+    await wait(3300);
+  }
 
   // Step 2: Fill bottom 80% with green from bottom to top
   await animateGreenFillUp(1000);
+
+  // On mobile, fade out property cost pill and line before showing labels
+  if (isMobile) {
+    const sidePill = document.querySelector('.stack-side-pill');
+    const sideLine = document.querySelector('.stack-side-line');
+    sidePill.classList.remove('mobile-show');
+    sidePill.classList.add('mobile-hide');
+    sideLine.classList.remove('mobile-show');
+    sideLine.classList.add('mobile-hide');
+    await wait(600);
+  }
 
   // Step 3: Solid to dotted transition left-to-right
   await animateDottedLineLeftToRight(800);
@@ -264,9 +303,11 @@ async function runAnimation() {
   document.querySelector('.stack-right-row-stamp').classList.add('show');
   await wait(500);
 
-  // Step 7: Shift everything left and show hero summary
-  document.querySelector('.stack-cluster').classList.add('shifted');
-  await wait(800);
+  // Step 7: Shift everything left (desktop only) and show hero summary
+  if (!isMobile) {
+    document.querySelector('.stack-cluster').classList.add('shifted');
+    await wait(800);
+  }
   heroSummary.classList.add('show');
   await wait(800);
 
@@ -275,11 +316,11 @@ async function runAnimation() {
     continueBtn.classList.add('visible');
   }
 
-  // Wait then loop
-  await wait(3000);
-  resetAnimation();
-  await wait(500);
-  runAnimation();
+  // Wait then loop (disabled temporarily)
+  // await wait(3000);
+  // resetAnimation();
+  // await wait(500);
+  // runAnimation();
 }
 
 runAnimation();
