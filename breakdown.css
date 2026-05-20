@@ -56,12 +56,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 18px;
-  padding-left: 200px;
 }
 
 .stack-cluster {
   position: relative;
-  width: 400px;
+  width: calc(var(--block-w) + 30px + 700px);
   height: calc(var(--base-h) + var(--top-h) + var(--middle-h) + (var(--effective-gap) * 2));
   margin-top: 0;
 }
@@ -247,18 +246,24 @@ svg.stack-top.show-solid {
   left: calc(var(--block-w) + 30px);
   top: 0;
   height: 100%;
-  width: 260px;
+  width: 700px;
 }
 
 .stack-right-line {
   display: none;
 }
 
+.stack-right-top {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-top: 10px;
+}
+
 .stack-right-group {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-top: 10px;
 }
 
 .stack-right-row {
@@ -305,6 +310,7 @@ svg.stack-top.show-solid {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, .2);
   background: rgba(7, 8, 12, .78);
+  white-space: nowrap;
 }
 
 .stack-right-value {
@@ -324,10 +330,7 @@ svg.stack-top.show-solid {
 .hero-summary {
   display: flex;
   align-items: center;
-  gap: 32px;
-  margin-left: 0;
-  align-self: flex-start;
-  margin-top: calc(var(--row1-top) + 120px);
+  gap: 20px;
   opacity: 0;
   transform: translateX(14px);
 }
@@ -379,8 +382,8 @@ svg.stack-top.show-solid {
 .hero-amount-value {
   font-family: 'Butler Pro', serif;
   font-weight: 400;
-  font-size: 64px;
-  line-height: 1.1;
+  font-size: 46px;
+  line-height: 1.15;
   letter-spacing: -0.04em;
   color: #fff;
 }
@@ -388,8 +391,8 @@ svg.stack-top.show-solid {
 .hero-amount-suffix {
   font-family: 'Butler Pro', serif;
   font-weight: 300;
-  font-size: 64px;
-  line-height: 1.1;
+  font-size: 46px;
+  line-height: 1.15;
   letter-spacing: -0.04em;
   color: rgba(255, 255, 255, .32);
 }
