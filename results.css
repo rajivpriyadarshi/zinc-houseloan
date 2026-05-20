@@ -1925,7 +1925,7 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 24px;
+  padding: 24px 24px 24px 32px;
   margin-bottom: 24px;
 }
 
@@ -2044,6 +2044,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
 }
 
 .legend-dot {
@@ -2064,6 +2065,66 @@ body {
   font-family: 'Satoshi', sans-serif;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.legend-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legend-info-icon:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.legend-info-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  width: 280px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.legend-info-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(20, 20, 20, 0.95);
+}
+
+.legend-item:hover .legend-info-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .legend-learn-more {
@@ -2351,7 +2412,8 @@ body {
 
 .benefit-box.benefit-negative {
   border: 1px solid transparent;
-  background: linear-gradient(rgb(0 0 0 / 40%), rgb(6 6 6 / 40%)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.6) 40%, rgba(253, 253, 253, 0.12) 100%) border-box border-box;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.45) 40%, rgb(149 149 149 / 12%) 100%) border-box border-box;
+  margin-top: 24px;
 }
 
 .benefit-box.benefit-positive {
@@ -2394,7 +2456,7 @@ body {
   font-size: 17px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
-  line-height: 1.5;
+  line-height: 1.7;
   letter-spacing: -0.19px;
 }
 
@@ -2404,10 +2466,12 @@ body {
 
 .benefit-text .highlight {
   color: #fff;
+  font-weight: 700;
 }
 
 .benefit-text .highlight-red {
-  color: #e93911;
+  color: #fff;
+  font-weight: 700;
 }
 
 .benefit-text .highlight-green {
@@ -2492,10 +2556,14 @@ body {
 }
 
 .faq-section {
-  padding: 80px 40px 200px;
+  padding: 80px 40px 40px;
   position: relative;
   background: #090706;
   background-image: none;
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  min-height: auto;
+  height: auto;
 }
 
 .faq-content {
@@ -2593,11 +2661,8 @@ body {
 .site-footer {
   background: #090706;
   padding: 48px 40px 100px;
-  width: 100vw;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  margin-top: 60px;
 }
 
 .footer-container {
