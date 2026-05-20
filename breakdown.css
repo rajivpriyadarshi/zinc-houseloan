@@ -63,10 +63,10 @@ body {
 
 .stack-cluster {
   position: relative;
-  width: calc(var(--block-w) + 30px + 700px);
+  width: calc(260px + var(--block-w) + 30px + 700px);
   height: calc(var(--base-h) + var(--top-h) + var(--effective-gap-top) + var(--middle-h) + var(--effective-gap));
   margin-top: 0;
-  transform: translateX(calc((700px + 30px) / 2));
+  transform: translateX(235px);
   transition: transform 0.8s ease-out;
 }
 
@@ -78,7 +78,7 @@ body {
   width: var(--block-w);
   height: 100%;
   position: absolute;
-  left: 0;
+  left: 260px;
   top: 0;
 }
 
@@ -158,9 +158,9 @@ svg.stack-top.show-solid {
 }
 
 .stack-side-label {
-  width: 360px;
+  width: 260px;
   position: absolute;
-  left: clamp(-360px, -26vw, -300px);
+  left: 0;
   top: 0;
   height: 100%;
   opacity: 0;
@@ -289,7 +289,7 @@ svg.stack-top.show-solid {
 
 .stack-right-labels {
   position: absolute;
-  left: calc(var(--block-w) + 30px);
+  left: calc(260px + var(--block-w) + 30px);
   top: 0;
   height: 100%;
   width: 700px;
@@ -652,17 +652,26 @@ svg.stack-top.show-solid {
 
 @media (max-width: 1500px) and (min-width: 1025px) {
   .stack-cluster {
-    width: calc(var(--block-w) + 20px + 400px);
-    transform: translateX(calc((400px + 20px) / 2));
+    width: calc(220px + 20px + var(--block-w) + 20px + 400px);
+    transform: translateX(90px);
   }
 
   .stack-cluster.shifted {
     transform: translateX(0);
   }
 
+  .stack-side-label {
+    left: 0;
+    width: calc(220px + 20px);
+  }
+
+  .stack-visual {
+    left: calc(220px + 20px);
+  }
+
   .stack-right-labels {
     width: 400px;
-    left: calc(var(--block-w) + 20px);
+    left: calc(220px + 20px + var(--block-w) + 20px);
   }
 
   .stack-right-pill {
@@ -672,11 +681,6 @@ svg.stack-top.show-solid {
 
   .stack-right-value { font-size: 15px; }
   .stack-right-text { font-size: 13px; }
-
-  .stack-side-label {
-    left: -220px;
-    width: 220px;
-  }
 
   .stack-side-line {
     right: 16px;
@@ -720,6 +724,10 @@ svg.stack-top.show-solid {
     height: calc(var(--base-h) + var(--top-h) + var(--effective-gap-top) + var(--middle-h) + var(--effective-gap));
     transform: translateX(calc((160px + 20px) / 2));
     transition: transform 0.6s ease-out;
+  }
+
+  .stack-visual {
+    left: 0;
   }
 
   .stack-cluster.mobile-center {
