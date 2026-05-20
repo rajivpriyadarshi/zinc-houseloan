@@ -1480,7 +1480,7 @@ body {
 
 .option-title {
   font-family: 'Butler Pro', serif;
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 300;
   color: #fff;
   letter-spacing: -2.88px;
@@ -1583,7 +1583,7 @@ body {
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 500;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -1803,12 +1803,13 @@ body {
 
 .comparison-chart-title {
   font-family: 'Butler Pro', serif;
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 300;
-  color: #fff;
+  color: rgb(255, 255, 255);
   text-align: center;
   margin-bottom: 16px;
-  letter-spacing: -2px;
+  letter-spacing: -2.88px;
+  line-height: 1.2;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
