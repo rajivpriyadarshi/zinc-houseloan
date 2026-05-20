@@ -22,15 +22,15 @@ function formatCr(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
     const cr = lacs / 100;
-    return `${cr.toFixed(2)} Cr`;
+    return `₹${cr.toFixed(2)} Cr`;
   }
-  return `${lacs.toFixed(2)} L`;
+  return `₹${lacs.toFixed(2)} L`;
 }
 
 function formatLacs(amount) {
   const lacs = amount / 100000;
-  if (lacs >= 100) return `${(lacs / 100).toFixed(2)} Cr`;
-  return `${lacs.toFixed(2)} L`;
+  if (lacs >= 100) return `₹${(lacs / 100).toFixed(2)} Cr`;
+  return `₹${lacs.toFixed(2)} L`;
 }
 
 const totalCost = propertyPrice + transactionDuty + interiors;

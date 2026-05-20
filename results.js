@@ -462,7 +462,7 @@ function calculateModel(inputs) {
   const cashFutureValue = calculateFutureValue(fundingGap, inputs.assets.cash.cagrPct, analysisHorizonYears);
   strategies.push({
     strategyId: 'use-cash',
-    strategyName: 'Use cash',
+    strategyName: 'Use savings',
     impact: cashFutureValue,
     rank: 0
   });
@@ -544,14 +544,14 @@ function formatCurrency(amount) {
 function formatCr(amount) {
   const cr = amount / 10000000;
   if (cr >= 1) {
-    return cr.toFixed(2) + ' Cr';
+    return '₹' + cr.toFixed(2) + ' Cr';
   }
-  return (amount / 100000).toFixed(2) + ' Lacs';
+  return '₹' + (amount / 100000).toFixed(2) + ' Lacs';
 }
 
 function formatCrSigned(amount) {
   const cr = Math.abs(amount) / 10000000;
-  const sign = amount >= 0 ? '+' : '-';
+  const sign = amount >= 0 ? '+₹' : '-₹';
   if (cr >= 1) {
     return sign + cr.toFixed(2) + ' Cr';
   }
@@ -562,9 +562,9 @@ function formatCrSigned(amount) {
 function formatLacs(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
-    return (lacs / 100).toFixed(1) + ' Cr';
+    return '₹' + (lacs / 100).toFixed(1) + ' Cr';
   }
-  return Math.round(lacs) + ' L';
+  return '₹' + Math.round(lacs) + ' L';
 }
 
 function updateUI() {
@@ -721,14 +721,14 @@ function showOptionDetails(strategyId) {
     problemText = `By taking a Zinc loan, you keep your RSUs worth <span class="highlight">${formatCurrency(valueToday)}</span> invested. They can grow to <span class="highlight-green">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong> while you pay only interest on the loan.`;
     isPositive = true;
   } else if (strategyId === 'use-cash') {
-    title = "What if you use cash to cover the funding gap?";
-    description = "Using your cash means no debt, but you lose out on potential investment returns if that money was invested instead.";
+    title = "What if you use savings to cover the funding gap?";
+    description = "Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.";
     valueToday = fundingGap;
     valueFuture = calculateFutureValue(fundingGap, modelInputs.assets.cash.cagrPct, years);
     growth = valueFuture - valueToday;
     growthRate = (modelInputs.assets.cash.cagrPct * 100).toFixed(0);
-    problemTitle = "The problem with using cash";
-    problemText = `By using cash worth <span class="highlight">${formatCurrency(valueToday)}</span>, you lose the opportunity to invest it and watch it grow to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.`;
+    problemTitle = "The problem with using savings";
+    problemText = `By using savings worth <span class="highlight">${formatCurrency(valueToday)}</span>, you lose the opportunity to invest them and watch them grow to <span class="highlight-red">${formatCurrency(valueFuture)}</span> over <strong>${years} years</strong>.`;
   } else if (strategyId === 'sell-land') {
     title = "What if you sell land to cover the funding gap?";
     description = "Selling land involves capital gains tax on your profits, plus you miss out on future appreciation.";
@@ -785,7 +785,7 @@ function showOptionDetails(strategyId) {
     cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
   } else if (strategyId === 'use-cash') {
     assetLabelToday = 'Cash to use today';
-    investedLabel = `If you let that cash remain invested for ${years} years`;
+    investedLabel = `If you keep your savings invested for ${years} years`;
     cagrTooltip = `${growthRate}% CAGR in a safe debt fund`;
   } else if (strategyId === 'sell-land') {
     assetLabelToday = 'Land to sell today';
@@ -1009,7 +1009,7 @@ function showChartCalculation(strategyId) {
       <div class="detail-sections">
         <div class="detail-group">
           <h3 class="group-heading">Step 1: Your funding gap</h3>
-          <p class="group-description">This is the upfront cash you need to buy your home (down payment + stamp duty + interiors).</p>
+          <p class="group-description">This is the upfront amount you need to buy your home (down payment + stamp duty + interiors).</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Down payment (20%)</span>
@@ -1197,7 +1197,7 @@ function showChartCalculation(strategyId) {
     if (strategyId === 'use-cash') {
       firstSection = `
         <div class="detail-group">
-          <h3 class="group-heading">Your cash</h3>
+          <h3 class="group-heading">Your savings</h3>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash you'd need</span>
@@ -1233,7 +1233,7 @@ function showChartCalculation(strategyId) {
       opportunityCostSection = `
         <div class="detail-group">
           <h3 class="group-heading">Financial impact over ${years} years</h3>
-          <p class="group-description group-description-italic">Let's see what if you kept this cash invested instead of using it</p>
+          <p class="group-description group-description-italic">Let's see what happens if you keep your savings invested instead</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash value today</span>
@@ -1369,14 +1369,14 @@ function showChartCalculation(strategyId) {
     let summarySection = '';
 
     if (strategyId === 'use-cash') {
-      // For cash: show how using cash depletes your cash
+      // For savings: show how using savings depletes your savings
       summarySection = `
         <div class="detail-group highlight-group negative">
           <h3 class="group-heading">Value lost after ${years} years: ${formatCr(futureValue)}</h3>
-          <p class="group-description">By using your cash, you lose out on potential investment returns.</p>
+          <p class="group-description">By using your savings, you lose out on potential investment returns.</p>
           <div class="detail-rows">
             <div class="detail-row">
-              <span class="detail-label">Cash used today</span>
+              <span class="detail-label">Savings used today</span>
               <span class="detail-value">${formatCurrency(assetValue)}</span>
             </div>
             <div class="detail-row">
@@ -1604,7 +1604,7 @@ const fieldConfig = {
   homeLoanLtv: { title: 'Loan-to-Value (LTV)', unit: '%', min: 50, max: 90, step: 5 },
   interiorsPct: { title: 'Interior Budget', unit: '% of property', min: 0, max: 50, step: 5 },
   analysisHorizon: { title: 'Analysis Horizon', unit: 'years', min: 5, max: 20, step: 1 },
-  cashCagr: { title: 'Cash Investment CAGR', unit: '%', min: 3, max: 12, step: 1 },
+  cashCagr: { title: 'Savings Investment CAGR', unit: '%', min: 3, max: 12, step: 1 },
   landCagr: { title: 'Land Appreciation CAGR', unit: '%', min: 3, max: 15, step: 1 },
   landEmbeddedGain: { title: 'Land Embedded Gain', unit: '%', min: 0, max: 90, step: 5 },
   equityCagr: { title: 'Equity CAGR', unit: '%', min: 5, max: 20, step: 1 },
@@ -1848,19 +1848,15 @@ function drawComparisonChart(animate = false) {
   } else if (selectedComparisonAsset === 'stocks') {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
-    assetLabel = 'Stock';
-  } else if (selectedComparisonAsset === 'mutual-funds') {
-    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
-    effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
-    assetLabel = 'Mutual Fund';
+    assetLabel = 'Stocks / MFs';
   } else if (selectedComparisonAsset === 'land') {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
     effectiveCagr = modelInputs.assets.land.cagrPct;
     assetLabel = 'Land';
   } else if (selectedComparisonAsset === 'cash') {
-    assetGrossSale = fundingGap; // No tax on cash
+    assetGrossSale = fundingGap; // No tax on savings
     effectiveCagr = modelInputs.assets.cash.cagrPct;
-    assetLabel = 'Cash';
+    assetLabel = 'Savings';
   } else {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.cash.cagrPct;
@@ -1914,7 +1910,7 @@ function drawComparisonChart(animate = false) {
   // Update growth percentage in tooltip
   const tooltipGrowthValue = document.getElementById('tooltip-growth-value');
   if (tooltipGrowthValue) {
-    tooltipGrowthValue.textContent = `${(effectiveCagr * 100).toFixed(1)}%`;
+    tooltipGrowthValue.textContent = `${(effectiveCagr * 100).toFixed(1)}% per annum`;
   }
 
   const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
@@ -2196,6 +2192,10 @@ function updateOptionSections() {
   document.getElementById('cash-tooltip-gap').textContent = formatCurrency(cashNeeded);
   document.getElementById('cash-tooltip-tax').textContent = '₹0';
   document.getElementById('cash-tooltip-total').textContent = formatCurrency(cashNeeded);
+  // Cash benefit text
+  document.getElementById('cash-benefit-today').textContent = formatCurrency(cashNeeded);
+  document.getElementById('cash-benefit-future').textContent = formatCurrency(cashFV);
+  document.getElementById('cash-benefit-years').textContent = years + ' years';
 
   // Land section
   const landGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
@@ -2209,6 +2209,10 @@ function updateOptionSections() {
   document.getElementById('land-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('land-tooltip-tax').textContent = formatCurrency(landTax);
   document.getElementById('land-tooltip-total').textContent = formatCurrency(landGrossSale);
+  // Land benefit text
+  document.getElementById('land-benefit-today').textContent = formatCurrency(landGrossSale);
+  document.getElementById('land-benefit-future').textContent = formatCurrency(landFV);
+  document.getElementById('land-benefit-years').textContent = years + ' years';
 
   // Equity section
   const equityGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
@@ -2222,6 +2226,10 @@ function updateOptionSections() {
   document.getElementById('equity-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('equity-tooltip-tax').textContent = formatCurrency(equityTax);
   document.getElementById('equity-tooltip-total').textContent = formatCurrency(equityGrossSale);
+  // Equity benefit text
+  document.getElementById('equity-benefit-today').textContent = formatCurrency(equityGrossSale);
+  document.getElementById('equity-benefit-future').textContent = formatCurrency(equityFV);
+  document.getElementById('equity-benefit-years').textContent = years + ' years';
 
   // RSU section
   const rsuGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
@@ -2236,6 +2244,10 @@ function updateOptionSections() {
   document.getElementById('rsu-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('rsu-tooltip-tax').textContent = formatCurrency(rsuTax);
   document.getElementById('rsu-tooltip-total').textContent = formatCurrency(rsuGrossSale);
+  // RSU benefit text
+  document.getElementById('rsu-benefit-today').textContent = formatCurrency(rsuGrossSale);
+  document.getElementById('rsu-benefit-future').textContent = formatCurrency(rsuFV);
+  document.getElementById('rsu-benefit-years').textContent = years + ' years';
 
   // Zinc section (same as RSU values but kept)
   document.getElementById('zinc-value-today').textContent = formatCurrency(rsuGrossSale);
@@ -2778,3 +2790,61 @@ if (scrollToTopBtn) {
 updateUI();
 updateOptionSections();
 updatePageIndicator();
+
+// Zinc Loan Cost Modal - populate data when opened
+window.populateZincModal = function() {
+  const results = calculateModel(modelInputs);
+  const years = modelInputs.zincLoanTenureYears;
+  const fundingGap = results.fundingGap;
+  const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
+
+  const monthlyRate = zincRate / 12;
+  const totalMonths = years * 12;
+  const emi = fundingGap * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+  // Update summary values
+  document.getElementById('modal-loan-amount').textContent = formatCurrency(fundingGap);
+  document.getElementById('modal-interest-rate').textContent = `${(zincRate * 100).toFixed(1)}% p.a.`;
+  document.getElementById('modal-monthly-emi').textContent = formatCurrency(emi);
+  document.getElementById('modal-tenure').textContent = `${years} years`;
+
+  // Build year-wise amortization table
+  const yearlyData = [];
+  let balance = fundingGap;
+  let cumulativeTotal = 0;
+
+  for (let year = 1; year <= years; year++) {
+    let yearPrincipal = 0;
+    let yearInterest = 0;
+
+    for (let month = 1; month <= 12; month++) {
+      const interestPayment = balance * monthlyRate;
+      const principalPayment = emi - interestPayment;
+      yearInterest += interestPayment;
+      yearPrincipal += principalPayment;
+      balance -= principalPayment;
+    }
+
+    cumulativeTotal += emi * 12;
+    yearlyData.push({
+      year,
+      annualEmi: emi * 12,
+      principalPaid: yearPrincipal,
+      interestPaid: yearInterest,
+      cumulativeTotal,
+      outstandingBalance: Math.max(0, balance)
+    });
+  }
+
+  const tableBody = document.getElementById('zinc-cost-table-body');
+  tableBody.innerHTML = yearlyData.map(row => `
+    <tr>
+      <td>Year ${row.year}</td>
+      <td>${formatCurrency(row.annualEmi)}</td>
+      <td>${formatCurrency(row.principalPaid)}</td>
+      <td>${formatCurrency(row.interestPaid)}</td>
+      <td>${formatCurrency(row.cumulativeTotal)}</td>
+      <td>${formatCurrency(row.outstandingBalance)}</td>
+    </tr>
+  `).join('');
+};
