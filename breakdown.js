@@ -71,17 +71,19 @@ function animateStrokeToSolid(svg, duration) {
 
 function animateGreenFillUp(duration) {
   return new Promise(resolve => {
-    const clipRect = document.getElementById('green-80-clip-rect');
-    const startY = 860;
-    const endY = 403;
+    const clipPoly = document.getElementById('green-80-clip-poly');
+    const startEdgeY = 860;
+    const endEdgeY = 403;
+    const vOffset = 69;
     let startTime = null;
 
     function tick(timestamp) {
       if (!startTime) startTime = timestamp;
       const t = Math.min((timestamp - startTime) / duration, 1);
       const ease = 1 - Math.pow(1 - t, 3);
-      const curY = Math.round(lerp(startY, endY, ease));
-      clipRect.setAttribute('y', curY);
+      const curEdgeY = Math.round(lerp(startEdgeY, endEdgeY, ease));
+      const curCenterY = curEdgeY + vOffset;
+      clipPoly.setAttribute('points', `0,${curEdgeY} 120,${curCenterY} 240,${curEdgeY} 240,1800 0,1800`);
       if (t < 1) {
         requestAnimationFrame(tick);
       } else {
@@ -150,7 +152,7 @@ function resetAnimation() {
   document.getElementById('gt-top').setAttribute('fill', 'none');
   document.getElementById('gt-left').setAttribute('fill', 'none');
   document.getElementById('gt-right').setAttribute('fill', 'none');
-  document.getElementById('green-80-clip-rect').setAttribute('y', '860');
+  document.getElementById('green-80-clip-poly').setAttribute('points', '0,860 120,930 240,860 240,1800 0,1800');
   baseTall.style.display = '';
 
   // Reset solid clip
@@ -196,8 +198,8 @@ async function runAnimation() {
   scene.classList.add('animating');
   document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 
-  // Step 1: Show tall green block (already at shrinked height)
-  await wait(1000);
+  // Wait for intro animations: block(800ms) + gap(300ms) + line(800ms) + gap(300ms) + pill(800ms)
+  await wait(3300);
 
   // Step 2: Fill bottom 80% with green from bottom to top
   await animateGreenFillUp(1000);

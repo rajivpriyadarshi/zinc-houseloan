@@ -29,8 +29,8 @@ body {
 
 .hero-breakdown-scene {
   --stack-gap: 0px;
-  --stack-overlap: 85px;
-  --stack-overlap-top: 80px;
+  --stack-overlap: 91px;
+  --stack-overlap-top: 84px;
   --effective-gap: calc(var(--stack-gap) - var(--stack-overlap));
   --effective-gap-top: calc(var(--stack-gap) - var(--stack-overlap-top));
   --block-w: clamp(118px, 10vw, 150px);
@@ -118,8 +118,9 @@ body {
   position: absolute;
   left: 0;
   top: calc(var(--top-h) + var(--effective-gap-top) + var(--middle-h) + var(--effective-gap) - (var(--base-h) * 0.357));
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 0;
+  transform: translateY(100vh);
+  animation: slideInUp 800ms ease-in-out forwards;
   display: block;
   z-index: 0;
 }
@@ -193,8 +194,12 @@ svg.stack-top.show-solid {
   top: calc(var(--green-center) - 148px);
   height: 304px;
   border-left: 2px solid rgba(255, 255, 255, .72);
-  transform-origin: bottom center;
-  transform: scaleY(1);
+  transform-origin: center center;
+  transform: scaleY(0);
+}
+
+.animating .stack-side-line {
+  animation: lineGrowUp 800ms ease-in-out 1.1s forwards;
 }
 
 .stack-side-line::before,
@@ -224,10 +229,12 @@ svg.stack-top.show-solid {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, .2);
   background: rgba(7, 8, 12, .78);
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 .animating .stack-side-pill {
-  animation: fadeIn .5s ease-out 0.50s forwards;
+  animation: pillSlideIn 800ms ease-in-out 2.2s forwards;
 }
 
 .stack-side-value, .stack-pill-value {
@@ -362,7 +369,7 @@ svg.stack-top.show-solid {
 }
 
 .summary-bracket {
-  width: 24px;
+  width: 16px;
   align-self: stretch;
   border-right: 2px solid rgba(255, 255, 255, .72);
   position: relative;
@@ -373,7 +380,7 @@ svg.stack-top.show-solid {
   content: "";
   position: absolute;
   right: -2px;
-  width: 24px;
+  width: 16px;
   border-top: 2px solid rgba(255, 255, 255, .72);
 }
 
@@ -419,6 +426,37 @@ svg.stack-top.show-solid {
   color: rgba(255, 255, 255, .32);
 }
 
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pillSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lineGrowUp {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
 
 @keyframes fadeInBlock {
   from {
