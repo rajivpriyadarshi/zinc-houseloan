@@ -221,7 +221,7 @@ svg.stack-top.show-solid {
 .stack-side-pill {
   position: absolute;
   top: calc(var(--green-center) - 34px);
-  right: 40px;
+  right: 48px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -231,6 +231,29 @@ svg.stack-top.show-solid {
   background: rgba(7, 8, 12, .78);
   opacity: 0;
   transform: translateY(20px);
+}
+
+.stack-side-pill::before {
+  content: "";
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .5);
+  transform: translateY(-50%);
+}
+
+.stack-side-pill::after {
+  content: "";
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: rgba(255, 255, 255, .35);
+  transform: translateY(-50%);
 }
 
 .animating .stack-side-pill {
@@ -317,9 +340,9 @@ svg.stack-top.show-solid {
 .stack-right-dot::after {
   content: "";
   position: absolute;
-  left: 7px;
+  left: 100%;
   top: 50%;
-  width: 10px;
+  width: 12px;
   border-top: 1px solid rgba(255, 255, 255, .35);
   transform: translateY(-50%);
 }
@@ -615,14 +638,14 @@ svg.stack-top.show-solid {
 @keyframes buttonPop {
   0% {
     opacity: 0;
-    transform: scale(0.8);
+    transform: translateX(-50%) scale(0.8);
   }
   60% {
-    transform: scale(1.05);
+    transform: translateX(-50%) scale(1.05);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateX(-50%) scale(1);
   }
 }
 
