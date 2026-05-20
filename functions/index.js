@@ -1,20 +1,17 @@
 const crypto = require('node:crypto');
 const { getApps, initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
-const { getStorage } = require('firebase-admin/storage');
 const { getAuth } = require('firebase-admin/auth');
 const { HttpsError, onCall } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
 const { defineSecret } = require('firebase-functions/params');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 setGlobalOptions({ region: 'asia-south1', maxInstances: 10 });
 
 if (!getApps().length) initializeApp();
 
-const db = getFirestore();
-const bucket = getStorage().bucket();
+const db = getFirestore('zinc-home-finance');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const OTP_LENGTH = 6;
@@ -26,12 +23,11 @@ const WEB_ORIGIN = (() => {
   if (raw === 'false') return false;
   return raw.split(',').map((item) => item.trim()).filter(Boolean);
 })();
+const API_BASE_URL = (process.env.API_BASE_URL || 'https://labs-sbox.zinc.money').replace(/\/+$/, '');
 const AWS_ACCESS_KEY_ID = defineSecret('AWS_ACCESS_KEY_ID');
 const AWS_SECRET_ACCESS_KEY = defineSecret('AWS_SECRET_ACCESS_KEY');
-const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
 const ZINC_LABS_API_KEY = defineSecret('ZINC_LABS_API_KEY');
-const ZINC_LABS_REGISTER_URL = 'https://labs-sbox.zinc.money/api/customers/register/';
-const ALLOWED_RESIDENCE_COUNTRIES = new Set(['India', 'Singapore']);
+const ZINC_LABS_REGISTER_URL = `${API_BASE_URL}/api/customers/register/`;
 
 function requireString(value, field) {
   if (typeof value !== 'string' || !value.trim()) {
@@ -67,30 +63,11 @@ function applicationIdForEmail(email) {
   return crypto.createHash('sha256').update(`application:${email}`).digest('hex').slice(0, 28);
 }
 
-function requireFirebaseSession(request, expectedApplicationId) {
-  const auth = request.auth;
-  if (!auth?.uid) {
-    throw new HttpsError('unauthenticated', 'Please verify your email again.');
-  }
-  if (expectedApplicationId && auth.uid !== expectedApplicationId) {
-    throw new HttpsError('permission-denied', 'Session does not match this application.');
-  }
-
-  const expiresAtMs = Number(auth.token.sessionExpiresAt || 0);
-  if (!expiresAtMs || expiresAtMs < Date.now()) {
-    throw new HttpsError('unauthenticated', 'Session expired. Please verify your email again.');
-  }
-
-  return {
-    applicationId: auth.uid,
-    email: String(auth.token.email || ''),
-    expiresAtMs,
-  };
-}
-
-function callableOptions(secrets = []) {
+function callableOptions(secrets = [], { invoker } = {}) {
   const isEmulator = process.env.FUNCTIONS_EMULATOR === 'true';
-  return { cors: isEmulator ? true : WEB_ORIGIN, secrets };
+  const opts = { cors: isEmulator ? true : WEB_ORIGIN, secrets };
+  if (invoker) opts.invoker = invoker;
+  return opts;
 }
 
 async function sendOtpEmail(email, otp) {
@@ -126,7 +103,7 @@ async function sendOtpEmail(email, otp) {
   }));
 }
 
-exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY]), async (request) => {
+exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY], { invoker: 'public' }), async (request) => {
   const email = normalizeEmail(request.data?.email);
   const otp = makeOtp();
   const salt = crypto.randomBytes(16).toString('hex');
@@ -154,7 +131,7 @@ exports.sendEmailOtp = onCall(callableOptions([AWS_ACCESS_KEY_ID, AWS_SECRET_ACC
   return { expiresAt: expiresAt.toISOString() };
 });
 
-exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
+exports.verifyEmailOtp = onCall(callableOptions([], { invoker: 'public' }), async (request) => {
   try {
     const email = normalizeEmail(request.data?.email);
     const otp = requireString(request.data?.otp, 'otp');
@@ -164,7 +141,7 @@ exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
 
     const verificationRef = db.collection('emailVerifications').doc(emailDocId(email));
     const applicationId = applicationIdForEmail(email);
-  const authTokenExpiresAt = new Date(Date.now() + SESSION_TTL_MS);
+    const authTokenExpiresAt = new Date(Date.now() + SESSION_TTL_MS);
 
     await db.runTransaction(async (tx) => {
       const verificationSnap = await tx.get(verificationRef);
@@ -188,41 +165,41 @@ exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
         throw new HttpsError('permission-denied', 'The verification code is incorrect.');
       }
 
-    tx.set(verificationRef, {
-      verifiedAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    }, { merge: true });
-  });
+      tx.set(verificationRef, {
+        verifiedAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      }, { merge: true });
+    });
 
-  const authClient = getAuth();
-  let authUser;
-  try {
-    authUser = await authClient.getUserByEmail(email);
-  } catch (error) {
-    if (error?.code !== 'auth/user-not-found') throw error;
-    authUser = await authClient.createUser({ uid: applicationId, email, emailVerified: true });
-  }
+    const authClient = getAuth();
+    let authUser;
+    try {
+      authUser = await authClient.getUserByEmail(email);
+    } catch (error) {
+      if (error?.code !== 'auth/user-not-found') throw error;
+      authUser = await authClient.createUser({ uid: applicationId, email, emailVerified: true });
+    }
 
-  const resolvedApplicationId = authUser.uid;
+    const resolvedApplicationId = authUser.uid;
 
-  await authClient.setCustomUserClaims(resolvedApplicationId, {
-    applicationId: resolvedApplicationId,
-    email,
-    sessionExpiresAt: authTokenExpiresAt.getTime(),
-  });
-  const firebaseCustomToken = await authClient.createCustomToken(resolvedApplicationId, {
-    applicationId: resolvedApplicationId,
-    email,
-    sessionExpiresAt: authTokenExpiresAt.getTime(),
-  });
+    await authClient.setCustomUserClaims(resolvedApplicationId, {
+      applicationId: resolvedApplicationId,
+      email,
+      sessionExpiresAt: authTokenExpiresAt.getTime(),
+    });
+    const firebaseCustomToken = await authClient.createCustomToken(resolvedApplicationId, {
+      applicationId: resolvedApplicationId,
+      email,
+      sessionExpiresAt: authTokenExpiresAt.getTime(),
+    });
 
-  return {
-    applicationId: resolvedApplicationId,
-    email,
-    firebaseCustomToken,
-    authTokenExpiresAt: authTokenExpiresAt.toISOString(),
-    status: 'email_verified',
-  };
+    return {
+      applicationId: resolvedApplicationId,
+      email,
+      firebaseCustomToken,
+      authTokenExpiresAt: authTokenExpiresAt.toISOString(),
+      status: 'email_verified',
+    };
   } catch (error) {
     if (error instanceof HttpsError) throw error;
     console.error('verifyEmailOtp unexpected error', error);
@@ -233,7 +210,7 @@ exports.verifyEmailOtp = onCall(callableOptions(), async (request) => {
   }
 });
 
-exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY]), async (request) => {
+exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY], { invoker: 'public' }), async (request) => {
   const auth = request.auth;
   if (!auth?.uid) {
     throw new HttpsError('unauthenticated', 'Login required before customer registration.');
@@ -258,6 +235,32 @@ exports.registerCustomer = onCall(callableOptions([ZINC_LABS_API_KEY]), async (r
   };
 
   const apiKey = process.env.ZINC_LABS_API_KEY;
+  if (process.env.FUNCTIONS_EMULATOR === 'true' && process.env.MOCK_ZINC_LABS_REGISTER === 'true') {
+    await db.collection('applications').doc(session.applicationId).set({
+      customerRegistration: {
+        email,
+        name,
+        status: 'mock_registered',
+        statusCode: 200,
+        response: {
+          ok: true,
+          mocked: true,
+          reason: 'MOCK_ZINC_LABS_REGISTER is enabled for the local emulator.',
+        },
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      updatedAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    return {
+      ok: true,
+      status: 200,
+      response: {
+        mocked: true,
+      },
+    };
+  }
+
   if (!apiKey) {
     throw new HttpsError('failed-precondition', 'Zinc Labs API key is not configured.');
   }

@@ -9,7 +9,7 @@
     "firebase:emulators": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start",
     "firebase:emulators:functions": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start --only functions",
     "firebase:emulators:functions:local": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase emulators:start --only functions,firestore,auth --project zinc-money",
-    "firebase:emulators:reset": "sh -c \"curl -s -X DELETE 'http://127.0.0.1:9099/emulator/v1/projects/zinc-money/accounts' && curl -s -X DELETE 'http://127.0.0.1:8080/emulator/v1/projects/zinc-money/databases/(default)/documents' && echo 'Emulator Auth + Firestore data cleared.'\"",
+    "firebase:emulators:reset": "sh -c \"curl -s -X DELETE 'http://127.0.0.1:9190/emulator/v1/projects/zinc-money/accounts' && curl -s -X DELETE 'http://127.0.0.1:8180/emulator/v1/projects/zinc-money/databases/(default)/documents' && echo 'Emulator Auth + Firestore data cleared.'\"",
     "firebase:deploy:functions": "XDG_CONFIG_HOME=.firebase-config FIREBASE_SKIP_UPDATE_CHECK=true firebase deploy --only functions"
   },
   "keywords": [],

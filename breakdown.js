@@ -36,8 +36,7 @@ function formatLacs(amount) {
 const totalCost = propertyPrice + transactionDuty + interiors;
 
 document.getElementById('hero-amount').textContent = formatCr(fundingGap);
-document.getElementById('breakdown-loan').textContent = formatCr(totalCost);
-document.getElementById('breakdown-downpayment').textContent = formatLacs(downPayment);
+document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 document.getElementById('breakdown-interior').textContent = formatLacs(interiors);
 document.getElementById('breakdown-stamp').textContent = formatLacs(transactionDuty);
 
@@ -49,7 +48,6 @@ const baseSmall = document.querySelector('.stack-base');
 const lower = document.querySelector('.stack-lower');
 const middle = document.querySelector('.stack-middle');
 const top = document.querySelector('.stack-top');
-const rows = document.querySelectorAll('.stack-row');
 const heroSummary = document.querySelector('.hero-summary');
 const sideLabel = document.querySelector('.stack-side-label');
 
@@ -104,11 +102,15 @@ function animateShrink(duration) {
     const leftEdgeS = document.getElementById('gt-left-edge-s');
     const rightEdgeS = document.getElementById('gt-right-edge-s');
     const centerEdgeS = document.getElementById('gt-center-edge-s');
+    const sideLine = document.querySelector('.stack-side-line');
 
     const startTopY = 72;
     const startCenterY = 144;
     const endTopY = 307;
     const endCenterY = 379;
+
+    const startScale = 1.47;
+    const endScale = 1;
 
     let startTime = null;
 
@@ -120,6 +122,7 @@ function animateShrink(duration) {
 
       const curTopY = Math.round(lerp(startTopY, endTopY, ease));
       const curCenterY = Math.round(lerp(startCenterY, endCenterY, ease));
+      const curScale = lerp(startScale, endScale, ease);
 
       topFill.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
       topStroke.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
@@ -134,6 +137,8 @@ function animateShrink(duration) {
       leftEdgeS.setAttribute('d', `M1 307V789`);
       rightEdgeS.setAttribute('d', `M239 307V789`);
       centerEdgeS.setAttribute('d', `M120 379V858`);
+
+      sideLine.style.transform = `scaleY(${curScale})`;
 
       if (t < 1) {
         requestAnimationFrame(tick);
@@ -179,8 +184,20 @@ function resetAnimation() {
   document.getElementById('gt-dotted-travel').setAttribute('opacity', '0');
   baseTall.style.display = '';
 
+  // Reset 20% overlay
+  const overlay20Ids = ['gt-20-top', 'gt-20-left', 'gt-20-right'];
+  overlay20Ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.style.transition = '';
+    el.setAttribute('opacity', '0');
+  });
+  document.getElementById('gt-20-stroke').setAttribute('opacity', '0');
+
+  // Reset right labels
+  document.querySelectorAll('.stack-right-row').forEach(row => row.classList.remove('show'));
+
   // Reset red blocks
-  [lower, middle, top].forEach(block => {
+  [middle, top].forEach(block => {
     block.classList.remove('show-dotted', 'show-solid');
     const solidPath = block.querySelector('.red-solid');
     const dottedPath = block.querySelector('.red-dotted');
@@ -194,62 +211,69 @@ function resetAnimation() {
     }
   });
 
-  // Reset rows
-  rows.forEach(row => row.classList.remove('show'));
 
   // Reset hero summary
   heroSummary.classList.remove('show');
 
   // Reset label
-  document.querySelector('.stack-side-text').textContent = 'Total cost';
+  document.querySelector('.stack-side-text').textContent = 'Property cost';
 }
 
 async function runAnimation() {
   scene.classList.add('animating');
-  document.getElementById('breakdown-loan').textContent = formatCr(totalCost);
+  document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 
   // Step 1: Show tall green block (already visible via CSS)
   await wait(1000);
 
-  // Step 2: Animate tall block shrinking (top face moves down)
+  // Step 2: Shrink green bar (top face moves down to 20% mark)
   await animateShrink(1200);
-  // Animate solid to dotted (travels from top-left to top-right)
   animateGreenToDotted(800);
-  document.getElementById('breakdown-loan').textContent = formatCr(homeLoanAmount);
-  document.querySelector('.stack-side-text').textContent = 'Loan amount';
-  await wait(900);
+  await wait(400);
 
-  // Step 3: Lower red block appears dotted then stroke travels to solid
-  lower.classList.add('show-dotted');
-  await wait(700);
-  animateStrokeToSolid(lower, 800);
-  lower.classList.remove('show-dotted');
-  lower.classList.add('show-solid');
-  await wait(900);
-  rows[2].classList.add('show');
-  await wait(500);
+  // Step 3: Show dotted 20% outline and "Home loan" label
+  document.getElementById('gt-20-stroke').setAttribute('opacity', '1');
+  document.getElementById('breakdown-homeloan').textContent = formatCr(homeLoanAmount);
+  document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
+  document.querySelector('.stack-right-row-loan').classList.add('show');
+  await wait(1000);
 
-  // Step 4: Middle red block appears dotted then stroke travels to solid
+  // Step 4: Fill 20% section with red (down-payment)
+  const top20 = document.getElementById('gt-20-top');
+  const left20 = document.getElementById('gt-20-left');
+  const right20 = document.getElementById('gt-20-right');
+  top20.style.transition = 'opacity 800ms ease-out';
+  left20.style.transition = 'opacity 800ms ease-out';
+  right20.style.transition = 'opacity 800ms ease-out';
+  top20.setAttribute('opacity', '1');
+  left20.setAttribute('opacity', '1');
+  right20.setAttribute('opacity', '1');
+  await wait(800);
+  document.getElementById('breakdown-downpayment').textContent = formatLacs(downPayment);
+  document.querySelector('.stack-right-row-dp').classList.add('show');
+  await wait(800);
+
+  // Step 5: Middle red block (interior - 30%) appears
   middle.classList.add('show-dotted');
   await wait(700);
   animateStrokeToSolid(middle, 800);
   middle.classList.remove('show-dotted');
   middle.classList.add('show-solid');
   await wait(900);
-  rows[1].classList.add('show');
+  document.querySelector('.stack-right-row-interior').classList.add('show');
   await wait(500);
 
-  // Step 5: Top red block appears dotted then stroke travels to solid
+  // Step 6: Top red block (stamp duty - ~6-8%) appears
   top.classList.add('show-dotted');
   await wait(700);
   animateStrokeToSolid(top, 800);
   top.classList.remove('show-dotted');
   top.classList.add('show-solid');
   await wait(900);
-  rows[0].classList.add('show');
+  document.querySelector('.stack-right-row-stamp').classList.add('show');
   await wait(500);
 
-  // Step 6: Show hero summary
+  // Step 7: Show hero summary
   heroSummary.classList.add('show');
   await wait(800);
 
@@ -257,12 +281,6 @@ async function runAnimation() {
   if (!continueBtn.classList.contains('visible')) {
     continueBtn.classList.add('visible');
   }
-
-  // Wait then loop
-  await wait(3000);
-  resetAnimation();
-  await wait(500);
-  runAnimation();
 }
 
 runAnimation();
