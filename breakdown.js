@@ -7,8 +7,9 @@ trackPageView('funding_breakdown');
 const propertyPrice = parseInt(localStorage.getItem('houseValue') || '10000000', 10);
 const selectedCity = localStorage.getItem('selectedCity') || 'Bangalore';
 
+// These values should match the logic layer in results.js
 const homeLoanLtvPct = 0.8;
-const interiorsPct = 0.2;
+const interiorsPct = 0.3; // 30% of property price
 const transactionDutyPct = getTransactionDutyRate(selectedCity);
 
 const homeLoanAmount = propertyPrice * homeLoanLtvPct;
@@ -18,14 +19,18 @@ const interiors = propertyPrice * interiorsPct;
 const fundingGap = downPayment + transactionDuty + interiors;
 
 function formatCr(amount) {
-  const cr = amount / 10000000;
-  return `${cr.toFixed(2)} Cr`;
+  const lacs = amount / 100000;
+  if (lacs >= 100) {
+    const cr = lacs / 100;
+    return `${cr.toFixed(2)} Cr`;
+  }
+  return `${lacs.toFixed(2)} L`;
 }
 
 function formatLacs(amount) {
   const lacs = amount / 100000;
-  if (lacs >= 100) return `${(lacs / 100).toFixed(1)} Cr`;
-  return `${Math.round(lacs)} L`;
+  if (lacs >= 100) return `${(lacs / 100).toFixed(2)} Cr`;
+  return `${lacs.toFixed(2)} L`;
 }
 
 const totalCost = propertyPrice + transactionDuty + interiors;

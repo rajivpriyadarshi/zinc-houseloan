@@ -684,21 +684,22 @@ body {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-10px);
-  width: auto;
-  padding: 10px 16px;
+  width: max-content;
+  max-width: 280px;
+  padding: 12px 16px;
   background: rgba(255, 255, 255, 0.98);
-  border-radius: 20px;
+  border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   font-family: 'Satoshi', sans-serif;
   font-size: 13px;
-  line-height: 1.4;
-  color: rgba(0, 0, 0, 0.7);
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.8);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
   z-index: 100;
   pointer-events: none;
-  white-space: nowrap;
+  text-align: left;
 }
 
 .chart-tooltip::after {
@@ -2196,11 +2197,11 @@ body {
 
 .benefit-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
-  letter-spacing: -0.16px;
+  letter-spacing: -0.19px;
 }
 
 .benefit-text strong {
@@ -2707,6 +2708,7 @@ body {
 
   .value-label {
     font-size: 12px;
+    justify-content: center;
   }
 
   .growth-badge {
@@ -2828,13 +2830,22 @@ body {
   }
 
   .comparison-asset-toggle {
-    flex-wrap: wrap;
-    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .comparison-asset-toggle::-webkit-scrollbar {
+    display: none;
   }
 
   .asset-toggle-btn {
     font-size: 12px;
     padding: 8px 14px;
+    flex-shrink: 0;
   }
 
   .comparison-breakdown {
@@ -2874,8 +2885,32 @@ body {
   }
 
   /* FAQ Section Mobile */
-  .faq-section {
-    padding: 60px 20px;
+  .faq-section.snap-section {
+    padding: 60px 20px 40px;
+    height: auto !important;
+    overflow: visible !important;
+    justify-content: flex-start;
+  }
+
+  /* Footer Mobile */
+  .site-footer {
+    padding: 32px 20px 80px;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .footer-links {
+    gap: 16px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
   }
 
   .faq-title {

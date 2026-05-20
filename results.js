@@ -648,11 +648,17 @@ function updateChartTooltips(results) {
   const rsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuCagr, years);
   const rsuCost = rsuFV - zincNetPosition;
 
-  // Simple tooltips - just "click to know more"
-  document.getElementById('tooltip-use-cash').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-land').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-indian-equity').innerHTML = `Click to know more`;
-  document.getElementById('tooltip-sell-rsus').innerHTML = `Click to know more`;
+  // Tooltips with explanatory text using the SAME values shown in the bars
+  const cashCagrPct = (modelInputs.assets.cash.cagrPct * 100).toFixed(0);
+  const landCagrPct = (modelInputs.assets.land.cagrPct * 100).toFixed(0);
+  const equityCagrPct = (modelInputs.assets.indianEquity.cagrPct * 100).toFixed(0);
+  const effectiveRsuCagrPct = ((modelInputs.assets.foreignRsu.usdCagrPct + modelInputs.assets.foreignRsu.inrDepreciationPct) * 100).toFixed(0);
+
+  document.getElementById('tooltip-zinc-loan').innerHTML = `Your RSUs stay invested and keep growing while you pay off the loan — you end up ${formatCurrency(zincNetPosition)} richer after ${years} years.`;
+  document.getElementById('tooltip-use-cash').innerHTML = `The cash you use to fund the gap could have earned ~${cashCagrPct}% annually if invested — you miss out on ${formatCurrency(cashFV)} in ${years} years.`;
+  document.getElementById('tooltip-sell-land').innerHTML = `The land you sell to fund the gap would have appreciated ~${landCagrPct}% per year — you lose ${formatCurrency(landFV)} in future value.`;
+  document.getElementById('tooltip-sell-indian-equity').innerHTML = `The equities you sell to fund the gap would have grown ~${equityCagrPct}% annually — you miss ${formatCurrency(equityFV)} in market gains.`;
+  document.getElementById('tooltip-sell-rsus').innerHTML = `The RSUs you sell to fund the gap have the highest growth potential at ~${effectiveRsuCagrPct}% annually — you lose ${formatCurrency(rsuFV)} in future value.`;
 }
 
 // Show option details modal
@@ -693,7 +699,7 @@ function showOptionDetails(strategyId) {
     isPositive = true;
   } else if (strategyId === 'use-cash') {
     title = "What if you use cash to cover the funding gap?";
-    description = "Using your savings means no debt, but you lose out on potential investment returns if that money was invested instead.";
+    description = "Using your cash means no debt, but you lose out on potential investment returns if that money was invested instead.";
     valueToday = fundingGap;
     valueFuture = calculateFutureValue(fundingGap, modelInputs.assets.cash.cagrPct, years);
     growth = valueFuture - valueToday;
@@ -755,7 +761,7 @@ function showOptionDetails(strategyId) {
     investedLabel = `If you let those RSUs remain invested for ${years} years`;
     cagrTooltip = `${(modelInputs.assets.foreignRsu.usdCagrPct * 100).toFixed(0)}% stock CAGR + ${(modelInputs.assets.foreignRsu.inrDepreciationPct * 100).toFixed(1)}% INR depreciation`;
   } else if (strategyId === 'use-cash') {
-    assetLabelToday = 'Savings to use today';
+    assetLabelToday = 'Cash to use today';
     investedLabel = `If you let that cash remain invested for ${years} years`;
     cagrTooltip = `${growthRate}% CAGR in a safe debt fund`;
   } else if (strategyId === 'sell-land') {
@@ -1168,7 +1174,7 @@ function showChartCalculation(strategyId) {
     if (strategyId === 'use-cash') {
       firstSection = `
         <div class="detail-group">
-          <h3 class="group-heading">Your savings</h3>
+          <h3 class="group-heading">Your cash</h3>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash you'd need</span>
@@ -1340,11 +1346,11 @@ function showChartCalculation(strategyId) {
     let summarySection = '';
 
     if (strategyId === 'use-cash') {
-      // For cash: show how using cash depletes your savings
+      // For cash: show how using cash depletes your cash
       summarySection = `
         <div class="detail-group highlight-group negative">
           <h3 class="group-heading">Value lost after ${years} years: ${formatCr(futureValue)}</h3>
-          <p class="group-description">By using your savings, you lose out on potential investment returns.</p>
+          <p class="group-description">By using your cash, you lose out on potential investment returns.</p>
           <div class="detail-rows">
             <div class="detail-row">
               <span class="detail-label">Cash used today</span>
@@ -1451,14 +1457,14 @@ function showChartCalculation(strategyId) {
   document.getElementById('detail-modal').classList.add('visible');
 }
 
-// Add click handlers to chart columns
-document.querySelectorAll('.chart-column').forEach(column => {
-  column.style.cursor = 'pointer';
-  column.addEventListener('click', () => {
-    const option = column.getAttribute('data-option');
-    showChartCalculation(option);
-  });
-});
+// Add click handlers to chart columns - COMMENTED OUT to use tooltips instead of popups
+// document.querySelectorAll('.chart-column').forEach(column => {
+//   column.style.cursor = 'pointer';
+//   column.addEventListener('click', () => {
+//     const option = column.getAttribute('data-option');
+//     showChartCalculation(option);
+//   });
+// });
 
 // Animate bars function
 let barsAnimated = false;
@@ -1820,6 +1826,18 @@ function drawComparisonChart(animate = false) {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
     assetLabel = 'Stock';
+  } else if (selectedComparisonAsset === 'mutual-funds') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
+    effectiveCagr = modelInputs.assets.indianEquity.cagrPct;
+    assetLabel = 'Mutual Fund';
+  } else if (selectedComparisonAsset === 'land') {
+    assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
+    effectiveCagr = modelInputs.assets.land.cagrPct;
+    assetLabel = 'Land';
+  } else if (selectedComparisonAsset === 'cash') {
+    assetGrossSale = fundingGap; // No tax on cash
+    effectiveCagr = modelInputs.assets.cash.cagrPct;
+    assetLabel = 'Cash';
   } else {
     assetGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
     effectiveCagr = modelInputs.assets.cash.cagrPct;
@@ -1839,8 +1857,24 @@ function drawComparisonChart(animate = false) {
   if (comparisonFundingGap) comparisonFundingGap.textContent = formatCurrency(fundingGap);
   if (comparisonTax) comparisonTax.textContent = formatCurrency(assetTax);
   if (comparisonTotal) comparisonTotal.textContent = formatCurrency(assetGrossSale);
-  if (comparisonAssetType) comparisonAssetType.textContent = assetLabel + 's';
-  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabel + 's';
+
+  // Handle pluralization and action text
+  let assetLabelPlural, actionText;
+  if (selectedComparisonAsset === 'cash') {
+    assetLabelPlural = 'Cash';
+    actionText = 'to use';
+  } else if (selectedComparisonAsset === 'land') {
+    assetLabelPlural = 'Land';
+    actionText = 'to sell';
+  } else {
+    assetLabelPlural = assetLabel + 's';
+    actionText = 'to sell';
+  }
+
+  if (comparisonAssetType) comparisonAssetType.textContent = assetLabelPlural;
+  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabelPlural;
+  const comparisonAction = document.getElementById('comparison-action');
+  if (comparisonAction) comparisonAction.textContent = actionText;
 
   // Update legend label
   const legendLabel = document.getElementById('legend-asset-label');
@@ -1882,12 +1916,13 @@ function drawComparisonChart(animate = false) {
     return { x, y };
   }
 
-  // Create gradients
-  const assetGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
-  assetGradient.addColorStop(0, 'rgba(255, 193, 92, 1)');
-  assetGradient.addColorStop(1, 'rgba(1, 87, 60, 1)');
+  // Create gradients (inverted direction: right to left, using RSU curve colors)
+  const assetGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
+  assetGradient.addColorStop(0, '#c4c870');
+  assetGradient.addColorStop(0.5, '#9ab060');
+  assetGradient.addColorStop(1, '#6a8a50');
 
-  const burdenGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
+  const burdenGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
   burdenGradient.addColorStop(0, 'rgb(247, 147, 46)');
   burdenGradient.addColorStop(1, 'rgb(235, 39, 39)');
 
@@ -1936,22 +1971,63 @@ function drawComparisonChart(animate = false) {
     const pointsToDraw = Math.floor(progress * totalPoints);
     const partialProgress = (progress * totalPoints) - pointsToDraw;
 
+    // Build arrays of points to draw for area fill
+    const assetPoints = [];
+    const burdenPoints = [];
+
+    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
+      const assetCoords = getCoords(dataPoints[i].year, dataPoints[i].assetValue);
+      const burdenCoords = getCoords(dataPoints[i].year, dataPoints[i].zincBurden);
+
+      if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
+        const nextAssetCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].assetValue);
+        const nextBurdenCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].zincBurden);
+        assetPoints.push(assetCoords);
+        assetPoints.push({
+          x: assetCoords.x + (nextAssetCoords.x - assetCoords.x) * partialProgress,
+          y: assetCoords.y + (nextAssetCoords.y - assetCoords.y) * partialProgress
+        });
+        burdenPoints.push(burdenCoords);
+        burdenPoints.push({
+          x: burdenCoords.x + (nextBurdenCoords.x - burdenCoords.x) * partialProgress,
+          y: burdenCoords.y + (nextBurdenCoords.y - burdenCoords.y) * partialProgress
+        });
+      } else {
+        assetPoints.push(assetCoords);
+        burdenPoints.push(burdenCoords);
+      }
+    }
+
+    // Draw filled area between the two lines (green gradient, inverted direction, using RSU curve colors)
+    if (assetPoints.length > 1) {
+      const areaGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
+      areaGradient.addColorStop(0, 'rgba(196, 200, 112, 0.25)');
+      areaGradient.addColorStop(0.5, 'rgba(154, 176, 96, 0.3)');
+      areaGradient.addColorStop(1, 'rgba(106, 138, 80, 0.35)');
+
+      ctx.beginPath();
+      // Start from first asset point
+      ctx.moveTo(assetPoints[0].x, assetPoints[0].y);
+      // Draw along asset line (top)
+      for (let i = 1; i < assetPoints.length; i++) {
+        ctx.lineTo(assetPoints[i].x, assetPoints[i].y);
+      }
+      // Draw down to burden line and back along it (bottom)
+      for (let i = burdenPoints.length - 1; i >= 0; i--) {
+        ctx.lineTo(burdenPoints[i].x, burdenPoints[i].y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = areaGradient;
+      ctx.fill();
+    }
+
     // Draw asset value line
     ctx.strokeStyle = assetGradient;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
-      const coords = getCoords(dataPoints[i].year, dataPoints[i].assetValue);
-      if (i === 0) ctx.moveTo(coords.x, coords.y);
-      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
-        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].assetValue);
-        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
-        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
-        ctx.lineTo(coords.x, coords.y);
-        ctx.lineTo(interpX, interpY);
-      } else {
-        ctx.lineTo(coords.x, coords.y);
-      }
+    for (let i = 0; i < assetPoints.length; i++) {
+      if (i === 0) ctx.moveTo(assetPoints[i].x, assetPoints[i].y);
+      else ctx.lineTo(assetPoints[i].x, assetPoints[i].y);
     }
     ctx.stroke();
 
@@ -1959,35 +2035,28 @@ function drawComparisonChart(animate = false) {
     ctx.strokeStyle = burdenGradient;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
-      const coords = getCoords(dataPoints[i].year, dataPoints[i].zincBurden);
-      if (i === 0) ctx.moveTo(coords.x, coords.y);
-      else if (i === pointsToDraw && i < totalPoints - 1 && partialProgress > 0) {
-        const nextCoords = getCoords(dataPoints[i + 1].year, dataPoints[i + 1].zincBurden);
-        const interpX = coords.x + (nextCoords.x - coords.x) * partialProgress;
-        const interpY = coords.y + (nextCoords.y - coords.y) * partialProgress;
-        ctx.lineTo(coords.x, coords.y);
-        ctx.lineTo(interpX, interpY);
-      } else {
-        ctx.lineTo(coords.x, coords.y);
-      }
+    for (let i = 0; i < burdenPoints.length; i++) {
+      if (i === 0) ctx.moveTo(burdenPoints[i].x, burdenPoints[i].y);
+      else ctx.lineTo(burdenPoints[i].x, burdenPoints[i].y);
     }
     ctx.stroke();
 
-    // Draw dots for completed points
+    // Draw dots for completed points (using RSU curve colors)
     for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
       const point = dataPoints[i];
       const assetCoords = getCoords(point.year, point.assetValue);
       const burdenCoords = getCoords(point.year, point.zincBurden);
 
       const dotProgress = point.year / years;
-      const assetDotColor = dotProgress < 0.5 ? 'rgba(255, 193, 92, 1)' : 'rgba(1, 87, 60, 1)';
+      // Inverted: darker green at left (start), yellow-green at right (end)
+      const assetDotColor = dotProgress < 0.5 ? '#6a8a50' : '#c4c870';
       ctx.fillStyle = assetDotColor;
       ctx.beginPath();
       ctx.arc(assetCoords.x, assetCoords.y, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      const burdenDotColor = dotProgress < 0.5 ? 'rgb(247, 147, 46)' : 'rgb(235, 39, 39)';
+      // Inverted: red at left (start), orange at right (end)
+      const burdenDotColor = dotProgress < 0.5 ? 'rgb(235, 39, 39)' : 'rgb(247, 147, 46)';
       ctx.fillStyle = burdenDotColor;
       ctx.beginPath();
       ctx.arc(burdenCoords.x, burdenCoords.y, 5, 0, Math.PI * 2);
@@ -2366,6 +2435,15 @@ function updateActivePill() {
     }
   });
 
+  // Also check if comparison chart section is in view (for Zinc loan pill)
+  const comparisonSection = document.getElementById('section-comparison-chart');
+  if (comparisonSection) {
+    const rect = comparisonSection.getBoundingClientRect();
+    if (rect.top <= 150 && rect.bottom > 150) {
+      currentSection = 'zinc-loan';
+    }
+  }
+
   if (currentSection) {
     navPills.forEach(pill => {
       pill.classList.toggle('active', pill.dataset.option === currentSection);
@@ -2378,6 +2456,14 @@ navPills.forEach(pill => {
   pill.style.cursor = 'pointer';
   pill.addEventListener('click', () => {
     const targetOption = pill.dataset.option;
+    // Zinc loan navigates to the comparison chart section
+    if (targetOption === 'zinc-loan') {
+      const comparisonSection = document.getElementById('section-comparison-chart');
+      if (comparisonSection) {
+        comparisonSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      return;
+    }
     const targetSection = document.querySelector(`.option-section[data-option="${targetOption}"]`);
     if (targetSection) {
       targetSection.scrollIntoView({ behavior: 'smooth' });
