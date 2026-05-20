@@ -24,10 +24,12 @@ const emulatorFlag = String(import.meta.env.VITE_USE_FIREBASE_EMULATORS || '').t
 const authEmulatorFlag = String(import.meta.env.VITE_USE_AUTH_EMULATOR || '').toLowerCase();
 const useAuthEmulator = authEmulatorFlag === 'true';
 const useFunctionsEmulator = emulatorFlag === 'true' && useAuthEmulator;
+const functionsEmulatorPort = Number(import.meta.env.VITE_FIREBASE_FUNCTIONS_EMULATOR_PORT || 5001);
+const authEmulatorPort = Number(import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_PORT || 9099);
 
 if (useFunctionsEmulator) {
   try {
-    connectFunctionsEmulator(functions, window.location.hostname, 5001);
+    connectFunctionsEmulator(functions, window.location.hostname, functionsEmulatorPort);
   } catch (error) {
     console.warn('Emulator connect failed, continuing with default Firebase endpoints.', error);
   }
@@ -39,7 +41,7 @@ if (emulatorFlag === 'true' && !useAuthEmulator) {
 
 if (useAuthEmulator) {
   try {
-    connectAuthEmulator(auth, `http://${window.location.hostname}:9099`, { disableWarnings: true });
+    connectAuthEmulator(auth, `http://${window.location.hostname}:${authEmulatorPort}`, { disableWarnings: true });
   } catch (error) {
     console.warn('Auth emulator connect failed, continuing with Firebase Auth server.', error);
   }
@@ -316,7 +318,7 @@ getRedirectResult(auth)
 
 // Fun fact ticker
 const funFacts = [
-  "Stamp duty in Mumbai can be up to 6% of property value",
+  "Stamp duty in Mumbai can be up to 6% of house value",
   "Interior costs typically add 15-25% to your home budget",
   "The average Indian spends 40% of income on housing EMI",
   "Registration charges vary from 1-2% across states",

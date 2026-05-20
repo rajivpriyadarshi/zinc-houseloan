@@ -1475,11 +1475,12 @@ body {
 
 .option-header {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .option-title {
   font-family: 'Butler Pro', serif;
-  font-size: 56px;
+  font-size: 52px;
   font-weight: 300;
   color: #fff;
   letter-spacing: -2.88px;
@@ -1582,7 +1583,7 @@ body {
   visibility: hidden;
   transform: translateY(-10px);
   transition: all 0.2s ease;
-  z-index: 100;
+  z-index: 500;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -1697,7 +1698,7 @@ body {
 
 .growth-callout {
   position: relative;
-  background: linear-gradient(180deg, rgba(100, 60, 60, 0.9) 0%, rgba(70, 45, 45, 0.9) 100%);
+  background: linear-gradient(rgb(100 60 60 / 16%) 0%, rgba(70, 45, 45, 0.9) 100%);
   border: 1px solid rgba(100, 60, 60, 0.6);
   border-radius: 52px;
   padding: 12px 20px;
@@ -1802,12 +1803,13 @@ body {
 
 .comparison-chart-title {
   font-family: 'Butler Pro', serif;
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 300;
-  color: #fff;
+  color: rgb(255, 255, 255);
   text-align: center;
   margin-bottom: 16px;
-  letter-spacing: -2px;
+  letter-spacing: -2.88px;
+  line-height: 1.2;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -2064,6 +2066,173 @@ body {
   color: rgba(255, 255, 255, 0.6);
 }
 
+.legend-learn-more {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-left: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legend-learn-more:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+/* Zinc Loan Cost Modal */
+.zinc-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.zinc-modal-box {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.zinc-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.zinc-modal-close:hover {
+  color: #fff;
+}
+
+.zinc-modal-title {
+  font-family: 'Butler Pro', serif;
+  font-size: 32px;
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.zinc-modal-subtitle {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 24px;
+}
+
+.zinc-modal-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.zinc-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zinc-summary-label {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zinc-summary-value {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.zinc-modal-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.zinc-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.zinc-modal-table th,
+.zinc-modal-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.zinc-modal-table th {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.zinc-modal-table td {
+  color: #fff;
+}
+
+.zinc-modal-table td:last-child {
+  color: #f79330;
+  font-weight: 500;
+}
+
+.zinc-modal-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.zinc-modal-note {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  padding: 16px;
+  background: rgba(247, 147, 48, 0.1);
+  border-radius: 12px;
+  border-left: 3px solid #f79330;
+}
+
+.zinc-modal-note strong {
+  color: #fff;
+  display: block;
+  margin-bottom: 8px;
+}
+
 /* Option Section Animations */
 
 /* Initial state - title centered vertically */
@@ -2160,29 +2329,54 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
-  padding: 32px;
-  border-radius: 32px;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 32px 24px;
+  border-radius: 24px;
+  background: rgb(24 24 24 / 40%);
   backdrop-filter: blur(12px);
 }
 
+.benefit-box:hover .learn-more-btn {
+  background: #fff;
+  color: #000;
+}
+
+.benefit-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .benefit-box.benefit-negative {
-  border: 1px solid #ff242429;
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(0 0 0 / 40%), rgb(6 6 6 / 40%)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.6) 40%, rgba(253, 253, 253, 0.12) 100%) border-box border-box;
 }
 
 .benefit-box.benefit-positive {
-  border: 1px solid #71854A29;
+  border: 1px solid #71854A;
 }
 
 .benefit-tag {
-  flex-shrink: 0;
-  padding: 8px 12px;
+  display: none;
+}
+
+.benefit-box .benefit-label {
   font-family: 'Satoshi', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: -0.14px;
-  border-radius: 32px;
+  text-transform: uppercase;
+  letter-spacing: 3.12px;
+  margin-bottom: 0;
+}
+
+.benefit-box.benefit-negative .benefit-label {
+  color: #c13515;
+}
+
+.benefit-box.benefit-positive .benefit-label {
+  color: #71854A;
 }
 
 .benefit-tag.negative {
@@ -2197,7 +2391,7 @@ body {
 
 .benefit-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
@@ -2222,22 +2416,23 @@ body {
 
 .learn-more-btn {
   flex-shrink: 0;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
+  border-radius: 40px;
   color: #fff;
   font-family: 'Satoshi', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.32px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .learn-more-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================================

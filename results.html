@@ -26,7 +26,7 @@
       <div class="hero-content">
         <div class="property-value-pill" id="property-value-pill">
           <img src="/houses/level1.png" alt="House" class="property-pill-image" id="property-pill-image">
-          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">property cost</span></span>
+          <span class="property-pill-text"><span class="property-pill-amount" id="property-pill-amount">1 Cr</span> <span class="property-pill-label">house cost</span></span>
           <button class="property-pill-edit" id="property-pill-edit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -68,7 +68,7 @@
     <!-- Section 2: Zinc Intro -->
     <section class="snap-section zinc-intro-section" id="zinc-intro-section">
       <div class="zinc-intro-content">
-        <p class="zinc-intro-label">Introducing Zinc loan, starting at 9.5%*</p>
+        <p class="zinc-intro-label">Introducing Zinc loan, starting at 9.5% per annum*</p>
         <h2 class="zinc-intro-title"><span class="zinc-intro-title-text" data-full-text="Unlock funding against your stocks, mutual funds & RSUs without selling them — fund big goals while staying invested"></span></h2>
       </div>
       <div class="scroll-indicator">
@@ -100,9 +100,9 @@
             <div class="chart-tooltip" id="tooltip-zinc-loan">Click to know more</div>
           </div>
 
-          <!-- Column 2: Use Cash -->
+          <!-- Column 2: Use Savings -->
           <div class="chart-column" data-option="use-cash">
-            <div class="column-header">Use Cash</div>
+            <div class="column-header">Use Savings</div>
             <div class="column-upper"></div>
             <div class="column-lower">
               <div class="bar bar-negative" id="cash-bar"></div>
@@ -179,7 +179,7 @@
         </button>
         -->
         <button class="nav-pill" data-option="use-cash">
-          <span class="pill-label">Use cash</span>
+          <span class="pill-label">Use savings</span>
         </button>
         <button class="nav-pill" data-option="sell-land">
           <span class="pill-label">Sell your land</span>
@@ -220,9 +220,6 @@
               <span class="value-label">Value after <span class="year-count" id="zinc-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your RSUs today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-zinc-loan"></canvas>
@@ -232,8 +229,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-positive">
-          <span class="benefit-tag positive">Advantage</span>
-          <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          </div>
           <button class="learn-more-btn" data-option="zinc-loan">Learn more</button>
         </div>
       </div>
@@ -249,7 +247,7 @@
     <section class="snap-section option-section" data-option="use-cash" id="section-use-cash">
       <div class="option-content">
         <div class="option-header">
-          <h2 class="option-title"><span class="option-title-text" data-full-text="Using your cash comes with a higher opportunity cost"></span></h2>
+          <h2 class="option-title"><span class="option-title-text" data-full-text="Using your savings comes with a higher opportunity cost"></span></h2>
           <p class="option-subtitle">In 10 years, this is how it would pan out</p>
         </div>
         <div class="value-comparison-wrapper">
@@ -273,9 +271,6 @@
               <span class="value-label">Value after <span class="year-count" id="cash-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to use your cash today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-use-cash"></canvas>
@@ -285,8 +280,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By using your cash worth <span class="highlight">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red">₹85.24 Lacs</span> over <strong>10 years</strong> if you invest that cash in a safe fund to get 6%.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By using your savings worth <span class="highlight" id="cash-benefit-today">₹47.60 Lacs</span>, you effectively lose the opportunity to see them appreciate to <span class="highlight-red" id="cash-benefit-future">₹85.24 Lacs</span> over <strong id="cash-benefit-years">10 years</strong> if invested in a safe fund at 6%.</p>
+          </div>
           <button class="learn-more-btn" data-option="use-cash">Learn more</button>
         </div>
       </div>
@@ -325,9 +321,6 @@
               <span class="value-label">Value after <span class="year-count" id="land-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your land today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-land"></canvas>
@@ -337,8 +330,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling land worth <span class="highlight">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">₹1.17 Cr</span> over <strong>10 years</strong> at 8% appreciation.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling land worth <span class="highlight" id="land-benefit-today">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red" id="land-benefit-future">₹1.17 Cr</span> over <strong id="land-benefit-years">10 years</strong> at 8% appreciation.</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-land">Learn more</button>
         </div>
       </div>
@@ -377,9 +371,6 @@
               <span class="value-label">Value after <span class="year-count" id="equity-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your equities today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-indian-equity"></canvas>
@@ -389,8 +380,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling equities worth <span class="highlight">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red">₹1.57 Cr</span> over <strong>10 years</strong> at 12% returns.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling equities worth <span class="highlight" id="equity-benefit-today">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red" id="equity-benefit-future">₹1.57 Cr</span> over <strong id="equity-benefit-years">10 years</strong> at 12% returns.</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-indian-equity">Learn more</button>
         </div>
       </div>
@@ -429,9 +421,6 @@
               <span class="value-label">Value after <span class="year-count" id="rsu-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your RSUs today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-rsus"></canvas>
@@ -441,8 +430,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling RSUs worth <span class="highlight">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">₹1.69 Cr</span> over <strong>10 years</strong> (12% stock + 2.5% INR depreciation).</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling RSUs worth <span class="highlight" id="rsu-benefit-today">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red" id="rsu-benefit-future">₹1.69 Cr</span> over <strong id="rsu-benefit-years">10 years</strong> (12% stock + 2.5% INR depreciation).</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-rsus">Learn more</button>
         </div>
       </div>
@@ -462,10 +452,9 @@
 
         <div class="comparison-asset-toggle">
           <button class="asset-toggle-btn active" data-asset="rsu">RSUs</button>
-          <button class="asset-toggle-btn" data-asset="stocks">Stocks</button>
-          <button class="asset-toggle-btn" data-asset="mutual-funds">Mutual Funds</button>
+          <button class="asset-toggle-btn" data-asset="stocks">Stocks / MFs</button>
           <button class="asset-toggle-btn" data-asset="land">Land</button>
-          <button class="asset-toggle-btn" data-asset="cash">Cash</button>
+          <button class="asset-toggle-btn" data-asset="cash">Savings</button>
         </div>
 
         <div class="comparison-breakdown">
@@ -487,7 +476,7 @@
             </div>
             <div class="tooltip-row tooltip-growth">
               <span class="tooltip-label">Assumed growth:</span>
-              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
+              <span class="tooltip-value" id="tooltip-growth-value">12% per annum</span>
             </div>
             <div class="tooltip-row tooltip-burden">
               <span class="tooltip-dot orange"></span>
@@ -691,8 +680,90 @@
     </svg>
   </button>
 
+  <!-- Zinc Loan Cost Modal -->
+  <div id="zinc-cost-modal" class="zinc-modal-overlay">
+    <div class="zinc-modal-box">
+      <button class="zinc-modal-close" id="close-zinc-modal">&times;</button>
+      <h2 class="zinc-modal-title">Zinc Loan Cost Breakdown</h2>
+      <p class="zinc-modal-subtitle">Here's how your loan cost builds up year by year</p>
+
+      <div class="zinc-modal-summary">
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Loan Amount</span>
+          <span class="zinc-summary-value" id="modal-loan-amount">₹0</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Interest Rate</span>
+          <span class="zinc-summary-value" id="modal-interest-rate">0%</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Monthly EMI</span>
+          <span class="zinc-summary-value" id="modal-monthly-emi">₹0</span>
+        </div>
+        <div class="zinc-summary-item">
+          <span class="zinc-summary-label">Tenure</span>
+          <span class="zinc-summary-value" id="modal-tenure">0 years</span>
+        </div>
+      </div>
+
+      <div class="zinc-modal-table-wrap">
+        <table class="zinc-modal-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Annual EMI</th>
+              <th>Principal Paid</th>
+              <th>Interest Paid</th>
+              <th>Total Paid</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="zinc-cost-table-body">
+          </tbody>
+        </table>
+      </div>
+
+      <p class="zinc-modal-note">
+        <strong>How is this calculated?</strong><br>
+        Each year you pay 12 EMIs. The EMI is split into principal repayment and interest.
+        As you pay down the principal, the interest component decreases while the principal component increases.
+      </p>
+    </div>
+  </div>
+
   <script type="module" src="results.js"></script>
   <script src="/community-widget.js"></script>
+  <script>
+  (function() {
+    var openBtn = document.getElementById('open-zinc-modal');
+    var closeBtn = document.getElementById('close-zinc-modal');
+    var modal = document.getElementById('zinc-cost-modal');
+
+    if (openBtn) {
+      openBtn.onclick = function() {
+        console.log('Button clicked, populateZincModal exists:', !!window.populateZincModal);
+        try {
+          if (window.populateZincModal) window.populateZincModal();
+        } catch(e) {
+          console.error('Error in populateZincModal:', e);
+        }
+        modal.style.display = 'flex';
+      };
+    }
+
+    if (closeBtn) {
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+      };
+    }
+
+    if (modal) {
+      modal.onclick = function(e) {
+        if (e.target === modal) modal.style.display = 'none';
+      };
+    }
+  })();
+  </script>
 </body>
 </html>
 
