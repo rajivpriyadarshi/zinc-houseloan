@@ -155,6 +155,11 @@ function resetAnimation() {
   document.getElementById('green-80-clip-poly').setAttribute('points', '0,860 120,930 240,860 240,1800 0,1800');
   baseTall.style.display = '';
 
+  // Re-trigger slide-in-from-bottom animation
+  baseTall.style.animation = 'none';
+  baseTall.offsetHeight;
+  baseTall.style.animation = '';
+
   // Reset solid clip
   document.getElementById('solid-20-clip-rect').setAttribute('x', '0');
   document.getElementById('solid-20-clip-rect').setAttribute('width', '240');
@@ -254,6 +259,12 @@ async function runAnimation() {
   if (!continueBtn.classList.contains('visible')) {
     continueBtn.classList.add('visible');
   }
+
+  // Wait then loop
+  await wait(3000);
+  resetAnimation();
+  await wait(500);
+  runAnimation();
 }
 
 runAnimation();
