@@ -28,27 +28,28 @@
                 <stop offset="100%" stop-color="rgba(1, 87, 60, 0.58)"/>
               </linearGradient>
             </defs>
-            <path id="gt-top" d="M1 72L120 144L239 72L120 1Z" fill="none"/>
-            <path id="gt-left" d="M1 72V789L120 858V144L1 72Z" fill="none"/>
-            <path id="gt-right" d="M239 72V789L120 858V144L239 72Z" fill="none"/>
+            <path id="gt-top" d="M1 307L120 379L239 307L120 236Z" fill="none"/>
+            <path id="gt-left" d="M1 307V789L120 858V379L1 307Z" fill="none"/>
+            <path id="gt-right" d="M239 307V789L120 858V379L239 307Z" fill="none"/>
             <defs>
               <clipPath id="green-80-clip">
                 <rect id="green-80-clip-rect" x="0" y="860" width="240" height="860"/>
+              </clipPath>
+              <clipPath id="solid-20-clip">
+                <rect id="solid-20-clip-rect" x="0" y="0" width="240" height="860"/>
               </clipPath>
             </defs>
             <g clip-path="url(#green-80-clip)">
               <path id="gt-80-left" d="M1 403V789L120 858V475L1 403Z" fill="url(#green-grad)"/>
               <path id="gt-80-right" d="M239 403V789L120 858V475L239 403Z" fill="url(#green-grad)"/>
             </g>
-            <path id="gt-top-s" d="M1 72L120 144L239 72L120 1Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
-            <path id="gt-left-edge-d" d="M1 72V307" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-right-edge-d" d="M239 72V307" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-center-edge-d" d="M120 144V379" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-left-edge-s" d="M1 307V789" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-right-edge-s" d="M239 307V789" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-center-edge-s" d="M120 379V858" stroke="#F2F2F2" stroke-width="2"/>
-            <path id="gt-bottom" d="M1 789L120 858L239 789" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
-            <path id="gt-dotted-travel" d="M1 307L120 236L239 307V789L120 858L1 789V307L120 379V858L120 379L239 307" stroke="none" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none" opacity="0"/>
+            <g clip-path="url(#solid-20-clip)">
+              <path id="gt-top-s" d="M1 307L120 379L239 307L120 236Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+              <path id="gt-left-edge-s" d="M1 307V789" stroke="#F2F2F2" stroke-width="2"/>
+              <path id="gt-right-edge-s" d="M239 307V789" stroke="#F2F2F2" stroke-width="2"/>
+              <path id="gt-center-edge-s" d="M120 379V858" stroke="#F2F2F2" stroke-width="2"/>
+              <path id="gt-bottom" d="M1 789L120 858L239 789" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none"/>
+            </g>
             <!-- 20% down-payment overlay -->
             <defs>
               <linearGradient id="red-grad-overlay" x1="0%" y1="0%" x2="80%" y2="100%">
@@ -64,7 +65,16 @@
               <path id="gt-20-left" d="M1 307V403L120 475V379L1 307Z" fill="url(#red-grad-overlay)"/>
               <path id="gt-20-right" d="M239 307V403L120 475V379L239 307Z" fill="url(#red-grad-overlay)"/>
             </g>
-            <path id="gt-20-stroke" d="M1 307L120 236L239 307V403L120 475L1 403V307L120 379V475L120 379L239 307" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none" opacity="0"/>
+            <defs>
+              <clipPath id="dotted-20-clip">
+                <rect id="dotted-20-clip-rect" x="0" y="0" width="0" height="860"/>
+              </clipPath>
+            </defs>
+            <g clip-path="url(#dotted-20-clip)">
+              <path id="gt-20-stroke" d="M1 307L120 236L239 307V403L120 475L1 403V307L120 379V475L120 379L239 307" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4" fill="none"/>
+            </g>
+            <path id="gt-20-bottom-solid" d="M1 403L120 475L239 403" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none" opacity="0"/>
+            <path id="gt-top-overlay" d="M1 307L120 379L239 307L120 236Z" stroke="#F2F2F2" stroke-width="2" stroke-linejoin="round" fill="none" opacity="0"/>
           </svg>
           <img class="stack-block stack-base" src="/block-green.svg" alt="Loan block">
           <svg class="stack-block stack-mid stack-lower" id="red-lower-svg" viewBox="0 0 237 202" fill="none" xmlns="http://www.w3.org/2000/svg">

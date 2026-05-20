@@ -22,15 +22,15 @@ function formatCr(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
     const cr = lacs / 100;
-    return `${cr.toFixed(2)} Cr`;
+    return `₹${cr.toFixed(2)} Cr`;
   }
-  return `${lacs.toFixed(2)} L`;
+  return `₹${lacs.toFixed(2)} L`;
 }
 
 function formatLacs(amount) {
   const lacs = amount / 100000;
-  if (lacs >= 100) return `${(lacs / 100).toFixed(2)} Cr`;
-  return `${lacs.toFixed(2)} L`;
+  if (lacs >= 100) return `₹${(lacs / 100).toFixed(2)} Cr`;
+  return `₹${lacs.toFixed(2)} L`;
 }
 
 const totalCost = propertyPrice + transactionDuty + interiors;
@@ -53,23 +53,6 @@ const sideLabel = document.querySelector('.stack-side-label');
 
 function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function animateGreenToDotted(duration) {
-  // Animate the solid strokes disappearing (traveling from left to right)
-  const ids = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    const length = el.getTotalLength();
-    el.style.strokeDasharray = `${length}`;
-    el.style.strokeDashoffset = '0';
-    el.getBoundingClientRect();
-    el.style.transition = `stroke-dashoffset ${duration}ms ease-out`;
-    el.style.strokeDashoffset = `${length}`;
-  });
-  // Show the dotted path underneath
-  const dottedTravel = document.getElementById('gt-dotted-travel');
-  dottedTravel.setAttribute('opacity', '1');
 }
 
 function animateStrokeToSolid(svg, duration) {
@@ -110,6 +93,31 @@ function animateGreenFillUp(duration) {
   });
 }
 
+function animateDottedLineLeftToRight(duration) {
+  return new Promise(resolve => {
+    const dottedClip = document.getElementById('dotted-20-clip-rect');
+    const solidClip = document.getElementById('solid-20-clip-rect');
+    let startTime = null;
+
+    function tick(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const t = Math.min((timestamp - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const curX = Math.round(240 * ease);
+      dottedClip.setAttribute('width', curX);
+      solidClip.setAttribute('x', curX);
+      solidClip.setAttribute('width', 240 - curX);
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(tick);
+  });
+}
+
 function animateRedFillLeftToRight(duration) {
   return new Promise(resolve => {
     const clipRect = document.getElementById('red-20-clip-rect');
@@ -135,107 +143,25 @@ function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
-function animateShrink(duration) {
-  return new Promise(resolve => {
-    const topFill = document.getElementById('gt-top');
-    const leftFill = document.getElementById('gt-left');
-    const rightFill = document.getElementById('gt-right');
-    const topStroke = document.getElementById('gt-top-s');
-    const leftEdgeD = document.getElementById('gt-left-edge-d');
-    const rightEdgeD = document.getElementById('gt-right-edge-d');
-    const centerEdgeD = document.getElementById('gt-center-edge-d');
-    const leftEdgeS = document.getElementById('gt-left-edge-s');
-    const rightEdgeS = document.getElementById('gt-right-edge-s');
-    const centerEdgeS = document.getElementById('gt-center-edge-s');
-    const sideLine = document.querySelector('.stack-side-line');
-
-    const startTopY = 72;
-    const startCenterY = 144;
-    const endTopY = 307;
-    const endCenterY = 379;
-
-    const startScale = 1.47;
-    const endScale = 1;
-
-    let startTime = null;
-
-    function tick(timestamp) {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - t, 3);
-
-      const curTopY = Math.round(lerp(startTopY, endTopY, ease));
-      const curCenterY = Math.round(lerp(startCenterY, endCenterY, ease));
-      const curScale = lerp(startScale, endScale, ease);
-
-      topFill.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
-      topStroke.setAttribute('d', `M1 ${curTopY}L120 ${curCenterY}L239 ${curTopY}L120 ${curTopY - 71}Z`);
-
-      leftFill.setAttribute('d', `M1 ${curTopY}V789L120 858V${curCenterY}L1 ${curTopY}Z`);
-      rightFill.setAttribute('d', `M239 ${curTopY}V789L120 858V${curCenterY}L239 ${curTopY}Z`);
-
-      leftEdgeD.setAttribute('d', `M1 ${curTopY}V307`);
-      rightEdgeD.setAttribute('d', `M239 ${curTopY}V307`);
-      centerEdgeD.setAttribute('d', `M120 ${curCenterY}V379`);
-
-      leftEdgeS.setAttribute('d', `M1 307V789`);
-      rightEdgeS.setAttribute('d', `M239 307V789`);
-      centerEdgeS.setAttribute('d', `M120 379V858`);
-
-      sideLine.style.transform = `scaleY(${curScale})`;
-
-      if (t < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        resolve();
-      }
-    }
-
-    requestAnimationFrame(tick);
-  });
-}
-
 function resetAnimation() {
   scene.classList.remove('animating');
 
-  // Reset green tall block (transparent wireframe)
-  document.getElementById('gt-top').setAttribute('d', 'M1 72L120 144L239 72L120 1Z');
+  // Reset green tall block
   document.getElementById('gt-top').setAttribute('fill', 'none');
-  document.getElementById('gt-left').setAttribute('d', 'M1 72V789L120 858V144L1 72Z');
   document.getElementById('gt-left').setAttribute('fill', 'none');
-  document.getElementById('gt-right').setAttribute('d', 'M239 72V789L120 858V144L239 72Z');
   document.getElementById('gt-right').setAttribute('fill', 'none');
   document.getElementById('green-80-clip-rect').setAttribute('y', '860');
-  document.getElementById('gt-top-s').setAttribute('d', 'M1 72L120 144L239 72L120 1Z');
-  document.getElementById('gt-top-s').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-left-edge-d').setAttribute('d', 'M1 72V307');
-  document.getElementById('gt-left-edge-d').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-right-edge-d').setAttribute('d', 'M239 72V307');
-  document.getElementById('gt-right-edge-d').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-center-edge-d').setAttribute('d', 'M120 144V379');
-  document.getElementById('gt-center-edge-d').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-left-edge-s').setAttribute('d', 'M1 307V789');
-  document.getElementById('gt-left-edge-s').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-right-edge-s').setAttribute('d', 'M239 307V789');
-  document.getElementById('gt-right-edge-s').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-center-edge-s').setAttribute('d', 'M120 379V858');
-  document.getElementById('gt-center-edge-s').removeAttribute('stroke-dasharray');
-  document.getElementById('gt-bottom').removeAttribute('stroke-dasharray');
-  // Reset solid strokes and hide dotted travel path
-  const strokeIds = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
-  strokeIds.forEach(id => {
-    const el = document.getElementById(id);
-    el.style.transition = '';
-    el.style.strokeDasharray = '';
-    el.style.strokeDashoffset = '';
-  });
-  document.getElementById('gt-dotted-travel').setAttribute('opacity', '0');
   baseTall.style.display = '';
+
+  // Reset solid clip
+  document.getElementById('solid-20-clip-rect').setAttribute('x', '0');
+  document.getElementById('solid-20-clip-rect').setAttribute('width', '240');
 
   // Reset 20% overlay
   document.getElementById('red-20-clip-rect').setAttribute('width', '0');
-  document.getElementById('gt-20-stroke').setAttribute('opacity', '0');
+  document.getElementById('dotted-20-clip-rect').setAttribute('width', '0');
+  document.getElementById('gt-20-bottom-solid').setAttribute('opacity', '0');
+  document.getElementById('gt-top-overlay').setAttribute('opacity', '0');
 
   // Reset right labels
   document.querySelectorAll('.stack-right-row').forEach(row => row.classList.remove('show'));
@@ -259,6 +185,9 @@ function resetAnimation() {
   // Reset hero summary
   heroSummary.classList.remove('show');
 
+  // Reset cluster position
+  document.querySelector('.stack-cluster').classList.remove('shifted');
+
   // Reset label
   document.querySelector('.stack-side-text').textContent = 'Property cost';
 }
@@ -267,26 +196,14 @@ async function runAnimation() {
   scene.classList.add('animating');
   document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 
-  // Step 1: Show tall green block (already visible via CSS)
+  // Step 1: Show tall green block (already at shrinked height)
   await wait(1000);
 
-  // Step 2: Shrink green bar (top face moves down to 20% mark)
-  await animateShrink(1200);
-
-  // Step 2b: Change all borders to dotted
-  const allStrokeIds = ['gt-top-s', 'gt-left-edge-d', 'gt-right-edge-d', 'gt-center-edge-d', 'gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'];
-  allStrokeIds.forEach(id => {
-    const el = document.getElementById(id);
-    el.setAttribute('stroke-dasharray', '6 4');
-  });
-  await wait(400);
-
-  // Step 3: Fill bottom 80% with green from bottom to top
+  // Step 2: Fill bottom 80% with green from bottom to top
   await animateGreenFillUp(1000);
-  // Remove dotted from bottom 80% strokes, keep top 20% dotted
-  ['gt-left-edge-s', 'gt-right-edge-s', 'gt-center-edge-s', 'gt-bottom'].forEach(id => {
-    document.getElementById(id).removeAttribute('stroke-dasharray');
-  });
+
+  // Step 3: Solid to dotted transition left-to-right
+  await animateDottedLineLeftToRight(800);
   await wait(400);
 
   // Show "Home loan" label
@@ -296,7 +213,9 @@ async function runAnimation() {
   await wait(800);
 
   // Step 4: Fill 20% section with red (left to right reveal)
-  document.getElementById('gt-20-stroke').setAttribute('opacity', '1');
+  // Remove dotted wireframe, show solid top surface with dark fill and white border on top
+  document.getElementById('gt-20-stroke').setAttribute('opacity', '0');
+  document.getElementById('gt-top-overlay').setAttribute('opacity', '1');
   await animateRedFillLeftToRight(800);
   await wait(400);
   document.getElementById('breakdown-downpayment').textContent = formatLacs(downPayment);
@@ -323,7 +242,9 @@ async function runAnimation() {
   document.querySelector('.stack-right-row-stamp').classList.add('show');
   await wait(500);
 
-  // Step 7: Show hero summary
+  // Step 7: Shift everything left and show hero summary
+  document.querySelector('.stack-cluster').classList.add('shifted');
+  await wait(800);
   heroSummary.classList.add('show');
   await wait(800);
 

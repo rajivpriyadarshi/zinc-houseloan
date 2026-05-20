@@ -65,6 +65,12 @@ body {
   width: calc(var(--block-w) + 30px + 700px);
   height: calc(var(--base-h) + var(--top-h) + var(--effective-gap-top) + var(--middle-h) + var(--effective-gap));
   margin-top: 0;
+  transform: translateX(calc((700px + 30px) / 2));
+  transition: transform 0.8s ease-out;
+}
+
+.stack-cluster.shifted {
+  transform: translateX(0);
 }
 
 .stack-visual {
@@ -188,7 +194,7 @@ svg.stack-top.show-solid {
   height: 304px;
   border-left: 2px solid rgba(255, 255, 255, .72);
   transform-origin: bottom center;
-  transform: scaleY(1.47);
+  transform: scaleY(1);
 }
 
 .stack-side-line::before,
@@ -221,7 +227,7 @@ svg.stack-top.show-solid {
 }
 
 .animating .stack-side-pill {
-  animation: pillMove 1.2s ease-out 0.50s forwards;
+  animation: fadeIn .5s ease-out 0.50s forwards;
 }
 
 .stack-side-value, .stack-pill-value {
@@ -537,7 +543,8 @@ svg.stack-top.show-solid {
 .continue-btn {
   position: absolute;
   bottom: 40px;
-  right: 38px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Satoshi', sans-serif;
   font-size: 18px;
   font-weight: 400;
@@ -559,12 +566,12 @@ svg.stack-top.show-solid {
 }
 
 .continue-btn:hover {
-  transform: scale(1.05);
+  transform: translateX(-50%) scale(1.05);
   box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15);
 }
 
 .continue-btn:active {
-  transform: scale(0.98);
+  transform: translateX(-50%) scale(0.98);
 }
 
 @keyframes buttonPop {
