@@ -1475,6 +1475,7 @@ body {
 
 .option-header {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .option-title {
@@ -1697,7 +1698,7 @@ body {
 
 .growth-callout {
   position: relative;
-  background: linear-gradient(180deg, rgba(100, 60, 60, 0.9) 0%, rgba(70, 45, 45, 0.9) 100%);
+  background: linear-gradient(rgb(100 60 60 / 16%) 0%, rgba(70, 45, 45, 0.9) 100%);
   border: 1px solid rgba(100, 60, 60, 0.6);
   border-radius: 52px;
   padding: 12px 20px;
@@ -2160,29 +2161,54 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
-  padding: 32px;
-  border-radius: 32px;
-  background: rgba(0, 0, 0, 0.4);
+  padding: 32px 24px;
+  border-radius: 24px;
+  background: rgb(24 24 24 / 40%);
   backdrop-filter: blur(12px);
 }
 
+.benefit-box:hover .learn-more-btn {
+  background: #fff;
+  color: #000;
+}
+
+.benefit-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .benefit-box.benefit-negative {
-  border: 1px solid #ff242429;
+  border: 1px solid transparent;
+  background: linear-gradient(rgb(0 0 0 / 40%), rgb(6 6 6 / 40%)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.6) 40%, rgba(253, 253, 253, 0.12) 100%) border-box border-box;
 }
 
 .benefit-box.benefit-positive {
-  border: 1px solid #71854A29;
+  border: 1px solid #71854A;
 }
 
 .benefit-tag {
-  flex-shrink: 0;
-  padding: 8px 12px;
+  display: none;
+}
+
+.benefit-box .benefit-label {
   font-family: 'Satoshi', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: -0.14px;
-  border-radius: 32px;
+  text-transform: uppercase;
+  letter-spacing: 3.12px;
+  margin-bottom: 0;
+}
+
+.benefit-box.benefit-negative .benefit-label {
+  color: #c13515;
+}
+
+.benefit-box.benefit-positive .benefit-label {
+  color: #71854A;
 }
 
 .benefit-tag.negative {
@@ -2197,7 +2223,7 @@ body {
 
 .benefit-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
@@ -2222,22 +2248,23 @@ body {
 
 .learn-more-btn {
   flex-shrink: 0;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
+  border-radius: 40px;
   color: #fff;
   font-family: 'Satoshi', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.32px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .learn-more-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ============================================

@@ -521,14 +521,14 @@ function formatCurrency(amount) {
 function formatCr(amount) {
   const cr = amount / 10000000;
   if (cr >= 1) {
-    return cr.toFixed(2) + ' Cr';
+    return '₹' + cr.toFixed(2) + ' Cr';
   }
-  return (amount / 100000).toFixed(2) + ' Lacs';
+  return '₹' + (amount / 100000).toFixed(2) + ' Lacs';
 }
 
 function formatCrSigned(amount) {
   const cr = Math.abs(amount) / 10000000;
-  const sign = amount >= 0 ? '+' : '-';
+  const sign = amount >= 0 ? '+₹' : '-₹';
   if (cr >= 1) {
     return sign + cr.toFixed(2) + ' Cr';
   }
@@ -539,9 +539,9 @@ function formatCrSigned(amount) {
 function formatLacs(amount) {
   const lacs = amount / 100000;
   if (lacs >= 100) {
-    return (lacs / 100).toFixed(1) + ' Cr';
+    return '₹' + (lacs / 100).toFixed(1) + ' Cr';
   }
-  return Math.round(lacs) + ' L';
+  return '₹' + Math.round(lacs) + ' L';
 }
 
 function updateUI() {
@@ -1891,7 +1891,7 @@ function drawComparisonChart(animate = false) {
   // Update growth percentage in tooltip
   const tooltipGrowthValue = document.getElementById('tooltip-growth-value');
   if (tooltipGrowthValue) {
-    tooltipGrowthValue.textContent = `${(effectiveCagr * 100).toFixed(1)}%`;
+    tooltipGrowthValue.textContent = `${(effectiveCagr * 100).toFixed(1)}% per annum`;
   }
 
   const zincRate = deriveZincLoanRate(modelInputs.selectedHomeLoanRatePct);
@@ -2173,6 +2173,10 @@ function updateOptionSections() {
   document.getElementById('cash-tooltip-gap').textContent = formatCurrency(cashNeeded);
   document.getElementById('cash-tooltip-tax').textContent = '₹0';
   document.getElementById('cash-tooltip-total').textContent = formatCurrency(cashNeeded);
+  // Cash benefit text
+  document.getElementById('cash-benefit-today').textContent = formatCurrency(cashNeeded);
+  document.getElementById('cash-benefit-future').textContent = formatCurrency(cashFV);
+  document.getElementById('cash-benefit-years').textContent = years + ' years';
 
   // Land section
   const landGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.land.embeddedGainPct, modelInputs.assets.land.ltcgTaxRatePct, modelInputs.assets.land.exemptionAmount);
@@ -2186,6 +2190,10 @@ function updateOptionSections() {
   document.getElementById('land-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('land-tooltip-tax').textContent = formatCurrency(landTax);
   document.getElementById('land-tooltip-total').textContent = formatCurrency(landGrossSale);
+  // Land benefit text
+  document.getElementById('land-benefit-today').textContent = formatCurrency(landGrossSale);
+  document.getElementById('land-benefit-future').textContent = formatCurrency(landFV);
+  document.getElementById('land-benefit-years').textContent = years + ' years';
 
   // Equity section
   const equityGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.indianEquity.embeddedGainPct, modelInputs.assets.indianEquity.ltcgTaxRatePct, modelInputs.assets.indianEquity.exemptionAmount);
@@ -2199,6 +2207,10 @@ function updateOptionSections() {
   document.getElementById('equity-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('equity-tooltip-tax').textContent = formatCurrency(equityTax);
   document.getElementById('equity-tooltip-total').textContent = formatCurrency(equityGrossSale);
+  // Equity benefit text
+  document.getElementById('equity-benefit-today').textContent = formatCurrency(equityGrossSale);
+  document.getElementById('equity-benefit-future').textContent = formatCurrency(equityFV);
+  document.getElementById('equity-benefit-years').textContent = years + ' years';
 
   // RSU section
   const rsuGrossSale = calculateGrossSaleRequired(results.fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
@@ -2213,6 +2225,10 @@ function updateOptionSections() {
   document.getElementById('rsu-tooltip-gap').textContent = formatCurrency(results.fundingGap);
   document.getElementById('rsu-tooltip-tax').textContent = formatCurrency(rsuTax);
   document.getElementById('rsu-tooltip-total').textContent = formatCurrency(rsuGrossSale);
+  // RSU benefit text
+  document.getElementById('rsu-benefit-today').textContent = formatCurrency(rsuGrossSale);
+  document.getElementById('rsu-benefit-future').textContent = formatCurrency(rsuFV);
+  document.getElementById('rsu-benefit-years').textContent = years + ' years';
 
   // Zinc section (same as RSU values but kept)
   document.getElementById('zinc-value-today').textContent = formatCurrency(rsuGrossSale);

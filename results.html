@@ -220,9 +220,6 @@
               <span class="value-label">Value after <span class="year-count" id="zinc-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your RSUs today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-zinc-loan"></canvas>
@@ -232,8 +229,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-positive">
-          <span class="benefit-tag positive">Advantage</span>
-          <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By taking a <strong>Zinc loan</strong> worth <span class="highlight">₹47.60 Lacs</span>, you keep your RSUs invested and they can grow to <span class="highlight-green">₹85.24 Lacs</span> over <strong>10 years</strong> while you pay only interest on the loan.</p>
+          </div>
           <button class="learn-more-btn" data-option="zinc-loan">Learn more</button>
         </div>
       </div>
@@ -273,9 +271,6 @@
               <span class="value-label">Value after <span class="year-count" id="cash-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to use your cash today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-use-cash"></canvas>
@@ -285,8 +280,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By using your cash worth <span class="highlight">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red">₹85.24 Lacs</span> over <strong>10 years</strong> if you invest that cash in a safe fund to get 6%.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By using your cash worth <span class="highlight" id="cash-benefit-today">₹47.60 Lacs</span>, you will effectively lose the opportunity to see it appreciate to <span class="highlight-red" id="cash-benefit-future">₹85.24 Lacs</span> over <strong id="cash-benefit-years">10 years</strong> if you invest that cash in a safe fund to get 6%.</p>
+          </div>
           <button class="learn-more-btn" data-option="use-cash">Learn more</button>
         </div>
       </div>
@@ -325,9 +321,6 @@
               <span class="value-label">Value after <span class="year-count" id="land-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your land today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-land"></canvas>
@@ -337,8 +330,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling land worth <span class="highlight">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red">₹1.17 Cr</span> over <strong>10 years</strong> at 8% appreciation.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling land worth <span class="highlight" id="land-benefit-today">₹54.28 Lacs</span>, you pay 12.5% LTCG tax and lose the opportunity to see it grow to <span class="highlight-red" id="land-benefit-future">₹1.17 Cr</span> over <strong id="land-benefit-years">10 years</strong> at 8% appreciation.</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-land">Learn more</button>
         </div>
       </div>
@@ -377,9 +371,6 @@
               <span class="value-label">Value after <span class="year-count" id="equity-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your equities today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-indian-equity"></canvas>
@@ -389,8 +380,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling equities worth <span class="highlight">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red">₹1.57 Cr</span> over <strong>10 years</strong> at 12% returns.</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling equities worth <span class="highlight" id="equity-benefit-today">₹50.71 Lacs</span>, you pay LTCG tax and miss out on potential growth to <span class="highlight-red" id="equity-benefit-future">₹1.57 Cr</span> over <strong id="equity-benefit-years">10 years</strong> at 12% returns.</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-indian-equity">Learn more</button>
         </div>
       </div>
@@ -429,9 +421,6 @@
               <span class="value-label">Value after <span class="year-count" id="rsu-year-count">10</span> years</span>
             </div>
           </div>
-          <div class="growth-callout">
-            <p>You'd miss this if you decide to sell your RSUs today</p>
-          </div>
         </div>
         <div class="growth-chart">
           <canvas id="chart-sell-rsus"></canvas>
@@ -441,8 +430,9 @@
           </div>
         </div>
         <div class="benefit-box benefit-negative">
-          <span class="benefit-tag negative">Problem</span>
-          <p class="benefit-text">By selling RSUs worth <span class="highlight">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red">₹1.69 Cr</span> over <strong>10 years</strong> (12% stock + 2.5% INR depreciation).</p>
+          <div class="benefit-content">
+                        <p class="benefit-text">By selling RSUs worth <span class="highlight" id="rsu-benefit-today">₹51.60 Lacs</span>, you pay 12.5% LTCG with no exemption and miss potential growth to <span class="highlight-red" id="rsu-benefit-future">₹1.69 Cr</span> over <strong id="rsu-benefit-years">10 years</strong> (12% stock + 2.5% INR depreciation).</p>
+          </div>
           <button class="learn-more-btn" data-option="sell-rsus">Learn more</button>
         </div>
       </div>
@@ -487,7 +477,7 @@
             </div>
             <div class="tooltip-row tooltip-growth">
               <span class="tooltip-label">Assumed growth:</span>
-              <span class="tooltip-value" id="tooltip-growth-value">12%</span>
+              <span class="tooltip-value" id="tooltip-growth-value">12% per annum</span>
             </div>
             <div class="tooltip-row tooltip-burden">
               <span class="tooltip-dot orange"></span>
