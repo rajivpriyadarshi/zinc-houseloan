@@ -238,7 +238,7 @@
   }
 
   .community-trigger {
-    padding: 10px 14px;
+    padding: 16px 16px;
     gap: 8px;
   }
 
@@ -249,6 +249,10 @@
 
   .community-trigger span {
     font-size: 12px;
+  }
+
+  .community-trigger-subtitle {
+    display: none;
   }
 
   .community-popup {

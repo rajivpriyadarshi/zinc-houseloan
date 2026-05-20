@@ -2708,6 +2708,7 @@ body {
 
   .value-label {
     font-size: 12px;
+    justify-content: center;
   }
 
   .growth-badge {
@@ -2829,13 +2830,22 @@ body {
   }
 
   .comparison-asset-toggle {
-    flex-wrap: wrap;
-    justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .comparison-asset-toggle::-webkit-scrollbar {
+    display: none;
   }
 
   .asset-toggle-btn {
     font-size: 12px;
     padding: 8px 14px;
+    flex-shrink: 0;
   }
 
   .comparison-breakdown {
@@ -2875,8 +2885,32 @@ body {
   }
 
   /* FAQ Section Mobile */
-  .faq-section {
-    padding: 60px 20px;
+  .faq-section.snap-section {
+    padding: 60px 20px 40px;
+    height: auto !important;
+    overflow: visible !important;
+    justify-content: flex-start;
+  }
+
+  /* Footer Mobile */
+  .site-footer {
+    padding: 32px 20px 80px;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .footer-links {
+    gap: 16px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
   }
 
   .faq-title {
