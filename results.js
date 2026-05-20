@@ -1916,12 +1916,13 @@ function drawComparisonChart(animate = false) {
     return { x, y };
   }
 
-  // Create gradients
-  const assetGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
-  assetGradient.addColorStop(0, 'rgba(255, 193, 92, 1)');
-  assetGradient.addColorStop(1, 'rgba(1, 87, 60, 1)');
+  // Create gradients (inverted direction: right to left, using RSU curve colors)
+  const assetGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
+  assetGradient.addColorStop(0, '#c4c870');
+  assetGradient.addColorStop(0.5, '#9ab060');
+  assetGradient.addColorStop(1, '#6a8a50');
 
-  const burdenGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
+  const burdenGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
   burdenGradient.addColorStop(0, 'rgb(247, 147, 46)');
   burdenGradient.addColorStop(1, 'rgb(235, 39, 39)');
 
@@ -1997,11 +1998,12 @@ function drawComparisonChart(animate = false) {
       }
     }
 
-    // Draw filled area between the two lines (green gradient)
+    // Draw filled area between the two lines (green gradient, inverted direction, using RSU curve colors)
     if (assetPoints.length > 1) {
-      const areaGradient = ctx.createLinearGradient(padding.left, 0, width - padding.right, 0);
-      areaGradient.addColorStop(0, 'rgba(255, 193, 92, 0.25)');
-      areaGradient.addColorStop(1, 'rgba(1, 87, 60, 0.35)');
+      const areaGradient = ctx.createLinearGradient(width - padding.right, 0, padding.left, 0);
+      areaGradient.addColorStop(0, 'rgba(196, 200, 112, 0.25)');
+      areaGradient.addColorStop(0.5, 'rgba(154, 176, 96, 0.3)');
+      areaGradient.addColorStop(1, 'rgba(106, 138, 80, 0.35)');
 
       ctx.beginPath();
       // Start from first asset point
@@ -2039,20 +2041,22 @@ function drawComparisonChart(animate = false) {
     }
     ctx.stroke();
 
-    // Draw dots for completed points
+    // Draw dots for completed points (using RSU curve colors)
     for (let i = 0; i <= pointsToDraw && i < totalPoints; i++) {
       const point = dataPoints[i];
       const assetCoords = getCoords(point.year, point.assetValue);
       const burdenCoords = getCoords(point.year, point.zincBurden);
 
       const dotProgress = point.year / years;
-      const assetDotColor = dotProgress < 0.5 ? 'rgba(255, 193, 92, 1)' : 'rgba(1, 87, 60, 1)';
+      // Inverted: darker green at left (start), yellow-green at right (end)
+      const assetDotColor = dotProgress < 0.5 ? '#6a8a50' : '#c4c870';
       ctx.fillStyle = assetDotColor;
       ctx.beginPath();
       ctx.arc(assetCoords.x, assetCoords.y, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      const burdenDotColor = dotProgress < 0.5 ? 'rgb(247, 147, 46)' : 'rgb(235, 39, 39)';
+      // Inverted: red at left (start), orange at right (end)
+      const burdenDotColor = dotProgress < 0.5 ? 'rgb(235, 39, 39)' : 'rgb(247, 147, 46)';
       ctx.fillStyle = burdenDotColor;
       ctx.beginPath();
       ctx.arc(burdenCoords.x, burdenCoords.y, 5, 0, Math.PI * 2);
@@ -2431,6 +2435,15 @@ function updateActivePill() {
     }
   });
 
+  // Also check if comparison chart section is in view (for Zinc loan pill)
+  const comparisonSection = document.getElementById('section-comparison-chart');
+  if (comparisonSection) {
+    const rect = comparisonSection.getBoundingClientRect();
+    if (rect.top <= 150 && rect.bottom > 150) {
+      currentSection = 'zinc-loan';
+    }
+  }
+
   if (currentSection) {
     navPills.forEach(pill => {
       pill.classList.toggle('active', pill.dataset.option === currentSection);
@@ -2443,6 +2456,14 @@ navPills.forEach(pill => {
   pill.style.cursor = 'pointer';
   pill.addEventListener('click', () => {
     const targetOption = pill.dataset.option;
+    // Zinc loan navigates to the comparison chart section
+    if (targetOption === 'zinc-loan') {
+      const comparisonSection = document.getElementById('section-comparison-chart');
+      if (comparisonSection) {
+        comparisonSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      return;
+    }
     const targetSection = document.querySelector(`.option-section[data-option="${targetOption}"]`);
     if (targetSection) {
       targetSection.scrollIntoView({ behavior: 'smooth' });
