@@ -320,7 +320,7 @@ svg.stack-top.show-solid {
 .stack-right-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   opacity: 0;
   transform: translateX(-8px);
 }
@@ -343,7 +343,7 @@ svg.stack-top.show-solid {
   position: absolute;
   left: 100%;
   top: 50%;
-  width: 12px;
+  width: 20px;
   border-top: 1px solid rgba(255, 255, 255, .35);
   transform: translateY(-50%);
 }
@@ -672,6 +672,14 @@ svg.stack-top.show-solid {
   .stack-right-labels {
     width: 400px;
     left: calc(220px + 20px + var(--block-w) + 20px);
+  }
+
+  .stack-right-row {
+    gap: 10px;
+  }
+
+  .stack-right-dot::after {
+    width: 10px;
   }
 
   .stack-right-pill {
