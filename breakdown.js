@@ -35,7 +35,7 @@ function formatLacs(amount) {
 
 const totalCost = propertyPrice + transactionDuty + interiors;
 
-document.getElementById('hero-amount').textContent = formatCr(fundingGap);
+document.getElementById('hero-amount').innerHTML = formatCr(fundingGap).replace('₹', '<span class="rupee">₹</span>');
 document.getElementById('breakdown-loan').textContent = formatCr(propertyPrice);
 document.getElementById('breakdown-interior').textContent = formatLacs(interiors);
 document.getElementById('breakdown-stamp').textContent = formatLacs(transactionDuty);
@@ -316,11 +316,10 @@ async function runAnimation() {
     continueBtn.classList.add('visible');
   }
 
-  // Wait then loop (disabled temporarily)
-  // await wait(3000);
-  // resetAnimation();
-  // await wait(500);
-  // runAnimation();
+  await wait(3000);
+  resetAnimation();
+  await wait(500);
+  runAnimation();
 }
 
 runAnimation();

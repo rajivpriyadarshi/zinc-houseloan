@@ -441,6 +441,11 @@ svg.stack-top.show-solid {
   color: #fff;
 }
 
+.hero-amount-value .rupee {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 500;
+}
+
 .hero-amount-suffix {
   font-family: 'Butler Pro', serif;
   font-weight: 300;
