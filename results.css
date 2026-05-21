@@ -1781,6 +1781,43 @@ body {
   width: 100% !important;
   height: 150px !important;
   margin-top: 32px;
+  cursor: crosshair;
+}
+
+.growth-chart-tooltip {
+  position: absolute;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: opacity 0.15s ease;
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.growth-chart-tooltip.visible {
+  opacity: 1;
+}
+
+.growth-chart-tooltip .tooltip-year {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.growth-chart-tooltip .tooltip-value {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #b4c864;
 }
 
 .chart-labels {

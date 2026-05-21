@@ -2426,6 +2426,70 @@ function drawGrowthCurve(canvasId, startValue, endValue, color = '#c4a35a') {
   if (growthEl) growthEl.textContent = '+₹0';
 
   requestAnimationFrame(animate);
+
+  // Store chart data for hover
+  canvas.chartData = {
+    todayValue,
+    finalValue,
+    cagr,
+    years,
+    paddingLeft,
+    paddingRight,
+    paddingBottom,
+    paddingTop,
+    allPoints
+  };
+
+  // Add hover event listener
+  canvas.removeEventListener('mousemove', handleGrowthChartHover);
+  canvas.removeEventListener('mouseleave', handleGrowthChartLeave);
+  canvas.addEventListener('mousemove', handleGrowthChartHover);
+  canvas.addEventListener('mouseleave', handleGrowthChartLeave);
+}
+
+// Growth chart hover tooltip
+function handleGrowthChartHover(e) {
+  const canvas = e.target;
+  const data = canvas.chartData;
+  if (!data) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const width = rect.width;
+
+  // Calculate year from mouse position
+  const chartWidth = width - data.paddingLeft - data.paddingRight;
+  const relativeX = mouseX - data.paddingLeft;
+  const progress = Math.max(0, Math.min(1, relativeX / chartWidth));
+  const year = Math.round(progress * data.years);
+
+  // Calculate value at this year
+  const value = calculateFutureValue(data.todayValue, data.cagr, year);
+
+  // Get or create tooltip
+  let tooltip = canvas.parentElement.querySelector('.growth-chart-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.className = 'growth-chart-tooltip';
+    canvas.parentElement.appendChild(tooltip);
+  }
+
+  // Position tooltip
+  const pointIndex = Math.floor(progress * (data.allPoints.length - 1));
+  const point = data.allPoints[pointIndex];
+
+  tooltip.innerHTML = `<span class="tooltip-year">Year ${year}</span><span class="tooltip-value">${formatCurrency(value)}</span>`;
+  tooltip.style.left = `${point.x}px`;
+  tooltip.style.top = `${point.y - 50}px`;
+  tooltip.classList.add('visible');
+}
+
+function handleGrowthChartLeave(e) {
+  const canvas = e.target;
+  const tooltip = canvas.parentElement.querySelector('.growth-chart-tooltip');
+  if (tooltip) {
+    tooltip.classList.remove('visible');
+  }
 }
 
 // Sticky nav scroll handling
