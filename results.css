@@ -3275,9 +3275,9 @@ body {
     display: none;
   }
 
-  /* Scroll indicator mobile */
-  .option-section .scroll-indicator {
-    bottom: 20px;
+  /* Scroll indicator mobile - hide arrows */
+  .scroll-indicator {
+    display: none;
   }
 
   /* Modal Mobile */
