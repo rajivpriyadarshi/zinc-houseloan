@@ -1625,6 +1625,9 @@ body {
 
 .value-info-tooltip .tooltip-row.total {
   font-weight: 600;
+  border-top: none;
+  margin-top: 0;
+  padding-top: 8px;
 }
 
 .value-info-tooltip .tooltip-row.total span:first-child {
@@ -1770,9 +1773,14 @@ body {
   margin-top: -20px;
 }
 
+#chart-use-cash {
+  margin-top: 32px;
+}
+
 .growth-chart canvas {
   width: 100% !important;
   height: 150px !important;
+  margin-top: 32px;
 }
 
 .chart-labels {
@@ -2413,7 +2421,7 @@ body {
 .benefit-box.benefit-negative {
   border: 1px solid transparent;
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.45) 40%, rgb(149 149 149 / 12%) 100%) border-box border-box;
-  margin-top: 24px;
+  margin-top: 32px;
 }
 
 .benefit-box.benefit-positive {
