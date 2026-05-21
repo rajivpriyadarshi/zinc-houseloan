@@ -1794,6 +1794,20 @@ if (chartSection && scrollContainer) {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         setTimeout(animateBars, 300);
+
+        // Add scroll hint animation on mobile
+        if (window.innerWidth <= 768) {
+          const chartWrapper = document.querySelector('.chart-wrapper');
+          if (chartWrapper) {
+            setTimeout(() => {
+              chartWrapper.classList.add('hint-scroll');
+              chartWrapper.addEventListener('animationend', () => {
+                chartWrapper.classList.remove('hint-scroll');
+              }, { once: true });
+            }, 800);
+          }
+        }
+
         chartObserver.unobserve(entry.target);
       }
     });
@@ -1866,34 +1880,19 @@ function drawComparisonChart(animate = false) {
   // Calculate tax amount
   const assetTax = assetGrossSale - fundingGap;
 
-  // Update breakdown line
-  const comparisonFundingGap = document.getElementById('comparison-funding-gap');
-  const comparisonTax = document.getElementById('comparison-tax');
-  const comparisonTotal = document.getElementById('comparison-total');
-  const comparisonAssetType = document.getElementById('comparison-asset-type');
-  const comparisonAssetType2 = document.getElementById('comparison-asset-type-2');
-
-  if (comparisonFundingGap) comparisonFundingGap.textContent = formatCurrency(fundingGap);
-  if (comparisonTax) comparisonTax.textContent = formatCurrency(assetTax);
-  if (comparisonTotal) comparisonTotal.textContent = formatCurrency(assetGrossSale);
-
-  // Handle pluralization and action text
-  let assetLabelPlural, actionText;
+  // Handle asset label for display
+  let assetLabelPlural;
   if (selectedComparisonAsset === 'cash') {
-    assetLabelPlural = 'Cash';
-    actionText = 'to use';
+    assetLabelPlural = 'Savings';
   } else if (selectedComparisonAsset === 'land') {
     assetLabelPlural = 'Land';
-    actionText = 'to sell';
   } else {
     assetLabelPlural = assetLabel + 's';
-    actionText = 'to sell';
   }
 
+  // Update asset type in breakdown
+  const comparisonAssetType = document.getElementById('comparison-asset-type');
   if (comparisonAssetType) comparisonAssetType.textContent = assetLabelPlural;
-  if (comparisonAssetType2) comparisonAssetType2.textContent = assetLabelPlural;
-  const comparisonAction = document.getElementById('comparison-action');
-  if (comparisonAction) comparisonAction.textContent = actionText;
 
   // Update legend label
   const legendLabel = document.getElementById('legend-asset-label');
@@ -1924,6 +1923,12 @@ function drawComparisonChart(animate = false) {
     const zincBurdenAtYear = calculateFutureValue(totalPaidSoFar, modelInputs.zincPaymentReinvestmentCagrPct, (years - year) / 2);
     dataPoints.push({ year, assetValue, zincBurden: zincBurdenAtYear });
   }
+
+  // Calculate and display net benefit at year 10
+  const finalData = dataPoints[years];
+  const netBenefit = finalData.assetValue - finalData.zincBurden;
+  const comparisonNetBenefit = document.getElementById('comparison-net-benefit');
+  if (comparisonNetBenefit) comparisonNetBenefit.textContent = formatCurrency(netBenefit);
 
   // Find max value for scale
   const maxValue = Math.max(...dataPoints.map(d => Math.max(d.assetValue, d.zincBurden))) * 1.1;
@@ -2854,6 +2859,30 @@ if (scrollToTopBtn) {
 updateUI();
 updateOptionSections();
 updatePageIndicator();
+
+// Mobile tooltip handling - toggle on tap for touch devices
+document.querySelectorAll('.value-info-icon').forEach(icon => {
+  icon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const tooltip = icon.nextElementSibling;
+    if (tooltip && tooltip.classList.contains('value-info-tooltip')) {
+      // Close all other tooltips first
+      document.querySelectorAll('.value-info-tooltip.active').forEach(t => {
+        if (t !== tooltip) t.classList.remove('active');
+      });
+      tooltip.classList.toggle('active');
+    }
+  });
+});
+
+// Close tooltips when tapping elsewhere
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.value-info-icon') && !e.target.closest('.value-info-tooltip')) {
+    document.querySelectorAll('.value-info-tooltip.active').forEach(t => {
+      t.classList.remove('active');
+    });
+  }
+});
 
 // Zinc Loan Cost Modal - populate data when opened
 window.populateZincModal = function() {

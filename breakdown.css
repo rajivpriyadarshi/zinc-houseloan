@@ -27,6 +27,26 @@ body {
   overflow: hidden;
 }
 
+.breakdown-title {
+  font-family: 'Butler Pro', serif;
+  font-weight: 300;
+  font-size: 42px;
+  color: #fff;
+  text-align: center;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin-top: 80px;
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 0.2s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 .hero-breakdown-scene {
   --stack-gap: 0px;
   --stack-overlap: calc(var(--block-w) * 0.607);
@@ -936,10 +956,25 @@ svg.stack-top.show-solid {
   }
 
   .continue-btn {
+    position: fixed;
     bottom: 20px;
-    padding: 16px 24px;
+    left: 20px;
+    right: 20px;
+    transform: none;
+    padding: 24px 32px;
     font-size: 16px;
-    min-width: 170px;
+    width: calc(100% - 40px);
+    min-width: auto;
+    border-radius: 40px;
+    z-index: 100;
+  }
+
+  .continue-btn:hover {
+    transform: none;
+  }
+
+  .continue-btn.visible {
+    animation: none;
   }
 }
 

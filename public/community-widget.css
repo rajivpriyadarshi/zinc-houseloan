@@ -238,20 +238,20 @@
   }
 
   .community-trigger {
-    padding: 16px 16px;
-    gap: 8px;
+    padding: 14px;
+    gap: 0;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    justify-content: center;
   }
 
   .community-trigger svg {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
   }
 
-  .community-trigger span {
-    font-size: 12px;
-  }
-
-  .community-trigger-subtitle {
+  .community-trigger-text {
     display: none;
   }
 
