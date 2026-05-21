@@ -1906,6 +1906,12 @@ function drawComparisonChart(animate = false) {
     tooltipAssetLabel.textContent = `${assetLabel} value:`;
   }
 
+  // Update mobile info bar label
+  const mobileInfoAssetLabel = document.getElementById('mobile-info-asset-label');
+  if (mobileInfoAssetLabel) {
+    mobileInfoAssetLabel.textContent = assetLabel;
+  }
+
   // Update growth percentage in tooltip
   const tooltipGrowthValue = document.getElementById('tooltip-growth-value');
   if (tooltipGrowthValue) {
@@ -2138,9 +2144,28 @@ function drawComparisonChart(animate = false) {
         document.getElementById('tooltip-burden-value').textContent = formatCurrency(point.zincBurden);
         document.getElementById('tooltip-net-value').textContent = formatCurrency(point.assetValue - point.zincBurden);
 
-        tooltip.style.left = (assetCoords.x + 20) + 'px';
-        tooltip.style.top = (assetCoords.y - 50) + 'px';
-        tooltip.classList.add('visible');
+        // Update mobile info bar as well
+        const mobileInfoBar = document.getElementById('comparison-mobile-info');
+        const mobileYearEl = document.getElementById('mobile-info-year-value');
+        const mobileRsuEl = document.getElementById('mobile-info-rsu-value');
+        const mobileBurdenEl = document.getElementById('mobile-info-burden-value');
+        const mobileNetEl = document.getElementById('mobile-info-net-value');
+
+        // Hide mobile info bar for year 0
+        if (mobileInfoBar) {
+          mobileInfoBar.style.display = point.year === 0 ? 'none' : 'flex';
+        }
+        if (mobileYearEl) mobileYearEl.textContent = point.year;
+        if (mobileRsuEl) mobileRsuEl.textContent = formatCurrency(point.assetValue);
+        if (mobileBurdenEl) mobileBurdenEl.textContent = formatCurrency(point.zincBurden);
+        if (mobileNetEl) mobileNetEl.textContent = formatCurrency(point.assetValue - point.zincBurden);
+
+        // On mobile, use the info bar instead of tooltip
+        if (window.innerWidth > 768) {
+          tooltip.style.left = (assetCoords.x + 20) + 'px';
+          tooltip.style.top = (assetCoords.y - 50) + 'px';
+          tooltip.classList.add('visible');
+        }
       }
     });
 
