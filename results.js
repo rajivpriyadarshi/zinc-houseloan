@@ -49,6 +49,51 @@ logoutBtn.addEventListener('click', async () => {
   }
 });
 
+// Hamburger menu functionality (bottom sheet)
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+const mobileMenuEmail = document.getElementById('mobile-menu-email');
+const mobileMenuLogout = document.getElementById('mobile-menu-logout');
+
+function openMobileMenu() {
+  mobileMenu?.classList.add('visible');
+  mobileMenuOverlay?.classList.add('visible');
+}
+
+function closeMobileMenu() {
+  mobileMenu?.classList.remove('visible');
+  mobileMenuOverlay?.classList.remove('visible');
+}
+
+if (hamburgerBtn && mobileMenu) {
+  hamburgerBtn.addEventListener('click', () => {
+    if (mobileMenu.classList.contains('visible')) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
+  });
+
+  // Close menu when clicking overlay
+  mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
+
+  // Mobile logout
+  if (mobileMenuLogout) {
+    mobileMenuLogout.addEventListener('click', async () => {
+      closeMobileMenu();
+      trackButtonClick('logout_click');
+      try {
+        await auth.signOut();
+        sessionStorage.removeItem('zinc-flow-started');
+        navigateTo('/');
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+  }
+}
+
 // Login modal functionality
 const loginModal = document.getElementById('login-modal');
 const googleSignInBtn = document.getElementById('google-signin-btn');
@@ -246,12 +291,19 @@ auth.onAuthStateChanged((user) => {
     logoutBtn.classList.add('visible');
     userEmailEl.textContent = user.email || '';
     userEmailEl.classList.add('visible');
+    // Update mobile menu email
+    if (mobileMenuEmail) {
+      mobileMenuEmail.textContent = user.email || '';
+    }
     // Re-enable snap scroll after login
     scrollContainer.style.scrollSnapType = 'y mandatory';
   } else {
     logoutBtn.classList.remove('visible');
     userEmailEl.textContent = '';
     userEmailEl.classList.remove('visible');
+    if (mobileMenuEmail) {
+      mobileMenuEmail.textContent = '';
+    }
   }
 });
 
@@ -710,7 +762,7 @@ function showOptionDetails(strategyId) {
 
   if (strategyId === 'zinc-loan') {
     title = "What if you use Zinc loan?";
-    description = "Zinc's HomeGap Loan lets you access funding against your vested RSUs without selling them upfront. You keep your assets invested while paying only interest.";
+    description = "Zinc Loan lets you access funding against your vested RSUs without selling them upfront. You keep your assets invested while paying only interest.";
     const rsuGrossSale = calculateGrossSaleRequired(fundingGap, modelInputs.assets.foreignRsu.embeddedGainPct, modelInputs.assets.foreignRsu.ltcgTaxRatePct, modelInputs.assets.foreignRsu.exemptionAmount);
     const effectiveRsuCagr = calculateEffectiveRsuInrCagr(modelInputs.assets.foreignRsu.usdCagrPct, modelInputs.assets.foreignRsu.inrDepreciationPct);
     valueToday = rsuGrossSale;
@@ -1488,6 +1540,39 @@ function showChartCalculation(strategyId) {
 //     showChartCalculation(option);
 //   });
 // });
+
+// Mobile info popup for bar info icons
+const mobileInfoPopup = document.getElementById('mobile-info-popup');
+const mobileInfoPopupOverlay = document.getElementById('mobile-info-popup-overlay');
+const mobileInfoPopupText = document.getElementById('mobile-info-popup-text');
+
+function openMobileInfoPopup(text) {
+  if (mobileInfoPopupText) mobileInfoPopupText.innerHTML = text;
+  mobileInfoPopup?.classList.add('visible');
+  mobileInfoPopupOverlay?.classList.add('visible');
+}
+
+function closeMobileInfoPopup() {
+  mobileInfoPopup?.classList.remove('visible');
+  mobileInfoPopupOverlay?.classList.remove('visible');
+}
+
+// Close popup on overlay click
+mobileInfoPopupOverlay?.addEventListener('click', closeMobileInfoPopup);
+
+// Handle info icon clicks on mobile
+document.querySelectorAll('.bar-info-icon').forEach(icon => {
+  icon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (window.innerWidth <= 768) {
+      const column = icon.closest('.chart-column');
+      const tooltipEl = column?.querySelector('.chart-tooltip');
+      if (tooltipEl) {
+        openMobileInfoPopup(tooltipEl.innerHTML);
+      }
+    }
+  });
+});
 
 // Animate bars function
 let barsAnimated = false;

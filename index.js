@@ -76,17 +76,24 @@ window.addEventListener('scroll', handleScroll, { passive: true });
 const userEmailEl = document.getElementById('user-email');
 
 auth.onAuthStateChanged((user) => {
+  const mobileEmailEl = document.getElementById('mobile-menu-email');
   if (user) {
     logoutBtn.classList.add('visible');
     if (userEmailEl) {
       userEmailEl.textContent = user.email || '';
       userEmailEl.classList.add('visible');
     }
+    if (mobileEmailEl) {
+      mobileEmailEl.textContent = user.email || '';
+    }
   } else {
     logoutBtn.classList.remove('visible');
     if (userEmailEl) {
       userEmailEl.textContent = '';
       userEmailEl.classList.remove('visible');
+    }
+    if (mobileEmailEl) {
+      mobileEmailEl.textContent = '';
     }
   }
 });
@@ -103,6 +110,52 @@ logoutBtn.addEventListener('click', async () => {
     trackButtonClick('logout_failed');
   }
 });
+
+// Hamburger menu functionality (bottom sheet)
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+const mobileMenuEmail = document.getElementById('mobile-menu-email');
+const mobileMenuLogout = document.getElementById('mobile-menu-logout');
+
+function openMobileMenu() {
+  mobileMenu?.classList.add('visible');
+  mobileMenuOverlay?.classList.add('visible');
+}
+
+function closeMobileMenu() {
+  mobileMenu?.classList.remove('visible');
+  mobileMenuOverlay?.classList.remove('visible');
+}
+
+if (hamburgerBtn && mobileMenu) {
+  hamburgerBtn.addEventListener('click', () => {
+    if (mobileMenu.classList.contains('visible')) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
+  });
+
+  // Close menu when clicking overlay
+  mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
+
+  // Mobile logout
+  if (mobileMenuLogout) {
+    mobileMenuLogout.addEventListener('click', async () => {
+      closeMobileMenu();
+      trackButtonClick('logout_click');
+      try {
+        await auth.signOut();
+        sessionStorage.removeItem('zinc-flow-started');
+        trackButtonClick('logout_success');
+      } catch (error) {
+        console.error('Logout error:', error);
+        trackButtonClick('logout_failed');
+      }
+    });
+  }
+}
 
 if (getStartedBtn) {
   getStartedBtn.addEventListener('click', () => {

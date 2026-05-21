@@ -19,7 +19,24 @@
       <span class="user-email" id="user-email"></span>
       <button class="logout-btn" id="logout-btn">Logout</button>
     </div>
+    <button class="hamburger-btn" id="hamburger-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
   </header>
+
+  <!-- Mobile Bottom Sheet Menu -->
+  <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-handle"></div>
+    <div class="mobile-menu-content">
+      <span class="mobile-menu-email" id="mobile-menu-email"></span>
+      <button class="mobile-menu-logout" id="mobile-menu-logout">Logout</button>
+    </div>
+  </div>
 
   <div class="scroll-container">
     <!-- Section 1: Hero - "You still need X Cr to get in your house" -->
@@ -160,6 +177,13 @@
 
         <!-- Baseline -->
         <div class="chart-baseline"></div>
+      </div>
+
+      <!-- Mobile Info Popup -->
+      <div class="mobile-info-popup-overlay" id="mobile-info-popup-overlay"></div>
+      <div class="mobile-info-popup" id="mobile-info-popup">
+        <div class="mobile-info-popup-handle"></div>
+        <p class="mobile-info-popup-text" id="mobile-info-popup-text"></p>
       </div>
 
       <div class="scroll-indicator">
@@ -531,13 +555,13 @@
         <div class="faq-list">
           <div class="faq-item">
             <button class="faq-question">
-              <span>What is Zinc's HomeGap Loan?</span>
+              <span>What is Zinc Loan?</span>
               <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
             <div class="faq-answer">
-              <p>HomeGap lets you unlock funding against your vested stocks, mutual funds & RSUs without selling them upfront, helping you finance goals like buying a home while staying invested in your company's future growth.</p>
+              <p>Zinc Loan lets you unlock funding against your vested stocks, mutual funds & RSUs without selling them upfront, helping you finance goals like buying a home while staying invested in your company's future growth.</p>
             </div>
           </div>
 

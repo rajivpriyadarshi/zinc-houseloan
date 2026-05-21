@@ -126,6 +126,89 @@ body {
   display: block;
 }
 
+/* Hamburger Menu (hidden on desktop) */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+
+.mobile-menu-overlay.visible {
+  display: block;
+}
+
+.mobile-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(25, 25, 25, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 24px 40px;
+  z-index: 1002;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu.visible {
+  transform: translateY(0);
+}
+
+.mobile-menu-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 24px;
+}
+
+.mobile-menu-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mobile-menu-email {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.mobile-menu-logout {
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  color: #fff;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-logout:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 /* Scroll Container with Snap */
 .scroll-container {
   height: 100vh;
@@ -2826,6 +2909,15 @@ body {
 
 /* Mobile Styles */
 @media (max-width: 768px) {
+  /* Header Mobile - Hamburger Menu */
+  .header-right {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: block;
+  }
+
   /* Hero Section Mobile */
   .hero-section {
     padding: 40px 24px;
@@ -2862,7 +2954,7 @@ body {
     width: 100%;
     max-width: 200px;
     justify-content: center;
-    padding: 10px 16px;
+    padding: 16px 16px;
   }
 
   .breakdown-plus {
@@ -2877,10 +2969,11 @@ body {
 
   .zinc-intro-label {
     font-size: 18px;
+    max-width: 280px;
   }
 
   .zinc-intro-title {
-    font-size: 28px;
+    font-size: 32px;
     letter-spacing: -1px;
     padding: 0 8px;
     min-height: 150px;
@@ -2979,6 +3072,61 @@ body {
     width: 14px;
     height: 14px;
     font-size: 9px;
+    cursor: pointer;
+  }
+
+  .chart-tooltip {
+    display: none !important;
+  }
+
+  /* Mobile Info Popup (Bottom Sheet) */
+  .mobile-info-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+  }
+
+  .mobile-info-popup-overlay.visible {
+    display: block;
+  }
+
+  .mobile-info-popup {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 24px 24px 0 0;
+    padding: 16px 24px 40px;
+    z-index: 1002;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-info-popup.visible {
+    transform: translateY(0);
+  }
+
+  .mobile-info-popup-handle {
+    width: 40px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  .mobile-info-popup-text {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    margin: 0;
   }
 
   .chart-baseline {
@@ -3007,16 +3155,19 @@ body {
 
   /* Option Sections Mobile */
   .option-section {
-    padding: 80px 20px 40px;
+    padding: 30px 20px 40px;
   }
 
   .option-content {
     max-width: 100%;
-    gap: 20px;
+    gap: 12px;
+    margin-top: 0;
   }
 
   .option-header {
     gap: 8px;
+    text-align: center;
+    margin-bottom: 0;
   }
 
   .option-title {
@@ -3398,8 +3549,11 @@ body {
 
   .section-disclaimer {
     bottom: 12px;
-    right: 20px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
     font-size: 10px;
+    text-align: center;
   }
 }
 
