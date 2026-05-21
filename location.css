@@ -429,9 +429,21 @@ body.page-exit {
   }
 
   .proceed-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
     font-size: 16px;
-    padding: 20px 28px;
-    min-width: 180px;
+    padding: 24px 32px;
+    margin: 0;
+    width: calc(100% - 40px);
+    min-width: auto;
+    border-radius: 40px;
+    z-index: 100;
+  }
+
+  .proceed-btn:hover {
+    transform: none;
   }
 
   .city-image-container {
@@ -441,5 +453,9 @@ body.page-exit {
   .city-image {
     max-width: 95vw;
     max-height: 35vh;
+  }
+
+  .community-widget {
+    display: none;
   }
 }

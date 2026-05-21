@@ -643,11 +643,11 @@ body.page-exit {
   }
 
   .hero-text {
-    margin-top: -10vh;
+    margin-top: -18vh;
   }
 
   .title {
-    font-size: 36px;
+    font-size: 42px;
     padding: 0 24px;
     letter-spacing: -0.02em;
   }
@@ -663,8 +663,8 @@ body.page-exit {
   .subtitle {
     font-size: 14px;
     max-width: 320px;
-    margin-top: 24px;
-    padding: 0 24px;
+    margin-top: 8px;
+    padding: 0;
   }
 
   .cta-pill {
@@ -686,6 +686,10 @@ body.page-exit {
     padding: 20px 28px;
     min-width: 180px;
     width: 100%;
+  }
+
+  .community-widget {
+    display: none;
   }
 }
 
