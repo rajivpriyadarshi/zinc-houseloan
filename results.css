@@ -1800,6 +1800,7 @@ body {
   padding: 8px 12px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
   pointer-events: none;
   opacity: 0;
@@ -1826,6 +1827,15 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: #b4c864;
+  margin-left: 0;
+  text-align: center;
+}
+
+.growth-chart-tooltip .tooltip-growth {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
 }
 
 .chart-labels {
@@ -2470,7 +2480,7 @@ body {
 .benefit-box.benefit-negative {
   border: 1px solid transparent;
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)) padding-box padding-box, linear-gradient(135deg, rgba(253, 253, 253, 0.12) 0%, rgba(180, 80, 50, 0.45) 40%, rgb(149 149 149 / 12%) 100%) border-box border-box;
-  margin-top: 32px;
+  margin-top: 52px;
 }
 
 .benefit-box.benefit-positive {

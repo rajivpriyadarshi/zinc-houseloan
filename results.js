@@ -2487,14 +2487,29 @@ function handleGrowthChartHover(e) {
   const mouseX = e.clientX - rect.left;
   const width = rect.width;
 
-  // Calculate year from mouse position
+  // Calculate time from mouse position (in months for granularity)
   const chartWidth = width - data.paddingLeft - data.paddingRight;
   const relativeX = mouseX - data.paddingLeft;
   const progress = Math.max(0, Math.min(1, relativeX / chartWidth));
-  const year = Math.round(progress * data.years);
+  const totalMonths = Math.round(progress * data.years * 12);
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  const decimalYears = totalMonths / 12;
 
-  // Calculate value at this year
-  const value = calculateFutureValue(data.todayValue, data.cagr, year);
+  // Calculate value at this time
+  const value = calculateFutureValue(data.todayValue, data.cagr, decimalYears);
+
+  // Format time display
+  let timeLabel;
+  if (years === 0 && months === 0) {
+    timeLabel = 'Value today';
+  } else if (years === 0) {
+    timeLabel = `Value after ${months} month${months > 1 ? 's' : ''}`;
+  } else if (months === 0) {
+    timeLabel = `Value after ${years} year${years > 1 ? 's' : ''}`;
+  } else {
+    timeLabel = `Value after ${years}y ${months}m`;
+  }
 
   // Get or create tooltip
   let tooltip = canvas.parentElement.querySelector('.growth-chart-tooltip');
@@ -2508,7 +2523,8 @@ function handleGrowthChartHover(e) {
   const pointIndex = Math.floor(progress * (data.allPoints.length - 1));
   const point = data.allPoints[pointIndex];
 
-  tooltip.innerHTML = `<span class="tooltip-year">Year ${year}</span><span class="tooltip-value">${formatCurrency(value)}</span>`;
+  const growthPct = (data.cagr * 100).toFixed(1);
+  tooltip.innerHTML = `<span class="tooltip-year">${timeLabel}</span><span class="tooltip-value">${formatCurrency(value)}</span><span class="tooltip-growth">@ ${growthPct}% growth</span>`;
   tooltip.style.left = `${point.x}px`;
   tooltip.style.top = `${point.y - 50}px`;
   tooltip.classList.add('visible');
