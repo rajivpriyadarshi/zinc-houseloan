@@ -630,7 +630,7 @@ svg.stack-top.show-solid {
 
 .continue-btn {
   position: absolute;
-  bottom: 40px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Satoshi', sans-serif;
