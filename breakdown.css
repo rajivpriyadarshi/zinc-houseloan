@@ -35,7 +35,7 @@ body {
   text-align: center;
   letter-spacing: -2px;
   line-height: 1.05;
-  margin-top: 80px;
+  margin-top: 40px;
   margin-bottom: 30px;
   opacity: 0;
   animation: fadeIn 0.6s ease-out 0.2s forwards;
@@ -746,10 +746,10 @@ svg.stack-top.show-solid {
   .breakdown-page { height: 100vh; padding: 20px 16px 20px; overflow: hidden; }
 
   .hero-breakdown-scene {
-    --block-w: 90px;
-    --stack-overlap: 54px;
-    --stack-overlap-top: 50px;
-    padding-bottom: 140px;
+    --block-w: 80px;
+    --stack-overlap: calc(var(--block-w) * 0.607);
+    --stack-overlap-top: calc(var(--block-w) * 0.56);
+    padding-bottom: 100px;
     position: relative;
   }
 
