@@ -2278,6 +2278,30 @@ if (comparisonChartSection && scrollContainer) {
   });
 
   comparisonObserver.observe(comparisonChartSection);
+
+  // Toggle snap scroll on mobile when reaching/leaving comparison chart section
+  if (window.innerWidth <= 768) {
+    const snapToggleObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Entering comparison chart section - disable snap
+          scrollContainer.style.scrollSnapType = 'none';
+        } else {
+          // Leaving comparison chart section
+          const rect = comparisonChartSection.getBoundingClientRect();
+          // Only re-enable snap if scrolling up (section is below viewport)
+          if (rect.top > 0) {
+            scrollContainer.style.scrollSnapType = 'y mandatory';
+          }
+        }
+      });
+    }, {
+      threshold: 0.1,
+      root: scrollContainer
+    });
+
+    snapToggleObserver.observe(comparisonChartSection);
+  }
 }
 
 // Asset toggle buttons

@@ -3320,6 +3320,8 @@ body {
   /* Comparison Chart Section Mobile */
   .comparison-chart-section {
     padding: 40px 20px;
+    height: auto !important;
+    min-height: 100vh;
   }
 
   .comparison-chart-title {
