@@ -252,6 +252,7 @@ svg.stack-top.show-solid {
   background: rgba(7, 8, 12, .78);
   opacity: 0;
   transform: translateY(20px);
+  white-space: nowrap;
 }
 
 .stack-side-pill::before {
@@ -363,7 +364,7 @@ svg.stack-top.show-solid {
   position: absolute;
   left: 100%;
   top: 50%;
-  width: 20px;
+  width: 8px;
   border-top: 1px solid rgba(255, 255, 255, .35);
   transform: translateY(-50%);
 }
