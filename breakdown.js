@@ -328,3 +328,15 @@ continueBtn.addEventListener('click', () => {
   trackButtonClick('breakdown_continue');
   window.location.href = 'results.html';
 });
+
+// Preload images for results page
+window.addEventListener('load', () => {
+  const imagesToPreload = [
+    '/bg_growth.jpg',
+  ];
+
+  imagesToPreload.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+});

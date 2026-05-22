@@ -221,3 +221,22 @@ document.getElementById('back-btn').addEventListener('click', (e) => {
   document.body.classList.add('page-exit');
   navigateTo('/', 400);
 });
+
+// Preload images for next pages in user flow
+window.addEventListener('load', () => {
+  const imagesToPreload = [
+    // Location page
+    '/new-cities/Bangalore.png',
+    '/new-cities/Mumbai.png',
+    '/new-cities/Delhi.png',
+    '/new-cities/Hyderabad.png',
+    '/new-cities/Chennai.png',
+    // Results page
+    '/bg_growth.jpg',
+  ];
+
+  imagesToPreload.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+});

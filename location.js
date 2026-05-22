@@ -105,3 +105,16 @@ document.getElementById('back-btn').addEventListener('click', (e) => {
   document.body.classList.add('page-exit');
   navigateTo('/planner', 400);
 });
+
+// Preload images for next pages in user flow
+window.addEventListener('load', () => {
+  const imagesToPreload = [
+    // Results page
+    '/bg_growth.jpg',
+  ];
+
+  imagesToPreload.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+});

@@ -437,3 +437,30 @@ function initRotatingPhrases() {
 }
 
 initRotatingPhrases();
+
+// Preload images for next pages in user flow
+window.addEventListener('load', () => {
+  const imagesToPreload = [
+    // Planner page
+    '/bg-planner.jpg',
+    '/houses/level1.png',
+    '/houses/level2.png',
+    '/houses/level3.png',
+    '/houses/level4.png',
+    '/houses/level5.png',
+    '/houses/level6.png',
+    // Location page
+    '/new-cities/Bangalore.png',
+    '/new-cities/Mumbai.png',
+    '/new-cities/Delhi.png',
+    '/new-cities/Hyderabad.png',
+    '/new-cities/Chennai.png',
+    // Results page
+    '/bg_growth.jpg',
+  ];
+
+  imagesToPreload.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+});
