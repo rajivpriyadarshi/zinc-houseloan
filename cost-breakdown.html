@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <title>Cost breakdown of your house - Zinc</title>
+    <link rel="stylesheet" href="flow.css" />
+    <link rel="stylesheet" href="cost-breakdown.css" />
+  </head>
+  <body class="cost-page">
+    <main class="breakdown-page" id="explainer" data-chapter="intro">
+      <div class="vertical-lines" aria-hidden="true"></div>
+      <h1>Cost breakdown of your house</h1>
+      <p class="narration" id="narration" aria-live="polite">
+        Every home starts with a price.
+      </p>
+      <div class="story-stage">
+        <div class="house-composition" id="house-composition">
+          <div
+            id="home-canvas"
+            role="img"
+            aria-label="A 3D home illustrates the property, interiors, and ownership costs."
+          ></div>
+          <div class="property-label reveal" id="property-label">
+            <span id="property-amount">₹1.00 Cr</span><span>Property cost</span>
+          </div>
+          <div class="loan-label reveal" id="loan-label">
+            <span class="label-line" aria-hidden="true"></span>
+            <div class="loan-pill">
+              <span class="loan-dot"></span
+              ><span id="loan-amount">₹80.00 L</span><span>Home loan</span>
+            </div>
+            <p>80% of the property price</p>
+          </div>
+        </div>
+        <div class="cost-story">
+          <p class="cost-heading reveal" id="cost-heading">
+            The rest comes from you
+          </p>
+          <div class="cost-steps" aria-label="Upfront costs">
+            <div class="cost-step reveal" id="down-step">
+              <span class="step-marker">01</span
+              ><span class="cost-value" id="down-amount">₹20.00 L</span
+              ><span class="cost-label">Down payment</span
+              ><span class="cost-detail">The remaining 20% of your home</span>
+            </div>
+            <div class="cost-step reveal" id="interiors-step">
+              <span class="step-marker">02</span
+              ><span class="cost-value" id="interiors-amount">₹20.00 L</span
+              ><span class="cost-label">Interiors</span
+              ><span class="cost-detail">To make the space your own</span>
+            </div>
+            <div class="cost-step reveal" id="duty-step">
+              <span class="step-marker">03</span
+              ><span class="cost-value" id="duty-amount">₹7.60 L</span
+              ><span class="cost-label">Stamp duty & registration</span
+              ><span class="cost-detail">To make it officially yours</span>
+            </div>
+          </div>
+          <div class="total-summary reveal" id="total-summary">
+            <p>You still need</p>
+            <div>
+              <span id="upfront-total">₹47.60 L</span
+              ><span class="total-suffix"
+                >before you<br class="desktop-break" />
+                move in</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="story-end">
+        <a class="continue-btn reveal" id="continue-btn" href="results.html"
+          >Continue<svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+        ></a>
+        <p class="estimate-note reveal" id="estimate-note">
+          Based on your property value and location. Costs are estimates.
+        </p>
+      </div>
+      <div class="playback-controls">
+        <button id="pause-btn" type="button" aria-label="Pause explanation">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M7 5v10M13 5v10" />
+          </svg></button
+        ><button id="skip-btn" type="button">Skip intro</button
+        ><button id="replay-btn" type="button" hidden>
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 8a6 6 0 1 1 0 5M4 3v5h5" /></svg
+          >Replay
+        </button>
+      </div>
+      <noscript
+        ><style>
+          .reveal {
+            opacity: 1;
+            transform: none;
+          }
+          .playback-controls {
+            display: none;
+          }
+        </style>
+        <p class="noscript-note">
+          Enable JavaScript to calculate your personalised estimate.
+        </p></noscript
+      >
+    </main>
+    <script type="module" src="cost-breakdown.js"></script>
+  </body>
+</html>

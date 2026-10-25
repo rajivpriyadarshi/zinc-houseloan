@@ -1,8 +1,10 @@
 import { getTransactionDutyRate } from './lib/stateDuty.js';
+import { PURCHASE_DEFAULTS, readPurchaseBudget } from './lib/purchaseBudget.js';
 
 // Get stored values
-const propertyPrice = parseInt(localStorage.getItem('houseValue')) || 10000000;
-const selectedCity = localStorage.getItem('selectedCity') || 'Bangalore';
+const purchaseBudget = readPurchaseBudget();
+const propertyPrice = purchaseBudget.price;
+const selectedCity = purchaseBudget.location;
 const transactionDutyPct = getTransactionDutyRate(selectedCity);
 
 // Default model inputs
@@ -10,8 +12,8 @@ let modelInputs = {
   propertyStatus: 'Ready',
   propertyPrice: propertyPrice,
   transactionDutyPct: transactionDutyPct,
-  interiorsPct: 0.2,
-  homeLoanLtvPct: 0.8,
+  interiorsPct: PURCHASE_DEFAULTS.interiorsPct,
+  homeLoanLtvPct: PURCHASE_DEFAULTS.homeLoanLtvPct,
   homeLoanTenureYears: 20,
   selectedHomeLoanRatePct: 0.085,
   constructionDurationYears: 3,
@@ -460,7 +462,7 @@ document.getElementById('detail-modal-close').addEventListener('click', () => {
 
 document.getElementById('back-btn').addEventListener('click', () => {
   document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'location.html', 400);
+  setTimeout(() => window.location.href = 'cost-breakdown.html', 400);
 });
 
 updateUI();

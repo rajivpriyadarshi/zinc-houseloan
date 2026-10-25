@@ -1,182 +1,117 @@
-const slider = document.getElementById('amount-slider');
-const amountInput = document.getElementById('amount-input');
-const amountDisplay = document.getElementById('amount-display');
-const houseImage = document.getElementById('house-image');
-const houseShadow = document.getElementById('house-shadow');
-
-const MIN_VALUE = 100000;
-const MAX_VALUE = 100000000;
-
-function getHouseLevel(value) {
-  const range = MAX_VALUE - MIN_VALUE;
-  const step = range / 6;
-
-  if (value < MIN_VALUE + step) return 1;
-  if (value < MIN_VALUE + step * 2) return 2;
-  if (value < MIN_VALUE + step * 3) return 3;
-  if (value < MIN_VALUE + step * 4) return 4;
-  if (value < MIN_VALUE + step * 5) return 5;
-  return 6;
+import { mountFlowShell } from "./lib/flowShell.js";
+import { readPurchaseBudget, formatMoney } from "./lib/purchaseBudget.js";
+mountFlowShell(1);
+const $ = (id) => document.getElementById(id),
+  slider = $("amount-slider"),
+  editor = $("amount-input");
+const anchors = [100000, 5000000, 10000000, 20000000, 50000000, 100000000];
+let value = readPurchaseBudget().price,
+  scene = null,
+  disposed = false;
+function valueFromPosition(position) {
+  const segment = Math.min(4, Math.floor(position / 200)),
+    fraction = (position - segment * 200) / 200;
+  return (
+    Math.round(
+      (anchors[segment] +
+        (anchors[segment + 1] - anchors[segment]) * fraction) /
+        100000,
+    ) * 100000
+  );
 }
-
-function formatCrores(value) {
-  const crores = value / 10000000;
-  if (crores >= 1) {
-    return '₹' + crores.toFixed(2) + ' Cr';
-  } else {
-    const lacs = value / 100000;
-    return '₹' + lacs.toFixed(2) + ' Lac';
-  }
+function positionFromValue(amount) {
+  const segment = Math.min(
+    4,
+    Math.max(
+      0,
+      anchors.findLastIndex((v) => v <= amount),
+    ),
+  );
+  return (
+    segment * 200 +
+    ((amount - anchors[segment]) / (anchors[segment + 1] - anchors[segment])) *
+      200
+  );
 }
-
-function formatIndianNumber(num) {
-  const str = num.toString();
-  let result = '';
-  let count = 0;
-
-  for (let i = str.length - 1; i >= 0; i--) {
-    count++;
-    result = str[i] + result;
-
-    if (count === 3 && i > 0) {
-      result = ',' + result;
-    } else if (count > 3 && (count - 3) % 2 === 0 && i > 0) {
-      result = ',' + result;
-    }
-  }
-
-  return result;
+function update(amount) {
+  value = Math.max(100000, Math.min(100000000, amount));
+  slider.value = positionFromValue(value);
+  slider.style.setProperty("--fill", slider.value / 10 + "%");
+  slider.setAttribute("aria-valuetext", formatMoney(value));
+  $("amount-text").textContent = formatMoney(value);
+  document
+    .querySelectorAll("[data-value]")
+    .forEach((button) =>
+      button.classList.toggle("active", Number(button.dataset.value) === value),
+    );
+  scene?.setValue(value);
 }
-
-function parseIndianNumber(str) {
-  return parseInt(str.replace(/,/g, ''), 10) || 0;
-}
-
-function updateDisplay(value) {
-  amountDisplay.textContent = formatCrores(value);
-}
-
-let isTransitioning = false;
-
-function updateHouseImage(level) {
-  const newSrc = `/houses/level${level}.png`;
-  if (houseImage.src.includes(`level${level}.png`) || isTransitioning) return;
-
-  isTransitioning = true;
-
-  houseImage.classList.add('zoom-out');
-  houseShadow.classList.add('zoom-out');
-
-  setTimeout(() => {
-    houseImage.src = newSrc;
-    houseShadow.src = newSrc;
-
-    setTimeout(() => {
-      houseImage.classList.remove('zoom-out');
-      houseShadow.classList.remove('zoom-out');
-      isTransitioning = false;
-    }, 50);
-  }, 300);
-}
-
-let currentLevel = 4;
-updateDisplay(10000000);
-updateHouseImage(currentLevel);
-
-let lastHapticValue = 10000000;
-const HAPTIC_STEP = 1000000;
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-function triggerHaptic() {
-  if (navigator.vibrate) {
-    navigator.vibrate(10);
-  }
-
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.frequency.value = 1200;
-  oscillator.type = 'sine';
-
-  gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
-
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + 0.05);
-}
-
-slider.addEventListener('input', () => {
-  const value = parseInt(slider.value, 10);
-  amountInput.value = formatIndianNumber(value);
-  updateDisplay(value);
-
-  const newLevel = getHouseLevel(value);
-  if (newLevel !== currentLevel) {
-    currentLevel = newLevel;
-    updateHouseImage(currentLevel);
-  }
-
-  const crossedStep = Math.floor(value / HAPTIC_STEP) !== Math.floor(lastHapticValue / HAPTIC_STEP);
-  if (crossedStep) {
-    triggerHaptic();
-  }
-  lastHapticValue = value;
+slider.addEventListener("input", () =>
+  update(valueFromPosition(Number(slider.value))),
+);
+document
+  .querySelectorAll("[data-value]")
+  .forEach((button) =>
+    button.addEventListener("click", () =>
+      update(Number(button.dataset.value)),
+    ),
+  );
+$("amount-display").addEventListener("click", () => {
+  editor.value = new Intl.NumberFormat("en-IN").format(value);
+  editor.hidden = false;
+  $("amount-display").hidden = true;
+  editor.focus();
+  editor.select();
 });
-
-amountDisplay.addEventListener('click', () => {
-  amountInput.style.display = 'block';
-  amountInput.focus();
-  amountDisplay.style.display = 'none';
-});
-
-amountInput.addEventListener('input', (e) => {
-  const rawValue = e.target.value.replace(/[^0-9]/g, '');
-  let numValue = parseInt(rawValue, 10) || 0;
-
-  if (numValue > MAX_VALUE) numValue = MAX_VALUE;
-
-  amountInput.value = formatIndianNumber(numValue);
-
-  if (numValue >= MIN_VALUE && numValue <= MAX_VALUE) {
-    slider.value = numValue;
-    const newLevel = getHouseLevel(numValue);
-    if (newLevel !== currentLevel) {
-      currentLevel = newLevel;
-      updateHouseImage(currentLevel);
-    }
+function closeEditor(commit = true) {
+  if (editor.hidden) return;
+  if (commit) {
+    const raw = editor.value.replace(/[^0-9]/g, "");
+    update(raw ? Math.round(Number(raw) / 100000) * 100000 : value);
+  }
+  editor.hidden = true;
+  $("amount-display").hidden = false;
+}
+editor.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    closeEditor();
+    $("amount-display").focus();
+  }
+  if (event.key === "Escape") {
+    closeEditor(false);
+    $("amount-display").focus();
   }
 });
-
-amountInput.addEventListener('blur', () => {
-  let value = parseIndianNumber(amountInput.value);
-  if (value < MIN_VALUE) value = MIN_VALUE;
-  if (value > MAX_VALUE) value = MAX_VALUE;
-  amountInput.value = formatIndianNumber(value);
-  slider.value = value;
-  updateDisplay(value);
-  amountInput.style.display = 'none';
-  amountDisplay.style.display = 'inline';
-
-  const newLevel = getHouseLevel(value);
-  if (newLevel !== currentLevel) {
-    currentLevel = newLevel;
-    updateHouseImage(currentLevel);
-  }
+editor.addEventListener("blur", () => closeEditor());
+$("proceed-btn").addEventListener("click", () => {
+  closeEditor();
+  try {
+    localStorage.setItem("houseValue", String(value));
+  } catch {}
+  window.location.href = "location.html";
 });
-
-document.getElementById('proceed-btn').addEventListener('click', () => {
-  const value = parseInt(slider.value, 10);
-  localStorage.setItem('houseValue', value);
-  document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'location.html', 400);
+function fallback() {
+  scene?.dispose();
+  scene = null;
+  $("property-canvas").hidden = true;
+}
+update(value);
+import("./lib/propertyScene.js")
+  .then(({ createPropertyScene }) => {
+    if (disposed) return;
+    scene = createPropertyScene($("property-canvas"), {
+      value,
+      interactive: true,
+      onError: fallback,
+    });
+  })
+  .catch(fallback);
+function dispose() {
+  disposed = true;
+  scene?.dispose();
+}
+window.addEventListener("pagehide", (event) => {
+  if (!event.persisted) dispose();
 });
-
-document.querySelector('.back-btn').addEventListener('click', (e) => {
-  e.preventDefault();
-  document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'index.html', 400);
-});
+if (import.meta.hot) import.meta.hot.dispose(dispose);

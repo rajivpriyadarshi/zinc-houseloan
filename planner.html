@@ -1,41 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Value of Your House - Zinc</title>
-  <link rel="stylesheet" href="planner.css">
-</head>
-<body>
-  <button class="back-btn" onclick="window.location.href='index.html'">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-  </button>
-
-  <div class="container">
-    <div class="vertical-lines"></div>
-
-    <div class="content">
-      <p class="subtitle">Value of your house?</p>
-      <div class="amount-display">
-        <span id="amount-display" class="amount-value">₹1.00 Cr</span>
-        <input type="text" id="amount-input" class="amount-input-hidden" value="1,00,00,000">
-      </div>
-
-      <div class="slider-container">
-        <input type="range" id="amount-slider" min="100000" max="100000000" value="10000000" step="100000">
-      </div>
-
-      <button class="proceed-btn" id="proceed-btn">Proceed</button>
-
-      <div class="house-container">
-        <img id="house-image" src="/houses/level4.png" alt="House" class="house-image">
-        <img id="house-shadow" src="/houses/level4.png" alt="" class="house-shadow">
-      </div>
-    </div>
-  </div>
-
-  <script type="module" src="planner-main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Value of Your House - Zinc</title>
+    <link rel="stylesheet" href="flow.css" />
+  </head>
+  <body class="value-page">
+    <main class="flow-main">
+      <section class="flow-copy">
+        <a class="back-link" href="index.html"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m14 6-6 6 6 6M8 12h12" /></svg
+          >Back</a
+        >
+        <p class="eyebrow">THE STARTING POINT</p>
+        <h1>Value of your house?</h1>
+        <button
+          type="button"
+          class="amount-display"
+          id="amount-display"
+          aria-label="Edit house value"
+        >
+          <span id="amount-text">₹1.00 Cr</span
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m15 5 4 4M4 20l5-1L20 8a2.8 2.8 0 0 0-4-4L5 15z" />
+          </svg></button
+        ><input
+          class="amount-editor"
+          id="amount-input"
+          inputmode="numeric"
+          aria-label="House value in rupees"
+          aria-describedby="amount-help"
+          hidden
+        />
+        <p class="amount-help" id="amount-help">
+          Drag to adjust, or click the amount to enter a value.
+        </p>
+        <div class="slider-wrap">
+          <label for="amount-slider" class="eyebrow" style="display: none"
+            >House value</label
+          ><input
+            id="amount-slider"
+            class="value-slider"
+            type="range"
+            min="0"
+            max="1000"
+            value="400"
+            step="1"
+            aria-label="House value"
+          />
+          <div class="slider-ticks">
+            <span>₹1 L</span><span>₹50 L</span><span>₹1 Cr</span
+            ><span>₹2 Cr</span><span>₹5 Cr</span><span>₹10 Cr</span>
+          </div>
+        </div>
+        <div class="preset-row" aria-label="Suggested house values">
+          <button type="button" data-value="5000000">₹50 L</button
+          ><button type="button" data-value="10000000">₹1 Cr</button
+          ><button type="button" data-value="20000000">₹2 Cr</button
+          ><button type="button" data-value="50000000">₹5 Cr</button
+          ><button type="button" data-value="100000000">₹10 Cr</button>
+        </div>
+        <p class="description">Move the slider. Watch your home take shape.</p>
+        <div class="action-area">
+          <button class="primary-button" id="proceed-btn" type="button">
+            Proceed
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12h16m-6-6 6 6-6 6" />
+            </svg>
+          </button>
+          <p class="action-hint">Next, choose where you’ll call home.</p>
+        </div>
+      </section>
+      <section class="model-stage" aria-label="Home construction preview">
+        <div
+          id="property-canvas"
+          class="model-canvas model-interactive"
+          tabindex="0"
+          role="img"
+          aria-label="A home that grows as the property value increases. Drag or hold arrow keys to change the view; release to return."
+        ></div>
+      </section>
+    </main>
+    <script type="module" src="planner-main.js"></script>
+  </body>
 </html>

@@ -1,73 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Where Will This House Be? - Zinc</title>
-  <link rel="stylesheet" href="location.css">
-</head>
-<body>
-  <button class="back-btn" onclick="window.location.href='planner.html'">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-  </button>
-
-  <div class="container">
-    <div class="content">
-      <h1 class="title">Where will this<br>house be?</h1>
-
-      <div class="city-options">
-        <button class="city-btn selected" data-city="Bangalore">Bangalore</button>
-        <button class="city-btn" data-city="Mumbai">Mumbai</button>
-        <button class="city-btn" data-city="Delhi">Delhi</button>
-        <button class="city-btn" data-city="Hyderabad">Hyderabad</button>
-        <button class="city-btn" data-city="Chennai">Chennai</button>
-        <button class="city-btn" data-city="Others">Others</button>
-      </div>
-
-      <div class="dropdown-container" id="dropdown-container">
-        <select id="state-dropdown" class="state-dropdown">
-          <option value="">Select a state</option>
-          <option value="Andhra Pradesh">Andhra Pradesh</option>
-          <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-          <option value="Assam">Assam</option>
-          <option value="Bihar">Bihar</option>
-          <option value="Chhattisgarh">Chhattisgarh</option>
-          <option value="Goa">Goa</option>
-          <option value="Gujarat">Gujarat</option>
-          <option value="Haryana">Haryana</option>
-          <option value="Himachal Pradesh">Himachal Pradesh</option>
-          <option value="Jharkhand">Jharkhand</option>
-          <option value="Karnataka">Karnataka</option>
-          <option value="Kerala">Kerala</option>
-          <option value="Madhya Pradesh">Madhya Pradesh</option>
-          <option value="Maharashtra">Maharashtra</option>
-          <option value="Manipur">Manipur</option>
-          <option value="Meghalaya">Meghalaya</option>
-          <option value="Mizoram">Mizoram</option>
-          <option value="Nagaland">Nagaland</option>
-          <option value="Odisha">Odisha</option>
-          <option value="Punjab">Punjab</option>
-          <option value="Rajasthan">Rajasthan</option>
-          <option value="Sikkim">Sikkim</option>
-          <option value="Tamil Nadu">Tamil Nadu</option>
-          <option value="Telangana">Telangana</option>
-          <option value="Tripura">Tripura</option>
-          <option value="Uttar Pradesh">Uttar Pradesh</option>
-          <option value="Uttarakhand">Uttarakhand</option>
-          <option value="West Bengal">West Bengal</option>
-        </select>
-      </div>
-
-      <button class="proceed-btn visible" id="proceed-btn">Proceed</button>
-    </div>
-
-    <div class="city-image-container">
-      <img id="city-image" class="city-image" src="/new-cities/Bangalore.png" alt="Bangalore">
-    </div>
-  </div>
-
-  <script src="location.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Where Will This House Be? - Zinc</title>
+    <link rel="stylesheet" href="flow.css" />
+  </head>
+  <body class="location-page">
+    <main class="flow-main">
+      <section class="flow-copy">
+        <a class="back-link" href="planner.html"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m14 6-6 6 6 6M8 12h12" /></svg
+          >Back to your home</a
+        >
+        <p class="eyebrow">A PLACE TO PUT DOWN ROOTS</p>
+        <h1>Where will this<br /><span class="muted">house be?</span></h1>
+        <p class="description">
+          Choose your location. We’ll account for the local stamp duty and
+          registration estimate.
+        </p>
+        <div class="city-options">
+          <button
+            class="city-btn selected"
+            data-city="Bangalore"
+            type="button"
+            aria-pressed="true"
+          >
+            Bangalore</button
+          ><button
+            class="city-btn"
+            data-city="Mumbai"
+            type="button"
+            aria-pressed="false"
+          >
+            Mumbai</button
+          ><button
+            class="city-btn"
+            data-city="Delhi"
+            type="button"
+            aria-pressed="false"
+          >
+            Delhi</button
+          ><button
+            class="city-btn"
+            data-city="Others"
+            type="button"
+            aria-pressed="false"
+          >
+            Others
+          </button>
+        </div>
+        <div class="dropdown-container" id="dropdown-container" hidden>
+          <label for="state-dropdown">Select a city or state</label
+          ><select id="state-dropdown" class="state-dropdown">
+            <option value="">Select a city or state</option>
+          </select>
+        </div>
+        <div class="action-area">
+          <button class="primary-button" id="proceed-btn" type="button">
+            Proceed
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12h16m-6-6 6 6-6 6" />
+            </svg>
+          </button>
+          <p class="action-hint">Next, the full cost of moving in.</p>
+        </div>
+      </section>
+      <section class="city-stage" aria-label="Selected location">
+        <div class="model-label">THE SETTING FOR YOUR NEXT CHAPTER</div>
+        <img class="city-image" id="city-image" alt="" hidden />
+        <div id="city-placeholder" class="city-placeholder" hidden>
+          <div class="skyline" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+        <div
+          id="city-canvas"
+          class="city-canvas"
+          role="img"
+          aria-label="India Gate in New Delhi assembling stone by stone, surrounded by a small landscaped lawn"
+          hidden
+        ></div>
+        <div class="model-caption">
+          <span class="stage-number">INDIA</span>
+          <div class="caption-text">
+            <strong id="city-name">Bangalore</strong>
+            <p id="location-value">A home worth ₹1.00 Cr</p>
+          </div>
+          <button
+            type="button"
+            id="replay-city"
+            class="city-replay"
+            aria-label="Replay India Gate construction"
+            hidden
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
+            </svg>
+            Replay build
+          </button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="location.js"></script>
+  </body>
 </html>

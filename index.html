@@ -1,22 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zinc - Plan Your Home Purchase</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <div class="vertical-lines"></div>
-    <h1 class="title">Plan your home<br>purchase</h1>
-    <button class="get-started-btn" id="get-started-btn">Get started</button>
-  </div>
-  <script>
-    document.getElementById('get-started-btn').addEventListener('click', () => {
-      document.body.classList.add('page-exit');
-      setTimeout(() => window.location.href = 'planner.html', 400);
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zinc - Plan Your Home Purchase</title>
+    <link rel="stylesheet" href="flow.css" />
+  </head>
+  <body class="welcome">
+    <main class="flow-main">
+      <section class="flow-copy">
+        <h1>Planning to fund<br />your new home</h1>
+        <div
+          class="welcome-rotation"
+          role="img"
+          aria-label="By selling RSUs, stocks or land, redeeming mutual funds, using savings, or breaking FDs?"
+        >
+          <span class="funding-phrase active" aria-hidden="true"
+            >by selling RSUs?</span
+          >
+          <span class="funding-phrase" aria-hidden="true"
+            >by selling stocks?</span
+          >
+          <span class="funding-phrase" aria-hidden="true"
+            >by redeeming mutual funds?</span
+          >
+          <span class="funding-phrase" aria-hidden="true"
+            >by using savings?</span
+          >
+          <span class="funding-phrase" aria-hidden="true"
+            >by breaking FDs?</span
+          >
+          <span class="funding-phrase" aria-hidden="true"
+            >by selling land?</span
+          >
+        </div>
+        <p class="description welcome-description">
+          Your home loan may cover up to 80% of the house value. But the actual
+          cost includes down payment, stamp duty, registration, GST, interiors,
+          furniture, and move-in expenses.
+        </p>
+        <div class="action-area">
+          <p class="welcome-cta">Let's find out the smartest way to fund it</p>
+          <a class="primary-button" id="get-started-btn" href="planner.html"
+            >Get started
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 12h16m-6-6 6 6-6 6" /></svg
+          ></a>
+        </div>
+      </section>
+      <section class="model-stage" aria-label="Your future home">
+        <div
+          id="property-canvas"
+          class="model-canvas"
+          role="img"
+          aria-label="A landscaped home with a car pulling into its garage, a passing car, and a person walking a dog in the garden"
+        ></div>
+      </section>
+    </main>
+    <script type="module" src="welcome.js"></script>
+  </body>
 </html>
