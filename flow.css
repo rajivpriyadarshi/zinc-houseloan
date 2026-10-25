@@ -35,6 +35,18 @@ body {
   min-height: 100dvh;
   background: radial-gradient(ellipse at 73% 52%, #34422a60, transparent 52%);
 }
+/* A static frosted-crystal field shared by the entire planner. */
+body {
+  isolation: isolate;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #171c19 url("/frosted-fractal.svg") center / cover no-repeat;
+}
 button,
 input,
 select {
@@ -453,7 +465,7 @@ h1 .muted {
   border: 0;
   padding: 0;
   text-align: left;
-  color: #eff3e7;
+  color: #b9cfa1;
   font-weight: 500;
   font-size: clamp(47px, 5vw, 76px);
   letter-spacing: -3px;
@@ -581,7 +593,7 @@ h1 .muted {
 }
 .city-options {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 29px;
   max-width: 370px;
@@ -758,5 +770,11 @@ h1 .muted {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-life-toggle {
+    display: none;
   }
 }

@@ -1,226 +1,225 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Funding Options - Zinc</title>
-  <link rel="stylesheet" href="results.css">
-</head>
-<body>
-  <div class="page-container">
-    <!-- Left Column -->
-    <div class="left-column">
-      <button class="back-btn" id="back-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your funding options — Zinc</title>
+    <link rel="stylesheet" href="flow.css" />
+    <link rel="stylesheet" href="results.css" />
+    <link rel="stylesheet" href="glass.css" />
+  </head>
+  <body class="funding-page">
+    <main class="funding-track" id="funding-track">
+      <div class="funding-stage" id="funding-stage">
+        <section
+          class="loan-intro"
+          id="zinc-intro"
+          aria-labelledby="intro-title"
+        >
+          <a href="cost-breakdown.html" class="back-link"
+            >← Your cost breakdown</a
+          >
+          <div class="intro-copy">
+            <p class="intro-kicker">
+              Introducing Zinc loan · starting at <strong>9.5% p.a.*</strong>
+            </p>
+            <h1 id="intro-title">
+              <span class="line-mask"
+                ><span class="reveal-line"
+                  >Unlock funding against your</span
+                ></span
+              >
+              <span class="line-mask"
+                ><span class="reveal-line"
+                  >stocks, mutual funds &amp; RSUs.</span
+                ></span
+              >
+              <span class="line-mask"
+                ><span class="reveal-line accent-line"
+                  >Without selling them.</span
+                ></span
+              >
+            </h1>
+            <p class="intro-support">Fund big goals while staying invested.</p>
+          </div>
+          <div class="intro-bottom">
+            <p class="launch-note">
+              Launching soon <span>·</span> Powered by RBI registered NBFCs /
+              Banks
+            </p>
+            <a href="#funding-comparison" class="scroll-cue"
+              >Scroll to compare <span>↓</span></a
+            >
+            <p class="rate-note">
+              *Rates vary based on your credit profile and asset holdings.
+            </p>
+          </div>
+        </section>
+        <section
+          class="comparison"
+          id="funding-comparison"
+          aria-labelledby="comparison-title"
+          inert
+        >
+          <div class="comparison-inner">
+            <h2 id="comparison-title">Let’s compare your funding options.</h2>
+            <p class="comparison-context">
+              Funding <strong id="funding-amount"></strong>
+              <span>·</span> Impact over
+              <strong id="period-label">10 years</strong>
+            </p>
+            <div class="comparison-chart" id="comparison-chart">
+              <div class="zero-line"><span>₹0</span></div>
+              <div class="chart-options" id="chart-options"></div>
+            </div>
+            <div class="comparison-bottom">
+              <p>Select an option to see the calculation.</p>
+              <button id="assumptions-open" class="text-button">
+                Assumptions <span>↗</span>
+              </button>
+            </div>
+          </div>
+          <a class="back-to-intro" href="#zinc-intro">↑ Back to Zinc loan</a>
+        </section>
+      </div>
+    </main>
+    <dialog id="option-dialog" aria-labelledby="option-title">
+      <button
+        type="button"
+        class="close-dialog"
+        id="option-close"
+        aria-label="Close calculation"
+      >
+        ×
       </button>
-
-      <div class="funding-info">
-        <p class="funding-label">You still need</p>
-        <h1 class="funding-amount" id="funding-amount">99.3 lacs</h1>
-        <p class="funding-subtitle">even after taking a home loan to get in your house</p>
-      </div>
-
-      <div class="house-info">
-        <div class="house-badge">
-          <span class="house-city" id="city-name">Mumbai</span> house
-          <div class="house-value" id="house-value">5 Cr</div>
-        </div>
-        <img id="house-image" class="house-image" src="/houses/level4.png" alt="House">
-      </div>
-
-      <div class="settings-section">
-        <button class="settings-btn" id="loan-settings-btn">
-          <span class="settings-label">Home loan rate</span>
-          <div class="settings-right">
-            <span class="settings-value" id="loan-settings-value">8.5%, 20 year, 80%</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+      <div id="option-detail" class="option-detail"></div>
+      <p class="model-note">
+        Illustrative outcomes based on assumed growth, tax and borrowing costs.
+        Outcomes are not guaranteed.
+      </p>
+      <button id="assumptions-inline" class="text-button">
+        View assumptions <span>↗</span>
+      </button>
+    </dialog>
+    <dialog id="assumptions-dialog" aria-labelledby="assumptions-title">
+      <form id="assumptions-form">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">MAKE IT YOURS</p>
+            <h2 id="assumptions-title">Your assumptions</h2>
           </div>
-        </button>
-
-        <button class="settings-btn" id="construction-btn">
-          <span class="settings-label">Under-construction property?</span>
-          <div class="settings-right">
-            <span class="settings-value" id="construction-value">No</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Right Column -->
-    <div class="right-column">
-      <h2 class="options-title">Here are your funding options</h2>
-
-      <div class="best-option-section">
-        <p class="section-label">Best option for you</p>
-        <div class="option-card best" id="best-option">
-          <!-- Filled by JS -->
+          <button
+            type="button"
+            class="close-dialog"
+            aria-label="Close assumptions"
+          >
+            ×
+          </button>
         </div>
-      </div>
-
-      <div class="other-options-section">
-        <p class="section-label">Other options</p>
-        <div id="other-options">
-          <!-- Filled by JS -->
+        <p class="dialog-description">
+          Change the inputs to see how the comparison responds.
+        </p>
+        <div class="horizon" role="group" aria-label="Comparison period">
+          <span>Compare over</span
+          ><button type="button" data-years="5" aria-pressed="false">
+            5 years</button
+          ><button type="button" data-years="10" aria-pressed="true">
+            10 years</button
+          ><button type="button" data-years="15" aria-pressed="false">
+            15 years
+          </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Loan Settings Modal -->
-  <div class="modal-overlay" id="loan-modal">
-    <div class="modal">
-      <h3 class="modal-title">Home Loan Settings</h3>
-
-      <div class="modal-field">
-        <label>Interest Rate</label>
-        <select id="modal-loan-rate">
-          <option value="0.075">7.5%</option>
-          <option value="0.08">8%</option>
-          <option value="0.085" selected>8.5%</option>
-          <option value="0.09">9%</option>
-          <option value="0.095">9.5%</option>
-          <option value="0.1">10%</option>
-          <option value="0.105">10.5%</option>
-          <option value="0.11">11%</option>
-          <option value="0.115">11.5%</option>
-          <option value="0.12">12%</option>
-          <option value="0.125">12.5%</option>
-        </select>
-      </div>
-
-      <div class="modal-field">
-        <label>Tenure (Years)</label>
-        <select id="modal-loan-tenure">
-          <option value="5">5 years</option>
-          <option value="10">10 years</option>
-          <option value="15">15 years</option>
-          <option value="20" selected>20 years</option>
-          <option value="25">25 years</option>
-          <option value="30">30 years</option>
-        </select>
-      </div>
-
-      <div class="modal-field">
-        <label>LTV (Loan to Value)</label>
-        <select id="modal-loan-ltv">
-          <option value="0.5">50%</option>
-          <option value="0.6">60%</option>
-          <option value="0.7">70%</option>
-          <option value="0.8" selected>80%</option>
-          <option value="0.9">90%</option>
-          <option value="0.95">95%</option>
-        </select>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-cancel" id="loan-modal-cancel">Cancel</button>
-        <button class="modal-save" id="loan-modal-save">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Construction Modal -->
-  <div class="modal-overlay" id="construction-modal">
-    <div class="modal">
-      <h3 class="modal-title">Property Status</h3>
-
-      <div class="modal-field">
-        <label>Is this an under-construction property?</label>
-        <select id="modal-construction">
-          <option value="Ready" selected>No - Ready to move</option>
-          <option value="Under Construction">Yes - Under construction</option>
-        </select>
-      </div>
-
-      <div id="construction-extra-fields" class="construction-extra-fields">
-        <div class="modal-field">
-          <label>Construction Duration (Years)</label>
-          <select id="modal-construction-duration">
-            <option value="1">1 year</option>
-            <option value="2">2 years</option>
-            <option value="3" selected>3 years</option>
-            <option value="4">4 years</option>
-            <option value="5">5 years</option>
-          </select>
+        <div class="input-grid">
+          <label
+            >Home loan rate <span>% per year</span
+            ><input
+              id="input-home-rate"
+              type="number"
+              min="5"
+              max="15"
+              step=".1"
+              required
+          /></label>
+          <label
+            >Home loan coverage <span>% of property value</span
+            ><input
+              id="input-ltv"
+              type="number"
+              min="50"
+              max="90"
+              step="1"
+              required
+          /></label>
+          <label
+            >Savings growth <span>% per year</span
+            ><input
+              id="input-cash"
+              type="number"
+              min="0"
+              max="20"
+              step=".5"
+              required
+          /></label>
+          <label
+            >Land appreciation <span>% per year</span
+            ><input
+              id="input-land"
+              type="number"
+              min="0"
+              max="25"
+              step=".5"
+              required
+          /></label>
+          <label
+            >Equity growth <span>% per year</span
+            ><input
+              id="input-equity"
+              type="number"
+              min="0"
+              max="30"
+              step=".5"
+              required
+          /></label>
+          <label
+            >RSU growth in USD <span>% per year</span
+            ><input
+              id="input-rsu"
+              type="number"
+              min="0"
+              max="30"
+              step=".5"
+              required
+          /></label>
         </div>
-
-        <div class="modal-info">
-          <span class="info-label">GST Rate</span>
-          <span class="info-value">5%</span>
+        <div class="assumption-details">
+          <strong>Also included in this illustration</strong>
+          <p>
+            Home loan: 20 years. Interiors: 20% of property price. Duties follow
+            your selected location. Zinc rate: home loan rate + 2%, capped at
+            12.5%, with interest-only payments and principal repaid at the end
+            of the comparison period.
+          </p>
+          <p>
+            Annual INR depreciation: 2.5%. Assumed embedded gains: land 60%,
+            equity 50%, RSUs 40%. Capital-gains tax assumption: 12.5%, with a
+            ₹1.25 L exemption for Indian equity. Opportunity cost of loan
+            payments: 6%.
+          </p>
         </div>
-
-        <div class="modal-field">
-          <label>Drawdown Schedule</label>
-          <div class="drawdown-grid">
-            <div class="drawdown-row">
-              <span>Year 0</span>
-              <select id="drawdown-0">
-                <option value="0.1">10%</option>
-                <option value="0.2">20%</option>
-                <option value="0.3" selected>30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 1</span>
-              <select id="drawdown-1">
-                <option value="0.1">10%</option>
-                <option value="0.2">20%</option>
-                <option value="0.3" selected>30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 2</span>
-              <select id="drawdown-2">
-                <option value="0.1">10%</option>
-                <option value="0.2" selected>20%</option>
-                <option value="0.3">30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-            <div class="drawdown-row">
-              <span>Year 3</span>
-              <select id="drawdown-3">
-                <option value="0.1">10%</option>
-                <option value="0.2" selected>20%</option>
-                <option value="0.3">30%</option>
-                <option value="0.4">40%</option>
-                <option value="0.5">50%</option>
-              </select>
-            </div>
-          </div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary-button" id="reset-assumptions">
+            Reset defaults</button
+          ><button class="primary-button" type="submit">
+            Update comparison <span>→</span>
+          </button>
         </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-cancel" id="construction-modal-cancel">Cancel</button>
-        <button class="modal-save" id="construction-modal-save">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Option Detail Modal -->
-  <div class="modal-overlay" id="detail-modal">
-    <div class="modal modal-large">
-      <h3 class="modal-title" id="detail-modal-title">Option Details</h3>
-      <div id="detail-modal-content"></div>
-      <div class="modal-actions">
-        <button class="modal-save" id="detail-modal-close">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <script type="module" src="results.js"></script>
-</body>
+      </form>
+    </dialog>
+    <noscript
+      ><p class="no-js">
+        Enable JavaScript to see the comparison based on your home budget.
+      </p></noscript
+    >
+    <script type="module" src="results.js"></script>
+  </body>
 </html>

@@ -1,103 +1,93 @@
 import { mountFlowShell } from "./lib/flowShell.js";
 import { readPurchaseBudget, formatMoney } from "./lib/purchaseBudget.js";
-import { STATE_DUTY_RATES } from "./lib/stateDuty.js";
 mountFlowShell(2);
 const $ = (id) => document.getElementById(id),
   budget = readPurchaseBudget();
-const cities = ["Bangalore", "Mumbai", "Delhi"];
-let selected = budget.location,
+const landmarks = {
+  Bangalore: "Vidhana Soudha",
+  Mumbai: "Gateway of India",
+  Delhi: "Lotus Temple",
+};
+let selected = Object.hasOwn(landmarks, budget.location)
+    ? budget.location
+    : "Bangalore",
   version = 0,
   cityScene = null,
-  disposed = false;
-for (const name of Object.keys(STATE_DUTY_RATES).filter(
-  (name) => !cities.includes(name),
-)) {
-  const option = document.createElement("option");
-  option.value = name;
-  option.textContent = name;
-  $("state-dropdown").append(option);
-}
+  disposed = false,
+  lifePaused = false;
 $("location-value").textContent = "A home worth " + formatMoney(budget.price);
 function showLocation(name) {
+  if (!Object.hasOwn(landmarks, name)) return;
   const token = ++version;
   cityScene?.dispose();
   cityScene = null;
-  $("city-canvas").hidden = true;
+  $("city-canvas").hidden = false;
   $("replay-city").hidden = true;
+  $("city-placeholder").hidden = true;
   selected = name;
-  $("city-name").textContent = name || "Somewhere new";
-  $("proceed-btn").disabled = !name;
-  const other = !cities.includes(name);
-  $("dropdown-container").hidden = !other;
+  lifePaused = false;
+  $("toggle-city-life").hidden = true;
+  $("toggle-city-life").textContent = "Pause life";
+  $("toggle-city-life").setAttribute("aria-label", "Pause people and animals");
+  $("toggle-city-life").setAttribute("aria-pressed", "false");
+  $("city-name").textContent = name + " · " + landmarks[name];
+  $("city-canvas").setAttribute(
+    "aria-label",
+    landmarks[name] +
+      " in " +
+      name +
+      (name === "Delhi"
+        ? " assembling marble petals around reflecting pools and greenery"
+        : " assembling stone by stone, with landscaped surroundings") +
+      ", with walking visitors, dogs and cats",
+  );
+  $("replay-city").setAttribute(
+    "aria-label",
+    "Replay " + landmarks[name] + " construction",
+  );
   document.querySelectorAll("[data-city]").forEach((button) => {
-    const active = button.dataset.city === (other ? "Others" : name);
+    const active = button.dataset.city === name;
     button.classList.toggle("selected", active);
     button.setAttribute("aria-pressed", String(active));
   });
-  if (other) {
-    $("state-dropdown").value = name || "";
-    $("city-image").hidden = true;
+  const fallback = () => {
+    if (token !== version || disposed) return;
+    cityScene?.dispose();
+    cityScene = null;
+    $("city-canvas").hidden = true;
+    $("replay-city").hidden = true;
     $("city-placeholder").hidden = false;
-    return;
-  }
-  $("city-placeholder").hidden = true;
-  if (name === "Delhi") {
-    $("city-image").hidden = true;
-    $("city-canvas").hidden = false;
-    $("city-name").textContent = "Delhi · India Gate";
-    const fallback = () => {
+    $("toggle-city-life").hidden = true;
+  };
+  import("./lib/cityScene.js")
+    .then(({ createCityScene }) => {
       if (token !== version || disposed) return;
-      cityScene?.dispose();
-      cityScene = null;
-      $("city-canvas").hidden = true;
-      $("replay-city").hidden = true;
-      $("city-placeholder").hidden = false;
-    };
-    import("./lib/delhiScene.js")
-      .then(({ createDelhiScene }) => {
-        if (token !== version || disposed) return;
-        cityScene = createDelhiScene($("city-canvas"), { onError: fallback });
-        $("replay-city").hidden = !cityScene;
-      })
-      .catch(fallback);
-    return;
-  }
-  showImage(name, token);
+      cityScene = createCityScene($("city-canvas"), {
+        city: name,
+        onError: fallback,
+      });
+      $("replay-city").hidden = !cityScene;
+      $("toggle-city-life").hidden = !cityScene;
+    })
+    .catch(fallback);
 }
-function showImage(name, token) {
-  $("city-image").hidden = true;
-  const image = $("city-image");
-  image.classList.add("changing");
-  const next = new Image();
-  next.onload = () => {
-    if (token !== version || disposed) return;
-    image.src = next.src;
-    image.alt = name + " city illustration";
-    image.hidden = false;
-    image.classList.remove("changing");
-  };
-  next.onerror = () => {
-    if (token !== version || disposed) return;
-    image.hidden = true;
-    $("city-placeholder").hidden = false;
-  };
-  next.src = "/new-cities/" + name + ".png";
-}
+$("toggle-city-life").addEventListener("click", () => {
+  lifePaused = !lifePaused;
+  cityScene?.setLifePaused(lifePaused);
+  $("toggle-city-life").textContent = lifePaused ? "Resume life" : "Pause life";
+  $("toggle-city-life").setAttribute(
+    "aria-label",
+    lifePaused ? "Resume people and animals" : "Pause people and animals",
+  );
+  $("toggle-city-life").setAttribute("aria-pressed", String(lifePaused));
+});
 $("replay-city").addEventListener("click", () => cityScene?.replay());
 document
   .querySelectorAll("[data-city]")
   .forEach((button) =>
-    button.addEventListener("click", () =>
-      showLocation(
-        button.dataset.city === "Others" ? null : button.dataset.city,
-      ),
-    ),
+    button.addEventListener("click", () => showLocation(button.dataset.city)),
   );
-$("state-dropdown").addEventListener("change", (event) =>
-  showLocation(event.target.value || null),
-);
 $("proceed-btn").addEventListener("click", () => {
-  if (!selected) return;
   try {
     localStorage.setItem("selectedCity", selected);
   } catch {}

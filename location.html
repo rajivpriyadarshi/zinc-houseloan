@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Where Will This House Be? - Zinc</title>
     <link rel="stylesheet" href="flow.css" />
+    <link rel="stylesheet" href="glass.css" />
   </head>
   <body class="location-page">
     <main class="flow-main">
@@ -41,21 +42,8 @@
             type="button"
             aria-pressed="false"
           >
-            Delhi</button
-          ><button
-            class="city-btn"
-            data-city="Others"
-            type="button"
-            aria-pressed="false"
-          >
-            Others
+            Delhi
           </button>
-        </div>
-        <div class="dropdown-container" id="dropdown-container" hidden>
-          <label for="state-dropdown">Select a city or state</label
-          ><select id="state-dropdown" class="state-dropdown">
-            <option value="">Select a city or state</option>
-          </select>
         </div>
         <div class="action-area">
           <button class="primary-button" id="proceed-btn" type="button">
@@ -69,7 +57,6 @@
       </section>
       <section class="city-stage" aria-label="Selected location">
         <div class="model-label">THE SETTING FOR YOUR NEXT CHAPTER</div>
-        <img class="city-image" id="city-image" alt="" hidden />
         <div id="city-placeholder" class="city-placeholder" hidden>
           <div class="skyline" aria-hidden="true">
             <i></i><i></i><i></i><i></i>
@@ -77,9 +64,11 @@
         </div>
         <div
           id="city-canvas"
-          class="city-canvas"
+          class="city-canvas model-interactive"
+          tabindex="0"
+          aria-description="Move your pointer to look around. Drag or use arrow keys to orbit. Release to return to the default view."
           role="img"
-          aria-label="India Gate in New Delhi assembling stone by stone, surrounded by a small landscaped lawn"
+          aria-label="Selected city landmark assembling stone by stone"
           hidden
         ></div>
         <div class="model-caption">
@@ -90,9 +79,19 @@
           </div>
           <button
             type="button"
+            id="toggle-city-life"
+            class="city-replay city-life-toggle"
+            aria-label="Pause people and animals"
+            aria-pressed="false"
+            hidden
+          >
+            Pause life
+          </button>
+          <button
+            type="button"
             id="replay-city"
             class="city-replay"
-            aria-label="Replay India Gate construction"
+            aria-label="Replay landmark construction"
             hidden
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">

@@ -32,6 +32,7 @@ import("./lib/propertyScene.js")
       // A composed hero home keeps the landing scene calm at every saved budget.
       value: 30000000,
       neighbourhood: true,
+      interactive: true,
       onError: fallback,
     });
   })

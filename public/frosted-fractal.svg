@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="pane" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d5e6be" stop-opacity=".2"/>
+      <stop offset=".38" stop-color="#708b73" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#253a31" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2=".8" y2="1">
+      <stop stop-color="#dae9c6" stop-opacity=".25"/>
+      <stop offset=".5" stop-color="#b0c5a7" stop-opacity=".05"/>
+      <stop offset="1" stop-color="#afcab7" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="light" cx=".85" cy=".12" r=".85">
+      <stop stop-color="#718c70" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#171c19" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="quiet" cx=".27" cy=".46" r=".64">
+      <stop stop-color="#171c19" stop-opacity=".9"/>
+      <stop offset=".5" stop-color="#171c19" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#171c19" stop-opacity=".05"/>
+    </radialGradient>
+    <filter id="frost" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency=".68" numOctaves="3" stitchTiles="stitch" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <path fill="#171c19" d="M0 0h1600v1000H0z"/>
+  <path fill="url(#light)" d="M0 0h1600v1000H0z"/>
+  <!-- Broad crystalline planes: quiet centre, soft refracted light at the edges. -->
+  <g fill="url(#pane)" stroke="url(#edge)" stroke-width="1" filter="url(#frost)">
+    <path d="M690-140 1250-80 1100 350 820 130Z"/>
+    <path d="m1250-80 490 80-140 500-500-150Z"/>
+    <path d="m820 130 280 220-165 305-300-230Z"/>
+    <path d="m1100 350 500 150-410 210-255-55Z"/>
+    <path d="m1600 500 100 530-510-320Z"/>
+    <path d="m1190 710 510 320-700 60-65-435Z"/>
+    <path d="m-200 420 370 165 230 450-520 70Z"/>
+    <path d="m170 585 310 215-80 235Z"/>
+    <path d="m480 800 455-145 65 435-600-55Z"/>
+  </g>
+  <g fill="none" stroke="url(#edge)" stroke-width="1.2" opacity=".42">
+    <path d="m690-140 130 270 280 220 150-430M1100 350l500 150-410 210-255-55 165-305M170 585l230 450 80-235"/>
+  </g>
+  <path fill="url(#quiet)" d="M0 0h1600v1000H0z"/>
+  <path fill="#fff" opacity=".035" filter="url(#grain)" d="M0 0h1600v1000H0z"/>
+</svg>

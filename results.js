@@ -1,468 +1,182 @@
-import { getTransactionDutyRate } from './lib/stateDuty.js';
-import { PURCHASE_DEFAULTS, readPurchaseBudget } from './lib/purchaseBudget.js';
+import {
+  readPurchaseBudget,
+  formatMoney as money,
+} from "./lib/purchaseBudget.js";
+import { mountFlowShell } from "./lib/flowShell.js";
+import { createFundingInputs, calculateModel } from "./lib/fundingModel.js";
+import { createFundingScroll } from "./lib/fundingScroll.js";
 
-// Get stored values
-const purchaseBudget = readPurchaseBudget();
-const propertyPrice = purchaseBudget.price;
-const selectedCity = purchaseBudget.location;
-const transactionDutyPct = getTransactionDutyRate(selectedCity);
+mountFlowShell(4);
+const budget = readPurchaseBudget();
+let inputs = createFundingInputs(budget),
+  model,
+  selected = "zinc-loan";
+const $ = (id) => document.getElementById(id);
+const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+const order = [
+  "zinc-loan",
+  "use-cash",
+  "sell-land",
+  "sell-indian-equity",
+  "sell-rsus",
+];
+const signed = (value) => `${value >= 0 ? "+" : "−"}${money(Math.abs(value))}`;
+const row = (label, value, total = false) =>
+  `<div${total ? ' class="equation-total"' : ""}><span>${label}</span><strong>${value}</strong></div>`;
 
-// Default model inputs
-let modelInputs = {
-  propertyStatus: 'Ready',
-  propertyPrice: propertyPrice,
-  transactionDutyPct: transactionDutyPct,
-  interiorsPct: PURCHASE_DEFAULTS.interiorsPct,
-  homeLoanLtvPct: PURCHASE_DEFAULTS.homeLoanLtvPct,
-  homeLoanTenureYears: 20,
-  selectedHomeLoanRatePct: 0.085,
-  constructionDurationYears: 3,
-  drawdownSchedule: [
-    { id: 'drawdown-1', year: 0, percentage: 0.3 },
-    { id: 'drawdown-2', year: 1, percentage: 0.3 },
-    { id: 'drawdown-3', year: 2, percentage: 0.2 },
-    { id: 'drawdown-4', year: 3, percentage: 0.2 },
+function renderDetail() {
+  const strategy = model.strategies.find((s) => s.strategyId === selected);
+  const detail = model.detail[selected],
+    years = inputs.zincLoanTenureYears;
+  let description, equation;
+  if (selected === "zinc-loan") {
+    description = `Keep your investments while borrowing the upfront amount. This illustration uses RSUs growing at ${(inputs.assets.foreignRsu.usdCagrPct * 100).toFixed(1)}% in USD, with 2.5% annual INR depreciation, and a ${(model.zincRate * 100).toFixed(1)}% interest-only loan. Principal is repaid after ${years} years.`;
+    equation =
+      row("Estimated retained RSU value", money(detail.retainedValue)) +
+      row(
+        "Less principal + interest with opportunity cost",
+        `−${money(detail.burden)}`,
+      ) +
+      row(
+        `Modeled net value after ${years} years`,
+        signed(-strategy.impact),
+        true,
+      );
+  } else {
+    const asset =
+      selected === "use-cash"
+        ? "savings"
+        : selected === "sell-land"
+          ? "land"
+          : selected === "sell-indian-equity"
+            ? "equities"
+            : "RSUs";
+    description = `Use your ${asset} to cover ${money(model.fundingGap)} upfront. The bar shows the future value of those assets you would give up over ${years} years under these assumptions${selected === "use-cash" ? "." : ", including the extra assets sold to cover estimated capital-gains tax."}`;
+    equation =
+      row(
+        selected === "use-cash" ? "Savings used today" : "Assets sold today",
+        money(detail.amount),
+      ) +
+      row("Estimated tax on sale", money(detail.tax)) +
+      row(
+        `Future value given up after ${years} years`,
+        signed(-strategy.impact),
+        true,
+      );
+  }
+  $("option-detail").innerHTML =
+    `<div class="detail-copy"><p class="eyebrow">HOW THIS OPTION WORKS</p><h3 id="option-title">${strategy.strategyName}</h3><p>${description}</p></div><div class="detail-equation">${equation}</div>`;
+}
+function render() {
+  model = calculateModel(inputs);
+  $("funding-amount").textContent = money(model.fundingGap);
+  $("period-label").textContent = `${inputs.zincLoanTenureYears} years`;
+  const max = Math.max(...model.strategies.map((s) => Math.abs(s.impact)), 1);
+  $("chart-options").innerHTML = order
+    .map((id, index) => {
+      const s = model.strategies.find((s) => s.strategyId === id),
+        positive = s.impact <= 0;
+      const height = Math.max(3, (Math.abs(s.impact) / max) * 85),
+        top = positive ? 165 - height : 166;
+      return `<button class="option-column" data-option="${id}" aria-haspopup="dialog" style="--i:${index}" aria-label="${s.strategyName}: ${signed(-s.impact)} modeled impact over ${inputs.zincLoanTenureYears} years"><h3>${s.strategyName}<span aria-hidden="true">↗</span></h3><span class="funding-bar" aria-hidden="true" style="top:${top}px;height:${height}px;transform-origin:${positive ? "bottom" : "top"};--bar:${positive ? "#a7bc89" : ["#b1947c", "#aa967d", "#a58d77", "#a78574", "#987866"][index]}"></span><span class="column-value" style="top:${positive ? top - 39 : top + height + 12}px;color:${positive ? "#cce3a8" : "#c9b7a5"}">${signed(-s.impact)}</span></button>`;
+    })
+    .join("");
+  document
+    .querySelectorAll("[data-years]")
+    .forEach((b) =>
+      b.setAttribute(
+        "aria-pressed",
+        String(Number(b.dataset.years) === inputs.zincLoanTenureYears),
+      ),
+    );
+  if ($("option-dialog").open) renderDetail();
+  window.dispatchEvent(new Event("scroll"));
+}
+$("chart-options").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-option]");
+  if (!button) return;
+  selected = button.dataset.option;
+  renderDetail();
+  $("option-dialog").showModal();
+});
+document.querySelector(".horizon").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-years]");
+  if (!button) return;
+  inputs.zincLoanTenureYears = Number(button.dataset.years);
+  render();
+});
+const fields = {
+  "input-home-rate": [
+    () => inputs.selectedHomeLoanRatePct,
+    (v) => (inputs.selectedHomeLoanRatePct = v),
   ],
-  zincLoanStructure: 'Interest Only',
-  zincLoanTenureYears: 5,
-  zincPaymentReinvestmentCagrPct: 0.06,
-  assets: {
-    cash: { cagrPct: 0.06 },
-    land: {
-      embeddedGainPct: 0.6,
-      ltcgTaxRatePct: 0.125,
-      exemptionAmount: 0,
-      cagrPct: 0.08,
-    },
-    indianEquity: {
-      embeddedGainPct: 0.5,
-      ltcgTaxRatePct: 0.125,
-      exemptionAmount: 125000,
-      cagrPct: 0.12,
-    },
-    foreignRsu: {
-      embeddedGainPct: 0.4,
-      ltcgTaxRatePct: 0.125,
-      exemptionAmount: 0,
-      usdCagrPct: 0.12,
-      inrDepreciationPct: 0.025,
-    },
-  },
+  "input-ltv": [
+    () => inputs.homeLoanLtvPct,
+    (v) => (inputs.homeLoanLtvPct = v),
+  ],
+  "input-cash": [
+    () => inputs.assets.cash.cagrPct,
+    (v) => (inputs.assets.cash.cagrPct = v),
+  ],
+  "input-land": [
+    () => inputs.assets.land.cagrPct,
+    (v) => (inputs.assets.land.cagrPct = v),
+  ],
+  "input-equity": [
+    () => inputs.assets.indianEquity.cagrPct,
+    (v) => (inputs.assets.indianEquity.cagrPct = v),
+  ],
+  "input-rsu": [
+    () => inputs.assets.foreignRsu.usdCagrPct,
+    (v) => (inputs.assets.foreignRsu.usdCagrPct = v),
+  ],
 };
-
-// Calculation functions
-const READY_GST_RATE = 0;
-const UNDER_CONSTRUCTION_GST_RATE = 0.05;
-const ZINC_RATE_SPREAD = 0.02;
-const ZINC_RATE_CAP = 0.125;
-
-function nonNegative(value) {
-  return Math.max(Number.isFinite(value) ? value : 0, 0);
+function fillForm() {
+  Object.entries(fields).forEach(
+    ([id, [get]]) => ($(id).value = Number((get() * 100).toFixed(2))),
+  );
 }
-
-function safeNumber(value) {
-  return Number.isFinite(value) ? value : 0;
-}
-
-function monthsFromYears(years) {
-  return Math.max(Math.round(nonNegative(years) * 12), 0);
-}
-
-function calculateEmi(principal, annualRate, years) {
-  const sanitizedPrincipal = nonNegative(principal);
-  const months = monthsFromYears(years);
-  if (sanitizedPrincipal === 0 || months === 0) return 0;
-  const monthlyRate = nonNegative(annualRate) / 12;
-  if (monthlyRate === 0) return sanitizedPrincipal / months;
-  const growthFactor = (1 + monthlyRate) ** months;
-  return (sanitizedPrincipal * monthlyRate * growthFactor) / (growthFactor - 1);
-}
-
-function buildAmortizationSchedule(principal, annualRate, years) {
-  const sanitizedPrincipal = nonNegative(principal);
-  const sanitizedRate = nonNegative(annualRate);
-  const months = monthsFromYears(years);
-  if (sanitizedPrincipal === 0 || months === 0) return [];
-
-  const monthlyRate = sanitizedRate / 12;
-  const scheduledPayment = calculateEmi(sanitizedPrincipal, sanitizedRate, years);
-  const schedule = [];
-  let remainingPrincipal = sanitizedPrincipal;
-  let cumulativeInterest = 0;
-
-  for (let month = 1; month <= months; month++) {
-    const interestPayment = monthlyRate === 0 ? 0 : remainingPrincipal * monthlyRate;
-    const principalPayment = Math.min(Math.max(scheduledPayment - interestPayment, 0), remainingPrincipal);
-    remainingPrincipal = Math.max(remainingPrincipal - principalPayment, 0);
-    cumulativeInterest += interestPayment;
-    schedule.push({ month, cumulativeInterest, remainingPrincipal });
-  }
-  return schedule;
-}
-
-function getInterestPaidByYear(schedule, year) {
-  if (schedule.length === 0) return 0;
-  const months = Math.min(schedule.length, monthsFromYears(year));
-  if (months === 0) return 0;
-  return schedule[months - 1].cumulativeInterest;
-}
-
-function calculateGrossSaleRequired(fundingGap, embeddedGainPct, taxRate, exemption) {
-  const netFundingGap = nonNegative(fundingGap);
-  const gainRate = nonNegative(embeddedGainPct);
-  const effectiveTaxRate = nonNegative(taxRate);
-  const exemptAmount = nonNegative(exemption);
-  if (netFundingGap === 0) return 0;
-  if (netFundingGap * gainRate <= exemptAmount) return netFundingGap;
-  const denominator = 1 - gainRate * effectiveTaxRate;
-  if (denominator <= 0) return netFundingGap;
-  return (netFundingGap - exemptAmount * effectiveTaxRate) / denominator;
-}
-
-function calculateFutureValue(presentValue, cagr, years) {
-  return nonNegative(presentValue) * (1 + safeNumber(cagr)) ** nonNegative(years);
-}
-
-function calculateEffectiveRsuInrCagr(usdCagr, inrDepreciation) {
-  return (1 + safeNumber(usdCagr)) * (1 + safeNumber(inrDepreciation)) - 1;
-}
-
-function deriveZincLoanRate(homeLoanRate) {
-  return Math.min(nonNegative(homeLoanRate) + ZINC_RATE_SPREAD, ZINC_RATE_CAP);
-}
-
-function calculatePreEmiInterest(homeLoanAmount, annualRate, drawdownSchedule, constructionDurationYears) {
-  const sanitizedHomeLoanAmount = nonNegative(homeLoanAmount);
-  const sanitizedAnnualRate = nonNegative(annualRate);
-  const sanitizedConstructionDuration = nonNegative(constructionDurationYears);
-
-  let totalInterest = 0;
-  drawdownSchedule.forEach(row => {
-    const trancheAmount = sanitizedHomeLoanAmount * safeNumber(row.percentage);
-    const yearsOutstanding = Math.max(sanitizedConstructionDuration - safeNumber(row.year), 0);
-    totalInterest += trancheAmount * sanitizedAnnualRate * yearsOutstanding;
+for (const id of ["assumptions-open", "assumptions-inline"])
+  $(id).addEventListener("click", () => {
+    $("option-dialog").close();
+    fillForm();
+    $("assumptions-dialog").showModal();
   });
-  return totalInterest;
+document
+  .querySelector("#assumptions-dialog .close-dialog")
+  .addEventListener("click", () => $("assumptions-dialog").close());
+$("assumptions-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  Object.entries(fields).forEach(([id, [, set]]) =>
+    set(Number($(id).value) / 100),
+  );
+  render();
+  $("assumptions-dialog").close();
+});
+$("reset-assumptions").addEventListener("click", () => {
+  const defaults = createFundingInputs(budget);
+  const values = [
+    defaults.selectedHomeLoanRatePct,
+    defaults.homeLoanLtvPct,
+    defaults.assets.cash.cagrPct,
+    defaults.assets.land.cagrPct,
+    defaults.assets.indianEquity.cagrPct,
+    defaults.assets.foreignRsu.usdCagrPct,
+  ];
+  Object.keys(fields).forEach(
+    (id, i) => ($(id).value = Number((values[i] * 100).toFixed(2))),
+  );
+});
+$("assumptions-dialog").addEventListener("close", () =>
+  $("assumptions-open").focus({ preventScroll: true }),
+);
+$("option-close").addEventListener("click", () => $("option-dialog").close());
+render();
+const scrollStory = createFundingScroll(reduced);
+function dispose() {
+  scrollStory.dispose();
 }
-
-function calculateModel(inputs) {
-  const analysisHorizonYears = nonNegative(inputs.zincLoanTenureYears);
-  const propertyPrice = nonNegative(inputs.propertyPrice);
-  const gstRate = inputs.propertyStatus === 'Under Construction' ? UNDER_CONSTRUCTION_GST_RATE : READY_GST_RATE;
-
-  const homeLoanAmount = propertyPrice * nonNegative(inputs.homeLoanLtvPct);
-  const downPayment = propertyPrice * (1 - nonNegative(inputs.homeLoanLtvPct));
-  const transactionDuty = propertyPrice * nonNegative(inputs.transactionDutyPct);
-  const gst = propertyPrice * gstRate;
-  const interiors = propertyPrice * nonNegative(inputs.interiorsPct);
-  const fundingGap = downPayment + transactionDuty + gst + interiors;
-
-  const homeLoanSchedule = buildAmortizationSchedule(homeLoanAmount, inputs.selectedHomeLoanRatePct, inputs.homeLoanTenureYears);
-  const monthlyEmi = calculateEmi(homeLoanAmount, inputs.selectedHomeLoanRatePct, inputs.homeLoanTenureYears);
-  const interestPaidByTenYears = getInterestPaidByYear(homeLoanSchedule, analysisHorizonYears);
-
-  const preEmiInterest = inputs.propertyStatus === 'Under Construction'
-    ? calculatePreEmiInterest(homeLoanAmount, inputs.selectedHomeLoanRatePct, inputs.drawdownSchedule, inputs.constructionDurationYears)
-    : 0;
-
-  const effectiveRsuInrCagr = calculateEffectiveRsuInrCagr(inputs.assets.foreignRsu.usdCagrPct, inputs.assets.foreignRsu.inrDepreciationPct);
-
-  const strategies = [];
-
-  const cashFutureValue = calculateFutureValue(fundingGap, inputs.assets.cash.cagrPct, analysisHorizonYears);
-  strategies.push({
-    strategyId: 'use-cash',
-    strategyName: 'Use cash',
-    impact: cashFutureValue,
-    rank: 0
-  });
-
-  const landGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.land.embeddedGainPct, inputs.assets.land.ltcgTaxRatePct, inputs.assets.land.exemptionAmount);
-  const landFutureValue = calculateFutureValue(landGrossSale, inputs.assets.land.cagrPct, analysisHorizonYears);
-  strategies.push({
-    strategyId: 'sell-land',
-    strategyName: 'Sell Land',
-    impact: landFutureValue,
-    rank: 0
-  });
-
-  const equityGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.indianEquity.embeddedGainPct, inputs.assets.indianEquity.ltcgTaxRatePct, inputs.assets.indianEquity.exemptionAmount);
-  const equityFutureValue = calculateFutureValue(equityGrossSale, inputs.assets.indianEquity.cagrPct, analysisHorizonYears);
-  strategies.push({
-    strategyId: 'sell-indian-equity',
-    strategyName: 'Sell Indian Listed Equity',
-    impact: equityFutureValue,
-    rank: 0
-  });
-
-  const rsuGrossSale = calculateGrossSaleRequired(fundingGap, inputs.assets.foreignRsu.embeddedGainPct, inputs.assets.foreignRsu.ltcgTaxRatePct, inputs.assets.foreignRsu.exemptionAmount);
-  const rsuFutureValue = calculateFutureValue(rsuGrossSale, effectiveRsuInrCagr, analysisHorizonYears);
-  strategies.push({
-    strategyId: 'sell-rsus',
-    strategyName: 'Sell Foreign RSUs',
-    impact: rsuFutureValue,
-    rank: 0
-  });
-
-  const zincRate = deriveZincLoanRate(inputs.selectedHomeLoanRatePct);
-  const zincInterest = fundingGap * zincRate * analysisHorizonYears;
-  const zincPaymentsFV = calculateFutureValue(zincInterest, inputs.zincPaymentReinvestmentCagrPct, analysisHorizonYears / 2);
-  const retainedRsuFV = calculateFutureValue(rsuGrossSale, effectiveRsuInrCagr, analysisHorizonYears);
-  const zincBurden = zincPaymentsFV + fundingGap;
-  const zincImpact = zincBurden - retainedRsuFV;
-
-  strategies.push({
-    strategyId: 'zinc-loan',
-    strategyName: 'Take Zinc Loan Against RSUs',
-    impact: zincImpact,
-    rank: 0
-  });
-
-  strategies.sort((a, b) => a.impact - b.impact);
-  strategies.forEach((s, i) => s.rank = i + 1);
-
-  return {
-    fundingGap,
-    homeLoanAmount,
-    monthlyEmi,
-    interestPaidByTenYears,
-    preEmiInterest,
-    strategies,
-    propertyPrice,
-    transactionDuty,
-    gst,
-    interiors,
-    downPayment
-  };
-}
-
-function formatCurrency(amount) {
-  const absAmount = Math.abs(amount);
-  if (absAmount >= 10000000) {
-    return '₹' + (amount / 10000000).toFixed(2) + ' Cr';
-  } else if (absAmount >= 100000) {
-    return '₹' + (amount / 100000).toFixed(2) + ' Lacs';
-  } else {
-    return '₹' + amount.toLocaleString('en-IN');
-  }
-}
-
-function formatLacs(amount) {
-  const lacs = amount / 100000;
-  if (lacs >= 100) {
-    return (lacs / 100).toFixed(1) + ' Cr';
-  }
-  return lacs.toFixed(1) + ' lacs';
-}
-
-function formatCr(amount) {
-  const cr = amount / 10000000;
-  if (cr >= 1) {
-    return cr.toFixed(0) + ' Cr';
-  }
-  return (amount / 100000).toFixed(0) + ' Lacs';
-}
-
-function getHouseLevel(value) {
-  const MIN_VALUE = 100000;
-  const MAX_VALUE = 100000000;
-  const range = MAX_VALUE - MIN_VALUE;
-  const step = range / 6;
-
-  if (value < MIN_VALUE + step) return 1;
-  if (value < MIN_VALUE + step * 2) return 2;
-  if (value < MIN_VALUE + step * 3) return 3;
-  if (value < MIN_VALUE + step * 4) return 4;
-  if (value < MIN_VALUE + step * 5) return 5;
-  return 6;
-}
-
-function updateUI() {
-  const results = calculateModel(modelInputs);
-
-  document.getElementById('funding-amount').textContent = formatLacs(results.fundingGap);
-  document.getElementById('city-name').textContent = selectedCity;
-  document.getElementById('house-value').textContent = formatCr(modelInputs.propertyPrice);
-
-  const houseLevel = getHouseLevel(modelInputs.propertyPrice);
-  document.getElementById('house-image').src = `/houses/level${houseLevel}.png`;
-
-  const ratePercent = (modelInputs.selectedHomeLoanRatePct * 100).toFixed(1);
-  const ltvPercent = (modelInputs.homeLoanLtvPct * 100).toFixed(0);
-  document.getElementById('loan-settings-value').textContent = `${ratePercent}%, ${modelInputs.homeLoanTenureYears} year, ${ltvPercent}%`;
-  document.getElementById('construction-value').textContent = modelInputs.propertyStatus === 'Ready' ? 'No' : 'Yes';
-
-  const bestOption = results.strategies.find(s => s.rank === 1);
-  const secondBestOption = results.strategies.find(s => s.rank === 2);
-  const otherOptions = results.strategies.filter(s => s.rank !== 1);
-
-  const savingsAmount = secondBestOption ? secondBestOption.impact - bestOption.impact : 0;
-
-  document.getElementById('best-option').innerHTML = `
-    <div class="option-left">
-      <div class="option-rank rank-1">1</div>
-      <div class="option-name">${bestOption.strategyName}</div>
-    </div>
-    <div class="option-right">
-      <div class="option-impact">
-        <div class="option-amount">${formatCurrency(bestOption.impact)}</div>
-        <div class="option-label">10 year financing impact</div>
-      </div>
-      <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-    </div>
-    ${savingsAmount > 0 ? `<div class="savings-tag">You'll be ${formatCurrency(savingsAmount)} richer compared to the 2nd best option</div>` : ''}
-  `;
-  document.getElementById('best-option').dataset.strategyId = bestOption.strategyId;
-
-  const otherOptionsHtml = otherOptions.map(opt => `
-    <div class="option-card" data-strategy-id="${opt.strategyId}">
-      <div class="option-left">
-        <div class="option-rank rank-other">${opt.rank}</div>
-        <div class="option-name">${opt.strategyName}</div>
-      </div>
-      <div class="option-right">
-        <div class="option-impact">
-          <div class="option-amount">${formatCurrency(opt.impact)}</div>
-          <div class="option-label">10 year financing impact</div>
-        </div>
-        <svg class="option-expand" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </div>
-    </div>
-  `).join('');
-  document.getElementById('other-options').innerHTML = otherOptionsHtml;
-
-  document.querySelectorAll('.option-card').forEach(card => {
-    card.addEventListener('click', () => showOptionDetails(card.dataset.strategyId, results));
-  });
-}
-
-function showOptionDetails(strategyId, results) {
-  const strategy = results.strategies.find(s => s.strategyId === strategyId);
-  if (!strategy) return;
-
-  document.getElementById('detail-modal-title').textContent = strategy.strategyName;
-
-  let content = `
-    <div class="detail-row">
-      <span class="detail-label">10 Year Financing Impact</span>
-      <span class="detail-value">${formatCurrency(strategy.impact)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Funding Gap</span>
-      <span class="detail-value">${formatCurrency(results.fundingGap)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Home Loan Amount</span>
-      <span class="detail-value">${formatCurrency(results.homeLoanAmount)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Monthly EMI</span>
-      <span class="detail-value">${formatCurrency(results.monthlyEmi)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Down Payment</span>
-      <span class="detail-value">${formatCurrency(results.downPayment)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Transaction Duty</span>
-      <span class="detail-value">${formatCurrency(results.transactionDuty)}</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">Interiors</span>
-      <span class="detail-value">${formatCurrency(results.interiors)}</span>
-    </div>
-  `;
-
-  document.getElementById('detail-modal-content').innerHTML = content;
-  document.getElementById('detail-modal').classList.add('visible');
-}
-
-const loanModal = document.getElementById('loan-modal');
-const constructionModal = document.getElementById('construction-modal');
-const detailModal = document.getElementById('detail-modal');
-
-document.getElementById('loan-settings-btn').addEventListener('click', () => {
-  document.getElementById('modal-loan-rate').value = modelInputs.selectedHomeLoanRatePct;
-  document.getElementById('modal-loan-tenure').value = modelInputs.homeLoanTenureYears;
-  document.getElementById('modal-loan-ltv').value = modelInputs.homeLoanLtvPct;
-  loanModal.classList.add('visible');
+window.addEventListener("pagehide", (event) => {
+  if (!event.persisted) dispose();
 });
-
-document.getElementById('loan-modal-cancel').addEventListener('click', () => {
-  loanModal.classList.remove('visible');
-});
-
-document.getElementById('loan-modal-save').addEventListener('click', () => {
-  modelInputs.selectedHomeLoanRatePct = parseFloat(document.getElementById('modal-loan-rate').value);
-  modelInputs.homeLoanTenureYears = parseInt(document.getElementById('modal-loan-tenure').value);
-  modelInputs.homeLoanLtvPct = parseFloat(document.getElementById('modal-loan-ltv').value);
-  loanModal.classList.remove('visible');
-  updateUI();
-});
-
-const constructionExtraFields = document.getElementById('construction-extra-fields');
-const constructionSelect = document.getElementById('modal-construction');
-
-constructionSelect.addEventListener('change', () => {
-  if (constructionSelect.value === 'Under Construction') {
-    constructionExtraFields.classList.add('visible');
-  } else {
-    constructionExtraFields.classList.remove('visible');
-  }
-});
-
-document.getElementById('construction-btn').addEventListener('click', () => {
-  document.getElementById('modal-construction').value = modelInputs.propertyStatus;
-  document.getElementById('modal-construction-duration').value = modelInputs.constructionDurationYears;
-
-  document.getElementById('drawdown-0').value = modelInputs.drawdownSchedule[0].percentage;
-  document.getElementById('drawdown-1').value = modelInputs.drawdownSchedule[1].percentage;
-  document.getElementById('drawdown-2').value = modelInputs.drawdownSchedule[2].percentage;
-  document.getElementById('drawdown-3').value = modelInputs.drawdownSchedule[3].percentage;
-
-  if (modelInputs.propertyStatus === 'Under Construction') {
-    constructionExtraFields.classList.add('visible');
-  } else {
-    constructionExtraFields.classList.remove('visible');
-  }
-
-  constructionModal.classList.add('visible');
-});
-
-document.getElementById('construction-modal-cancel').addEventListener('click', () => {
-  constructionModal.classList.remove('visible');
-});
-
-document.getElementById('construction-modal-save').addEventListener('click', () => {
-  modelInputs.propertyStatus = document.getElementById('modal-construction').value;
-
-  if (modelInputs.propertyStatus === 'Under Construction') {
-    modelInputs.constructionDurationYears = parseInt(document.getElementById('modal-construction-duration').value);
-    modelInputs.drawdownSchedule = [
-      { id: 'drawdown-1', year: 0, percentage: parseFloat(document.getElementById('drawdown-0').value) },
-      { id: 'drawdown-2', year: 1, percentage: parseFloat(document.getElementById('drawdown-1').value) },
-      { id: 'drawdown-3', year: 2, percentage: parseFloat(document.getElementById('drawdown-2').value) },
-      { id: 'drawdown-4', year: 3, percentage: parseFloat(document.getElementById('drawdown-3').value) },
-    ];
-  }
-
-  constructionModal.classList.remove('visible');
-  updateUI();
-});
-
-document.getElementById('detail-modal-close').addEventListener('click', () => {
-  detailModal.classList.remove('visible');
-});
-
-[loanModal, constructionModal, detailModal].forEach(modal => {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.remove('visible');
-  });
-});
-
-document.getElementById('back-btn').addEventListener('click', () => {
-  document.body.classList.add('page-exit');
-  setTimeout(() => window.location.href = 'cost-breakdown.html', 400);
-});
-
-updateUI();
+if (import.meta.hot) import.meta.hot.dispose(dispose);

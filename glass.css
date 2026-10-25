@@ -1,0 +1,355 @@
+/* Shared frosted surfaces. Opaque fills remain legible without backdrop-filter. */
+:root {
+  --glass-fill: rgb(36 48 39 / 58%);
+  --glass-solid: #2a352c;
+  --glass-border: rgb(222 238 209 / 22%);
+  --glass-sheen: linear-gradient(
+    145deg,
+    rgb(239 247 228 / 12%),
+    rgb(220 237 204 / 3%) 48%,
+    rgb(231 243 217 / 7%)
+  );
+  --glass-shadow:
+    inset 0 1px 0 rgb(249 255 239 / 15%), inset 0 -1px 0 rgb(12 23 16 / 18%),
+    0 6px 18px rgb(6 16 10 / 12%);
+}
+:is(
+  .primary-button,
+  .continue-btn,
+  .city-btn,
+  .preset-row button,
+  .city-replay,
+  .playback-controls button,
+  .horizon button,
+  .secondary-button,
+  .close-dialog,
+  .amount-editor,
+  .input-grid input,
+  .slider-wrap
+) {
+  background-color: var(--glass-solid);
+  background-image: var(--glass-sheen);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: #e6efdc;
+}
+:is(
+  .primary-button,
+  .continue-btn,
+  .city-btn,
+  .preset-row button,
+  .city-replay,
+  .playback-controls button,
+  .horizon button,
+  .secondary-button,
+  .close-dialog
+) {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms,
+    background-color 180ms,
+    box-shadow 180ms;
+}
+:is(.primary-button, .continue-btn) {
+  --glass-fill: rgb(157 188 126 / 24%);
+  --glass-solid: #405137;
+  --glass-border: rgb(215 239 183 / 45%);
+  --glass-sheen: linear-gradient(
+    145deg,
+    rgb(237 251 213 / 19%),
+    rgb(206 230 172 / 4%) 56%,
+    rgb(213 236 184 / 12%)
+  );
+  border-radius: 12px;
+  color: #edf6e2;
+  box-shadow:
+    inset 0 1px 0 rgb(249 255 234 / 26%),
+    inset 0 -1px 0 rgb(16 31 17 / 20%),
+    0 8px 22px rgb(6 16 10 / 18%);
+}
+:is(.primary-button, .continue-btn):hover {
+  background-color: #516646;
+  border-color: #d7eab5;
+  transform: translateY(-2px);
+}
+:is(
+  .city-btn,
+  .preset-row button,
+  .city-replay,
+  .playback-controls button,
+  .horizon button,
+  .secondary-button,
+  .close-dialog
+):hover {
+  background-color: #394b36;
+  border-color: rgb(225 243 205 / 46%);
+  color: #f0f5e9;
+}
+:is(
+  .city-btn.selected,
+  .preset-row button.active,
+  .horizon button[aria-pressed="true"]
+) {
+  --glass-fill: rgb(165 193 135 / 20%);
+  --glass-solid: #3d5034;
+  background-color: var(--glass-solid);
+  border-color: rgb(211 231 172 / 64%);
+  box-shadow:
+    inset 0 1px 0 rgb(245 255 226 / 22%),
+    inset 0 0 0 1px rgb(211 231 172 / 8%),
+    0 5px 16px rgb(7 19 11 / 12%);
+  color: #edf5e2;
+}
+:is(
+  .secondary-button,
+  .amount-editor,
+  .input-grid input
+) {
+  border-radius: 10px;
+}
+/* One pill silhouette for compact choices and chips throughout the flow. */
+:is(
+  .city-btn,
+  .preset-row button,
+  .horizon button,
+  .feature-chips span,
+  .city-replay,
+  .playback-controls button
+) {
+  border-radius: 999px;
+}
+:is(.city-replay, .playback-controls button) {
+  padding: 8px 12px;
+}
+.city-replay + .city-replay {
+  margin-left: 8px;
+}
+.playback-controls {
+  gap: 8px;
+}
+:is(
+  .primary-button,
+  .continue-btn,
+  .city-btn,
+  .preset-row button,
+  .city-replay,
+  .playback-controls button,
+  .horizon button,
+  .secondary-button,
+  .close-dialog
+):active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow:
+    inset 0 2px 5px rgb(8 18 12 / 20%),
+    inset 0 1px 0 rgb(246 255 230 / 10%);
+}
+:is(
+  .primary-button,
+  .continue-btn,
+  .city-btn,
+  .preset-row button,
+  .city-replay,
+  .playback-controls button,
+  .horizon button,
+  .secondary-button,
+  .close-dialog
+):disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+.slider-wrap {
+  padding: 18px 20px 16px;
+  border-radius: 18px;
+  margin-top: 30px;
+}
+.value-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 32px;
+  background: transparent;
+  border: 0;
+  margin: 0 0 12px;
+  border-radius: 12px;
+}
+.value-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #b9cfa1 var(--fill, 40%),
+    rgb(194 215 175 / 13%) var(--fill, 40%)
+  );
+  box-shadow:
+    inset 0 1px 2px rgb(7 17 10 / 32%),
+    0 1px 0 rgb(247 255 231 / 12%);
+}
+.value-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #b9cfa1 var(--fill, 40%),
+    rgb(194 215 175 / 13%) var(--fill, 40%)
+  );
+  box-shadow:
+    inset 0 1px 2px rgb(7 17 10 / 32%),
+    0 1px 0 rgb(247 255 231 / 12%);
+}
+.value-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -11px;
+  border: 1px solid rgb(242 253 224 / 75%);
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    rgb(247 255 232 / 76%),
+    rgb(159 188 132 / 72%) 60%,
+    rgb(219 239 192 / 88%)
+  );
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 244 / 70%),
+    inset 0 -2px 3px rgb(46 69 37 / 22%),
+    0 3px 9px rgb(7 17 10 / 35%);
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.value-slider::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgb(242 253 224 / 75%);
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    rgb(247 255 232 / 76%),
+    rgb(159 188 132 / 72%) 60%,
+    rgb(219 239 192 / 88%)
+  );
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 244 / 70%),
+    inset 0 -2px 3px rgb(46 69 37 / 22%),
+    0 3px 9px rgb(7 17 10 / 35%);
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.value-slider:is(:hover, :active)::-webkit-slider-thumb {
+  transform: scale(1.1);
+}
+.value-slider:is(:hover, :active)::-moz-range-thumb {
+  transform: scale(1.1);
+}
+.slider-ticks {
+  color: #a5b59a;
+}
+
+@supports (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  :is(
+    .primary-button,
+    .continue-btn,
+    .city-btn,
+    .preset-row button,
+    .city-replay,
+    .playback-controls button,
+    .horizon button,
+    .secondary-button,
+    .close-dialog,
+    .amount-editor,
+    .input-grid input,
+    .slider-wrap
+  ) {
+    background-color: var(--glass-fill);
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+    backdrop-filter: blur(16px) saturate(125%);
+  }
+  :is(.primary-button, .continue-btn):hover {
+    background-color: rgb(174 204 142 / 34%);
+  }
+  :is(
+    .city-btn,
+    .preset-row button,
+    .city-replay,
+    .playback-controls button,
+    .horizon button,
+    .secondary-button,
+    .close-dialog
+  ):hover {
+    background-color: rgb(152 180 130 / 22%);
+  }
+  .value-slider::-webkit-slider-thumb {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .primary-button,
+    .continue-btn,
+    .city-btn,
+    .preset-row button,
+    .city-replay,
+    .playback-controls button,
+    .horizon button,
+    .secondary-button,
+    .close-dialog
+  ) {
+    transition: none;
+  }
+  .value-slider::-webkit-slider-thumb {
+    transition: none;
+  }
+  .value-slider::-moz-range-thumb {
+    transition: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :is(
+    .primary-button,
+    .continue-btn,
+    .city-btn,
+    .preset-row button,
+    .city-replay,
+    .playback-controls button,
+    .horizon button,
+    .secondary-button,
+    .close-dialog,
+    .amount-editor,
+    .input-grid input,
+    .slider-wrap
+  ) {
+    background-color: var(--glass-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Keep the added slider surface and primary action in view on short desktop windows. */
+@media (min-width: 960px) and (max-height: 820px) {
+  .value-page .flow-main {
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+  .value-page .model-stage {
+    height: max(460px, calc(100dvh - 202px));
+  }
+  .value-page .back-link {
+    margin-bottom: 22px;
+  }
+  .value-page h1 {
+    margin-bottom: 18px;
+  }
+  .value-page .slider-wrap {
+    margin-top: 22px;
+  }
+  .value-page .preset-row {
+    margin-top: 18px;
+  }
+  .value-page .description {
+    margin-top: 16px;
+  }
+  .value-page .action-area {
+    margin-top: 22px;
+  }
+}
